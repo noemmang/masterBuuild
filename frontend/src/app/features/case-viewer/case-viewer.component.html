@@ -1,0 +1,153 @@
+<div class="cv-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="cv-sidebar">
+    <h2 class="cv-titulo">Comparar gabinetes</h2>
+
+    <div class="cv-search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Buscar gabinete..."
+        [value]="busqueda()"
+        (input)="setBusqueda($any($event.target).value)"
+      />
+    </div>
+
+    <div class="cv-lista">
+      @for (g of gabinetesFiltrados(); track g.uuid) {
+        <div
+          class="cv-item"
+          [class.seleccionado]="g.seleccionado"
+          [class.lleno]="!g.seleccionado && numSeleccionados() >= 4"
+          (click)="toggleGabinete(g.uuid)"
+        >
+          <span class="cv-dot" [style.background]="g.color"></span>
+          <div class="cv-item-info">
+            <p class="cv-item-nombre">{{ g.nombre }}</p>
+            <p class="cv-item-dims">{{ g.ancho_mm }} × {{ g.alto_mm }} × {{ g.profundidad_mm }}mm</p>
+            <p class="cv-item-tipo">{{ g.tipo }} · {{ g.estructura }}</p>
+            <p class="cv-item-aio">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+              </svg>
+              AIO: {{ formatRadiadores(g.soporte_radiadores) }}
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (gabinetesMostrados().length > 0) {
+      <div class="cv-leyenda">
+        <p class="cv-leyenda-titulo">LEYENDA</p>
+        @for (g of gabinetesMostrados(); track g.uuid) {
+          <div class="cv-leyenda-item">
+            <span class="cv-dot" [style.background]="g.color"></span>
+            <span>{{ g.nombre }}</span>
+          </div>
+        }
+      </div>
+    }
+  </aside>
+
+  <!-- VISOR -->
+  <div class="cv-visor">
+
+    <!-- Topbar -->
+    <div class="cv-topbar">
+      <div class="cv-vistas">
+        @for (v of vistas; track v.key) {
+          <button
+            class="cv-vista-btn"
+            [class.activo]="vistaActual() === v.key"
+            (click)="setVista(v.key)"
+          >{{ v.label }}</button>
+        }
+      </div>
+      <div class="cv-topbar-right">
+        <span class="cv-escala">Escala 1:10 · mm</span>
+        @if (gabinetesMostrados().length >= 2) {
+          <button
+            class="cv-dif-btn"
+            [class.activo]="mostrarDiferencias()"
+            (click)="toggleDiferencias()"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M8 3v18M16 3v18M3 8h18M3 16h18"/>
+            </svg>
+            Diferencias
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="cv-canvas-wrap">
+      <canvas #canvas></canvas>
+
+      <!-- Panel diferencias — visible en TODAS las vistas -->
+      @if (mostrarDiferencias() && diferencias()) {
+        <div class="cv-dif-panel">
+
+          <p class="cv-dif-seccion">DIMENSIONES</p>
+          @for (dif of diferencias()!.dimensiones; track dif.campo) {
+            <div class="cv-dif-grupo">
+              <div class="cv-dif-head">
+                <span class="cv-dif-label">{{ dif.campo }}</span>
+                @if (dif.diferencia > 0) {
+                  <span class="cv-dif-delta">Δ {{ dif.diferencia }}mm</span>
+                }
+              </div>
+              @for (v of dif.valores; track v.nombre) {
+                <div class="cv-dif-barra-wrap">
+                  <div
+                    class="cv-dif-barra"
+                    [style.width.%]="pct(v.valor, dif.max)"
+                    [style.background]="v.color"
+                  ></div>
+                  <span class="cv-dif-val">{{ v.valor }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="cv-dif-sep"></div>
+
+          <p class="cv-dif-seccion">COMPATIBILIDAD</p>
+          @for (dif of diferencias()!.compatibilidad; track dif.campo) {
+            <div class="cv-dif-grupo">
+              <div class="cv-dif-head">
+                <span class="cv-dif-label">{{ dif.campo }}</span>
+                @if (dif.diferencia > 0) {
+                  <span class="cv-dif-delta">Δ {{ dif.diferencia }}mm</span>
+                }
+              </div>
+              @for (v of dif.valores; track v.nombre) {
+                <div class="cv-dif-barra-wrap">
+                  <div
+                    class="cv-dif-barra"
+                    [style.width.%]="pct(v.valor, dif.max)"
+                    [style.background]="v.color"
+                  ></div>
+                  <span class="cv-dif-val">{{ v.valor }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="cv-dif-sep"></div>
+
+        </div>
+      }
+
+      <!-- Hint drag -->
+      @if (vistaActual() === '3d') {
+        <p class="cv-hint">Arrastra para rotar</p>
+      }
+
+    </div>
+  </div>
+</div>

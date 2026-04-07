@@ -1,0 +1,57 @@
+<header class="header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a routerLink="/home" class="logo">
+      <span class="logo-master">master</span><span class="logo-build">Build</span>
+    </a>
+
+    <!-- Nav central -->
+    <nav class="nav">
+      <a routerLink="/home"         routerLinkActive="active" class="nav-link">Inicio</a>
+      <a routerLink="/buscar"       routerLinkActive="active" class="nav-link">Buscar</a>
+      <a routerLink="/configurador" routerLinkActive="active" class="nav-link">Configurador</a>
+      <a routerLink="/gabinetes"    routerLinkActive="active" class="nav-link">Gabinetes</a>
+      <a routerLink="/guardados"    routerLinkActive="active" class="nav-link">Guardados</a>
+    </nav>
+
+    <!-- Derecha -->
+    <div class="header-right">
+
+      <!-- Toggle tema -->
+      <button class="btn-tema" (click)="toggleTema()" [title]="modoOscuro ? 'Modo claro' : 'Modo oscuro'">
+        @if (modoOscuro) {
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        } @else {
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        }
+      </button>
+
+      @if (auth.usuario()) {
+        <button class="avatar-btn" (click)="toggleMenuUsuario()">
+          {{ auth.usuario()!.nombre.charAt(0).toUpperCase() }}
+        </button>
+        @if (menuUsuarioAbierto) {
+          <div class="dropdown">
+            <div class="dropdown-user">
+              <span class="dropdown-nombre">{{ auth.usuario()!.nombre }}</span>
+              <span class="dropdown-email">{{ auth.usuario()!.email }}</span>
+            </div>
+            <a routerLink="/perfil"    class="dropdown-item" (click)="menuUsuarioAbierto = false">Perfil</a>
+            <a routerLink="/guardados" class="dropdown-item" (click)="menuUsuarioAbierto = false">Guardados</a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" (click)="logout()">Cerrar sesión</button>
+          </div>
+        }
+      } @else {
+        <a routerLink="/auth/login" class="btn-login">Iniciar sesión</a>
+      }
+
+    </div>
+  </div>
+</header>

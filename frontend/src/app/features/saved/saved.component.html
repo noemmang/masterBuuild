@@ -1,0 +1,244 @@
+<div class="saved-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="saved-sidebar">
+      <h2 class="saved-titulo">Guardados</h2>
+      <nav class="saved-nav">
+  
+        <button class="saved-tab" [class.activo]="pestanaActiva() === 'componentes'" (click)="setPestana('componentes')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+          Componentes
+          @if (numGuardados() > 0) { <span class="tab-badge">{{ numGuardados() }}</span> }
+        </button>
+  
+        <button class="saved-tab" [class.activo]="pestanaActiva() === 'configuraciones'" (click)="setPestana('configuraciones')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Configuraciones
+          @if (numConfiguraciones() > 0) { <span class="tab-badge">{{ numConfiguraciones() }}</span> }
+        </button>
+  
+        <button class="saved-tab" [class.activo]="pestanaActiva() === 'alertas'" (click)="setPestana('alertas')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          Alertas
+          @if (numAlertas() > 0) { <span class="tab-badge">{{ numAlertas() }}</span> }
+        </button>
+  
+      </nav>
+    </aside>
+  
+    <!-- PANEL PRINCIPAL -->
+    <div class="saved-main">
+  
+      <!-- ══ COMPONENTES ══ -->
+      @if (pestanaActiva() === 'componentes') {
+        @if (cargando()) {
+          <div class="grid-componentes">
+            @for (s of [1,2,3,4,5,6,7,8]; track s) { <div class="card-skeleton"></div> }
+          </div>
+        } @else if (error()) {
+          <div class="empty-state">
+            <p>{{ error() }}</p>
+            <button class="btn-reintentar" (click)="cargarGuardados()">Reintentar</button>
+          </div>
+        } @else if (guardados().length === 0) {
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            <p>No tienes componentes guardados</p>
+            <span>Explora el buscador y guarda los que te interesen</span>
+            <a routerLink="/buscar" class="btn-ir">Ir al buscador</a>
+          </div>
+        } @else {
+          <div class="grid-componentes">
+            @for (g of guardados(); track g.uuid) {
+              <div class="comp-card" [class.eliminando]="eliminando() === g.uuid">
+  
+                <!-- Zona clicable → buscador -->
+                <div class="comp-clickable" (click)="abrirEnBuscador(g.componente.uuid)">
+                  <div class="comp-img">
+                    @if (g.componente.imagen_url) {
+                      <img [src]="g.componente.imagen_url" [alt]="g.componente.nombre" />
+                    } @else {
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+                      </svg>
+                    }
+                    <div class="comp-badges">
+                      @if (g.componente.con_cupon)  { <span class="badge naranja">%</span> }
+                      @if (g.componente.con_regalo) { <span class="badge verde">🎁</span> }
+                    </div>
+                  </div>
+                  <div class="comp-body">
+                    <span class="comp-cat">{{ nombreCategoria(g.componente.categoria) }}</span>
+                    <h3 class="comp-nombre">{{ g.componente.nombre }}</h3>
+                    <span class="comp-marca">{{ g.componente.marca }}</span>
+                    @if (g.componente.mejor_precio) {
+                      <div class="comp-precio-wrap">
+                        <span class="comp-precio">{{ formatPrecio(g.componente.mejor_precio) }}</span>
+                        @if (g.componente.tienda) {
+                          <span class="comp-tienda">en {{ g.componente.tienda }}</span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="comp-sin-precio">Sin precio disponible</span>
+                    }
+                  </div>
+                </div>
+  
+                <!-- Notas (no propaga el click al clickable) -->
+                <div class="comp-notas-wrap" (click)="$event.stopPropagation()">
+                  @if (editandoNotas() === g.uuid) {
+                    <div class="notas-edit">
+                      <textarea [(ngModel)]="notasTmp" placeholder="Añade una nota..." rows="2" class="notas-textarea"></textarea>
+                      <div class="notas-actions">
+                        <button class="btn-notas-save" (click)="guardarNotas(g.uuid)">Guardar</button>
+                        <button class="btn-notas-cancel" (click)="cancelarNotas()">Cancelar</button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="comp-notas" (click)="empezarEditarNotas(g)">
+                      {{ g.notas || '+ Añadir nota' }}
+                    </p>
+                  }
+                </div>
+  
+                <!-- Botón eliminar -->
+                <div class="comp-acciones" (click)="$event.stopPropagation()">
+                  <button class="btn-eliminar" (click)="eliminar(g.uuid)" title="Eliminar de guardados">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+  
+              </div>
+            }
+          </div>
+        }
+      }
+  
+      <!-- ══ CONFIGURACIONES ══ -->
+      @if (pestanaActiva() === 'configuraciones') {
+        @if (configuraciones().length === 0) {
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <p>No tienes configuraciones guardadas</p>
+            <span>Crea una desde el configurador</span>
+            <a routerLink="/configurador" class="btn-ir">Ir al configurador</a>
+          </div>
+        } @else {
+          <div class="grid-configuraciones">
+            @for (cfg of configuraciones(); track cfg.uuid) {
+              <div class="cfg-card">
+                <div class="cfg-head">
+                  <div>
+                    <h3 class="cfg-nombre">{{ cfg.nombre }}</h3>
+                    <span class="cfg-total">{{ formatPrecio(cfg.total) }}</span>
+                  </div>
+                  <div class="cfg-head-right">
+                    <span class="cfg-compat" [class.ok]="cfg.compatible" [class.error]="!cfg.compatible">
+                      {{ cfg.compatible ? 'Compatible' : 'Hay errores' }}
+                    </span>
+                    <a routerLink="/configurador" class="btn-abrir">Abrir →</a>
+                  </div>
+                </div>
+                <div class="cfg-slots">
+                  @for (slot of cfg.slots; track slot.categoria) {
+                    <div class="cfg-slot">
+                      <span class="cfg-slot-dot" [class.ok]="slot.ok" [class.error]="!slot.ok"></span>
+                      <span class="cfg-slot-cat">{{ slot.categoria }}</span>
+                      <span class="cfg-slot-nombre">{{ slot.nombre }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+  
+      <!-- ══ ALERTAS ══ -->
+      @if (pestanaActiva() === 'alertas') {
+        @if (cargandoAlertas()) {
+          <div class="alertas-lista">
+            @for (s of [1,2,3]; track s) { <div class="card-skeleton" style="height:120px"></div> }
+          </div>
+        } @else if (alertas().length === 0) {
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <p>No tienes alertas de precio</p>
+            <span>Créalas desde el panel de precios en el buscador</span>
+            <a routerLink="/buscar" class="btn-ir">Ir al buscador</a>
+          </div>
+        } @else {
+          <div class="alertas-lista">
+            @for (alerta of alertas(); track alerta.uuid) {
+              <div class="alerta-card" [class.inactiva]="!alerta.activa" (click)="abrirEnBuscador(alerta.componente.uuid)">
+  
+                <div class="alerta-info">
+                  <span class="alerta-cat">{{ nombreCategoria(alerta.componente.categoria) }}</span>
+                  <h3 class="alerta-nombre">{{ alerta.componente.nombre }}</h3>
+                </div>
+  
+                <div class="alerta-precios">
+                  <div class="alerta-precio-bloque">
+                    <span class="alerta-precio-label">Objetivo</span>
+                    <span class="alerta-precio-val objetivo">{{ formatPrecio(alerta.precio_objetivo) }}</span>
+                  </div>
+                  <div class="alerta-flecha">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                  <div class="alerta-precio-bloque">
+                    <span class="alerta-precio-label">Actual</span>
+                    <span class="alerta-precio-val" [class.bajo]="alerta.componente.precio_actual !== null && alerta.componente.precio_actual <= alerta.precio_objetivo">
+                      {{ formatPrecio(alerta.componente.precio_actual) }}
+                    </span>
+                  </div>
+                </div>
+  
+                <div class="alerta-barra-wrap">
+                  <div class="alerta-barra" [style.width.%]="pctAlerta(alerta.componente.precio_actual, alerta.precio_objetivo)"></div>
+                </div>
+  
+                <div class="alerta-footer" (click)="$event.stopPropagation()">
+                  @if (alerta.disparada) {
+                    <span class="alerta-disponible">¡Disponible!</span>
+                  } @else {
+                    <span class="alerta-pendiente">
+                      Faltan {{ formatPrecio((alerta.componente.precio_actual ?? alerta.precio_objetivo) - alerta.precio_objetivo) }}
+                    </span>
+                  }
+                  <div class="alerta-footer-actions">
+                    <button class="alerta-toggle" [class.activo]="alerta.activa" (click)="toggleAlerta(alerta)">
+                      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                      {{ alerta.activa ? 'Activa' : 'Inactiva' }}
+                    </button>
+                    <button class="btn-eliminar-alerta" (click)="eliminarAlerta(alerta.uuid)" [disabled]="eliminandoAlerta() === alerta.uuid" title="Eliminar alerta">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+  
+              </div>
+            }
+          </div>
+        }
+      }
+  
+    </div>
+  </div>

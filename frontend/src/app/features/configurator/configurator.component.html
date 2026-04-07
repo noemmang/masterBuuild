@@ -1,0 +1,311 @@
+<div class="cfg-layout"
+  [class.panel-open]="panelAbierto() && !componenteDetalle()"
+  [class.precios-open]="componenteDetalle() && !panelAbierto()"
+  [class.ambos-open]="panelAbierto() && componenteDetalle()">
+
+  <!-- SIDEBAR -->
+  <aside class="cfg-sidebar">
+    <p class="cfg-sidebar-title">Configurador</p>
+
+    <div class="slots-list">
+      @for (slot of slots; track slot.id) {
+        <div
+          class="slot-item"
+          [class.active]="slotActivo().id === slot.id"
+          [class.filled]="!!slot.componente"
+          (click)="cargarSlot(slot)">
+
+          <div class="slot-info">
+            <span class="slot-label">{{ slot.label }}</span>
+            @if (slot.componente) {
+              <span class="slot-nombre">{{ slot.componente.nombre }}</span>
+            } @else if (slotActivo().id === slot.id) {
+              <span class="slot-placeholder">Seleccionando...</span>
+            } @else {
+              <span class="slot-placeholder">Pendiente</span>
+            }
+          </div>
+
+          <!-- Iconos de estado sin fondo -->
+          @if (slot.componente) {
+            <div class="slot-estado-icons">
+              @if (logueado && estaGuardado(slot.componente.uuid)) {
+                <svg class="estado-icon guardado-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+              }
+              @if (logueado && tieneAlerta(slot.componente.uuid)) {
+                <svg class="estado-icon alerta-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+              }
+            </div>
+          }
+
+          @if (slot.precio) {
+            <span class="slot-precio">{{ formatPrecio(slot.precio) }}</span>
+          }
+
+          @if (slot.componente) {
+            <button class="slot-quitar" (click)="quitarComponente(slot, $event)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="cfg-sidebar-footer">
+      <div class="total-row">
+        <span class="total-label">Total estimado</span>
+        <span class="total-valor">{{ formatPrecio(totalEstimado()) || '—' }}</span>
+      </div>
+
+      @if (compatibilidad()) {
+        <button
+          class="btn-compatibilidad"
+          [class.hay-errores]="numErrores() > 0"
+          [class.hay-advert]="numErrores() === 0 && numAdvert() > 0"
+          (click)="togglePanel()">
+          @if (numErrores() > 0) {
+            <span class="dot rojo"></span> {{ numErrores() }} error{{ numErrores() > 1 ? 'es' : '' }}
+          } @else if (numAdvert() > 0) {
+            <span class="dot naranja"></span> {{ numAdvert() }} advertencia{{ numAdvert() > 1 ? 's' : '' }}
+          } @else {
+            <span class="dot verde"></span> Todo compatible
+          }
+        </button>
+      }
+
+      <div class="cfg-btns">
+        <button class="btn-auto">Auto</button>
+        <button class="btn-guardar">Guardar config</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL -->
+  <div class="cfg-main">
+    <div class="cfg-topbar">
+      <div class="cfg-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" [(ngModel)]="busqueda" (input)="onBusqueda()" placeholder="Buscar..." />
+      </div>
+      <div class="precio-range">
+        <input type="number" [(ngModel)]="precioMin" (change)="onFiltroChange()" placeholder="Min €" class="precio-input" />
+        <span class="precio-sep">—</span>
+        <input type="number" [(ngModel)]="precioMax" (change)="onFiltroChange()" placeholder="Max €" class="precio-input" />
+      </div>
+      <select [(ngModel)]="ordenActivo" (change)="onFiltroChange()" class="orden-select">
+        @for (o of ordenes; track o.value) {
+          <option [value]="o.value">{{ o.label }}</option>
+        }
+      </select>
+      <button class="btn-compat-icon" (click)="togglePanel()" [class.tiene-errores]="numErrores() > 0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 0 0 1.946-.806 3.42 3.42 0 0 1 4.438 0 3.42 3.42 0 0 0 1.946.806 3.42 3.42 0 0 1 3.138 3.138 3.42 3.42 0 0 0 .806 1.946 3.42 3.42 0 0 1 0 4.438 3.42 3.42 0 0 0-.806 1.946 3.42 3.42 0 0 1-3.138 3.138 3.42 3.42 0 0 0-1.946.806 3.42 3.42 0 0 1-4.438 0 3.42 3.42 0 0 0-1.946-.806 3.42 3.42 0 0 1-3.138-3.138 3.42 3.42 0 0 0-.806-1.946 3.42 3.42 0 0 1 0-4.438 3.42 3.42 0 0 0 .806-1.946 3.42 3.42 0 0 1 3.138-3.138z"/>
+        </svg>
+        @if (numErrores() > 0) { <span class="compat-dot"></span> }
+      </button>
+    </div>
+
+    <div class="cfg-grid-area">
+      @if (cargando()) {
+        <div class="cfg-grid">
+          @for (s of [1,2,3,4,5,6,7,8,9]; track s) { <div class="card-skeleton"></div> }
+        </div>
+      } @else {
+        <div class="cfg-grid">
+          @for (comp of componentes(); track comp.uuid) {
+            <div
+              class="cfg-card"
+              [class.selected]="slotActivo().componente?.uuid === comp.uuid"
+              (click)="seleccionarComponente(comp)">
+              <div class="cfg-card-img">
+                @if (comp.imagen_url) {
+                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
+                } @else {
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <path d="M8 21h8M12 17v4"/>
+                  </svg>
+                }
+                <!-- Iconos estado sin fondo -->
+                <div class="cfg-card-estado">
+                  @if (comp.tiene_cupon) { <span class="cfg-badge naranja">%</span> }
+                  @if (logueado && estaGuardado(comp.uuid)) {
+                    <svg class="estado-icon guardado-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  }
+                  @if (logueado && tieneAlerta(comp.uuid)) {
+                    <svg class="estado-icon alerta-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                  }
+                </div>
+              </div>
+              <div class="cfg-card-body">
+                <span class="cfg-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
+                <h3 class="cfg-card-nombre">{{ comp.nombre }}</h3>
+                @if (comp.marca) { <span class="cfg-card-marca">{{ comp.marca.nombre }}</span> }
+                <div class="cfg-card-footer">
+                  <span class="cfg-card-precio">{{ formatPrecio(comp.precio_min) || 'Sin precio' }}</span>
+                  <span class="cfg-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- PANEL COMPATIBILIDAD -->
+  @if (panelAbierto()) {
+    <aside class="compat-panel">
+      <div class="compat-head">
+        <h3>Compatibilidad</h3>
+        <button class="compat-close" (click)="togglePanel()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      @if (!compatibilidad()) {
+        <p class="panel-empty">Añade componentes para ver la compatibilidad</p>
+      } @else {
+        <p class="compat-resumen">
+          @if (numErrores() > 0) { <span class="dot rojo"></span> {{ numErrores() }} error · }
+          @if (numAdvert() > 0)  { <span class="dot naranja"></span> {{ numAdvert() }} advertencia · }
+          <span class="dot verde"></span> {{ compatibilidad()!.notas.length }} OK
+        </p>
+        <div class="compat-lista">
+          @for (e of compatibilidad()!.errores; track e.tipo) {
+            <div class="compat-row error"><span class="dot rojo"></span><span>{{ e.mensaje }}</span></div>
+          }
+          @for (a of compatibilidad()!.advertencias; track a.tipo) {
+            <div class="compat-row advert"><span class="dot naranja"></span><span>{{ a.mensaje }}</span></div>
+          }
+          @for (n of compatibilidad()!.notas; track n.tipo) {
+            <div class="compat-row nota"><span class="dot gris"></span><span>{{ n.mensaje }}</span></div>
+          }
+        </div>
+        @if (compatibilidad()!.consumo_total_watts > 0) {
+          <div class="compat-consumo">
+            <p class="consumo-label">CONSUMO ESTIMADO</p>
+            <div class="consumo-bar-wrap">
+              <div class="consumo-bar" [style.width.%]="Math.min(compatibilidad()!.consumo_total_watts / 10, 100)"></div>
+            </div>
+            <p class="consumo-val">{{ compatibilidad()!.consumo_total_watts }}W estimado</p>
+          </div>
+        }
+      }
+    </aside>
+  }
+
+  <!-- PANEL PRECIOS -->
+  @if (componenteDetalle()) {
+    <aside class="precio-panel">
+      <div class="panel-head">
+        <div>
+          <p class="panel-cat">{{ nombreCategoria(componenteDetalle()!.categoria) }}</p>
+          <h3 class="panel-nombre">{{ componenteDetalle()!.nombre }}</h3>
+          @if (componenteDetalle()!.num_tiendas) {
+            <p class="panel-tiendas">{{ componenteDetalle()!.num_tiendas }} tiendas</p>
+          }
+        </div>
+        <button class="panel-close" (click)="cerrarDetalle()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Acciones guardar / alerta -->
+      @if (logueado) {
+        <div class="panel-acciones">
+          @if (estaGuardado(componenteDetalle()!.uuid)) {
+            <button class="btn-accion guardado" [disabled]="eliminandoGuardado()" (click)="eliminarGuardado()">
+              @if (eliminandoGuardado()) { <span class="mini-spinner-sm"></span> }
+              @else {
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                Guardado
+              }
+            </button>
+          } @else {
+            <button class="btn-accion" [disabled]="guardando()" (click)="guardarComponente()">
+              @if (guardando()) { <span class="mini-spinner-sm"></span> }
+              @else {
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+                Guardar
+              }
+            </button>
+          }
+          @if (tieneAlerta(componenteDetalle()!.uuid)) {
+            <button class="btn-accion alerta-activa" (click)="eliminarAlerta()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              Alerta activa
+            </button>
+          } @else {
+            <button class="btn-accion" (click)="toggleFormAlerta()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              Alerta precio
+            </button>
+          }
+        </div>
+
+        @if (mostrarAlerta() && !tieneAlerta(componenteDetalle()!.uuid)) {
+          <div class="alerta-form">
+            <p class="alerta-form-label">Avísame cuando baje de</p>
+            <div class="alerta-input-wrap">
+              <input
+                type="number"
+                class="alerta-input"
+                [value]="precioObjetivo()"
+                (input)="setPrecioObjetivo($any($event.target).value)"
+                placeholder="Precio objetivo"
+              />
+              <span class="alerta-euro">€</span>
+            </div>
+            <button class="btn-alerta-guardar" [disabled]="!precioObjetivo() || guardandoAlerta()" (click)="guardarAlerta()">
+              @if (guardandoAlerta()) { <span class="mini-spinner-sm"></span> }
+              @else { Crear alerta }
+            </button>
+          </div>
+        }
+      }
+
+      <div class="panel-body">
+        @if (cargandoPrecios()) {
+          <div class="panel-cargando"><div class="mini-spinner accent"></div></div>
+        } @else if (precios().length === 0) {
+          <p class="panel-empty">Sin precios disponibles</p>
+        } @else {
+          @for (p of precios(); track p.uuid; let i = $index) {
+            <div class="precio-row" [class.mejor]="i === 0">
+              <div class="precio-info">
+                @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
+                <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
+                @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+              </div>
+              <span class="precio-valor" [class.accent]="i === 0">{{ formatPrecio(p.precio) }}</span>
+            </div>
+          }
+        }
+      </div>
+    </aside>
+  }
+</div>

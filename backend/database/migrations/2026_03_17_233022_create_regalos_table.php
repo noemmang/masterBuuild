@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('regalos', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('nombre');
+            $table->string('tipo')->default('videojuego');
+            $table->string('imagen_url')->nullable();
+            $table->text('descripcion')->nullable();
+            $table->decimal('valor_estimado', 10, 2)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->index('tipo');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('regalos');
+    }
+};

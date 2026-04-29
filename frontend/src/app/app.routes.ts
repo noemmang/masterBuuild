@@ -25,6 +25,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/case-viewer/case-viewer.component').then(m => m.CaseViewerComponent)
   },
   {
+    path: 'comparar',
+    loadComponent: () =>
+      import('./features/spec-compare/spec-compare.component').then(m => m.SpecCompareComponent),
+  },
+  {
     path: 'guardados',
     loadComponent: () => import('./features/saved/saved.component').then(m => m.SavedComponent),
     canActivate: [authGuard]

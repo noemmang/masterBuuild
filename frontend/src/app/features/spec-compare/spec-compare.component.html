@@ -1,0 +1,262 @@
+<div class="compare-layout">
+
+  <!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
+  <aside class="compare-sidebar">
+
+    <div class="sidebar-section">
+      <p class="sidebar-label">Categoría</p>
+      <div class="cat-list">
+        @for (cat of CATEGORIAS; track cat.slug) {
+          <button
+            class="cat-pill"
+            [class.active]="categoriaActiva().slug === cat.slug"
+            (click)="setCategoriaActiva(cat)">
+            {{ cat.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-label">Añadir componente</p>
+      <div class="busq-wrap">
+        <svg class="busq-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          class="busq-input"
+          type="text"
+          [(ngModel)]="busqueda"
+          (ngModelChange)="onBusqueda()"
+          [placeholder]="'Buscar ' + categoriaActiva().label + '…'"
+        />
+      </div>
+
+      <div class="resultados-list">
+        @if (cargandoBusq()) {
+          @for (_ of [1,2,3,4]; track $index) {
+            <div class="resultado-skeleton"></div>
+          }
+        } @else {
+          @for (comp of resultados(); track comp.uuid) {
+            <div
+              class="resultado-item"
+              [class.en-comparacion]="estaEnComparacion(comp.uuid)"
+              [class.max-alcanzado]="!puedeAnadir() && !estaEnComparacion(comp.uuid)"
+              (click)="toggleComponente(comp)">
+              @if (estaEnComparacion(comp.uuid)) {
+                <div class="resultado-dot" [style.background]="colorDeComp(comp.uuid)"></div>
+              } @else {
+                <div class="resultado-dot empty"></div>
+              }
+              <div class="resultado-info">
+                <span class="resultado-nombre">{{ comp.nombre }}</span>
+                @if (comp.marca) {
+                  <span class="resultado-marca">{{ comp.marca.nombre }}</span>
+                }
+              </div>
+              @if (comp.precio_min) {
+                <span class="resultado-precio">{{ formatPrecio(comp.precio_min) }}</span>
+              }
+            </div>
+          }
+          @if (resultados().length === 0) {
+            <p class="resultados-empty">Sin resultados</p>
+          }
+        }
+      </div>
+    </div>
+
+    @if (comparando().length > 0) {
+      <div class="sidebar-section comparando-actual">
+        <p class="sidebar-label">Comparando</p>
+        @for (c of comparando(); track c.detalle.uuid) {
+          <div class="comparando-item">
+            <div class="comparando-dot" [style.background]="c.color"></div>
+            <span class="comparando-nombre">{{ c.detalle.nombre }}</span>
+            <button class="comparando-quitar" (click)="quitarComponente(c.detalle.uuid)" title="Quitar">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+  </aside>
+
+  <!-- ══════════════════════════ MAIN ══════════════════════════ -->
+  <div class="compare-main">
+
+    @if (comparando().length === 0) {
+      <div class="estado-vacio">
+        <div class="vacio-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </div>
+        <h2 class="vacio-titulo">Selecciona componentes para comparar</h2>
+        <p class="vacio-sub">Elige hasta 3 {{ categoriaActiva().label | lowercase }} desde la barra lateral</p>
+      </div>
+
+    } @else {
+
+      <!-- ── BARRA DE ÍNDICE STICKY ── -->
+      <nav class="indice-barra" aria-label="Ir a sección">
+        @for (sec of secciones(); track sec.titulo) {
+          <a
+            class="indice-item"
+            [class.activo]="seccionActiva === slugSeccion(sec.titulo)"
+            [href]="'#sec-' + slugSeccion(sec.titulo)"
+            (click)="scrollASeccion($event, sec.titulo)">
+            {{ sec.titulo }}
+          </a>
+        }
+        <a
+          class="indice-item"
+          [class.activo]="seccionActiva === 'tiendas'"
+          href="#sec-tiendas"
+          (click)="scrollASeccion($event, 'tiendas')">
+          Tiendas
+        </a>
+      </nav>
+
+      <!-- ── CABECERAS ── -->
+      <div class="cols-header"
+        [style.grid-template-columns]="'180px repeat(' + comparando().length + ', minmax(0,1fr))'">
+        <div></div>
+        @for (c of comparando(); track c.detalle.uuid; let i = $index) {
+          <div class="col-card">
+            <div class="col-card-top">
+              <div class="col-dot" [style.background]="c.color"></div>
+              <h3 class="col-nombre">{{ c.detalle.nombre }}</h3>
+              <button class="col-quitar" (click)="quitarComponente(c.detalle.uuid)" title="Quitar">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            @if (c.detalle.marca) {
+              <p class="col-sub">{{ c.detalle.marca.nombre }}</p>
+            }
+            <p class="col-precio" [style.color]="c.color">{{ formatPrecio(c.detalle.precio_min) }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- ── SECCIONES DE SPECS ── -->
+      @for (seccion of secciones(); track seccion.titulo) {
+        <div class="seccion-bloque">
+
+          <div class="seccion-header"
+            [id]="'sec-' + slugSeccion(seccion.titulo)"
+            [style.grid-template-columns]="'180px repeat(' + comparando().length + ', minmax(0,1fr))'">
+            <div class="seccion-label">{{ seccion.titulo }}</div>
+            @for (c of comparando(); track c.detalle.uuid) { <div></div> }
+          </div>
+
+          @for (fila of seccion.filas; track fila.prop) {
+            <div class="spec-row"
+              [style.grid-template-columns]="'180px repeat(' + comparando().length + ', minmax(0,1fr))'">
+              <div class="spec-label">{{ fila.label }}</div>
+              @for (c of comparando(); track c.detalle.uuid; let i = $index) {
+                <div class="spec-cell">
+                  <span class="spec-val"
+                  [class.mejor]="esMejor(fila, i)"
+                  [style.color]="esMejor(fila, i) ? c.color : ''">
+                    {{ getValor(c.detalle, fila) }}
+                  </span>
+                  @if (!fila.sinBarra && fila.max) {
+                    <div class="barra-wrap">
+                      <div
+                        class="barra-fill"
+                        [style.width.%]="getPorcentajeBarra(fila, i)"
+                        [style.background]="esMejor(fila, i) ? c.color : c.color + '55'">
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+        </div>
+      }
+
+      <!-- ── PRECIO ── -->
+      <div class="seccion-bloque">
+        <div class="seccion-header"
+          [style.grid-template-columns]="'180px repeat(' + comparando().length + ', minmax(0,1fr))'">
+          <div class="seccion-label">Precio</div>
+          @for (c of comparando(); track c.detalle.uuid) { <div></div> }
+        </div>
+        <div class="spec-row"
+          [style.grid-template-columns]="'180px repeat(' + comparando().length + ', minmax(0,1fr))'">
+          <div class="spec-label">Precio mín.</div>
+          @for (c of comparando(); track c.detalle.uuid; let i = $index) {
+            <div class="spec-cell">
+              <span class="spec-val"
+              [class.mejor]="esMejorPrecio(i)"
+              [style.color]="esMejorPrecio(i) ? c.color : ''">
+                {{ formatPrecio(c.detalle.precio_min) }}
+              </span>
+              <div class="barra-wrap">
+                <div
+                  class="barra-fill"
+                  [style.width.%]="precioBarraPct(i)"
+                  [style.background]="esMejorPrecio(i) ? c.color : c.color + '55'">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ── TIENDAS ── -->
+      <div class="tiendas-section" id="sec-tiendas">
+        <h4 class="tiendas-header">Tiendas disponibles</h4>
+        <div class="tiendas-cols"
+          [style.grid-template-columns]="'repeat(' + comparando().length + ', minmax(0,1fr))'">
+          @for (c of comparando(); track c.detalle.uuid; let i = $index) {
+            <div class="tienda-col">
+              <div class="tienda-col-titulo">
+                <div class="tienda-col-dot" [style.background]="c.color"></div>
+                <span>{{ c.detalle.nombre }}</span>
+              </div>
+              @if (c.cargandoPrecios) {
+                <div class="tienda-cargando"><div class="mini-spinner"></div></div>
+              } @else if (c.precios.length === 0) {
+                <p class="tienda-empty">Sin precios disponibles</p>
+              } @else {
+                @for (p of c.precios; track p.uuid; let pi = $index) {
+                  <a
+                    [href]="p.url || '#'"
+                    target="_blank"
+                    class="tienda-entry"
+                    [class.mejor-precio]="pi === 0">
+                    <div class="tienda-entry-left">
+                      @if (pi === 0) { <span class="badge-mejor">mejor precio</span> }
+                      <span class="tienda-nombre">{{ p.tienda.nombre }}</span>
+                    </div>
+                    <div class="tienda-entry-right">
+                      <span class="tienda-precio">{{ formatPrecio(p.precio) }}</span>
+                      @if (p.cupon) { <span class="badge-cupon">cupón</span> }
+                      @if (p.disponible) {
+                        <svg class="tienda-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                      }
+                    </div>
+                  </a>
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+    }
+  </div>
+</div>

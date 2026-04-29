@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ComponenteService, Componente } from '../../core/services/componente.service';
 import { GuardadoService } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 // ── Definición de filtros por categoría ─────────────────────────────────────
@@ -15,10 +16,10 @@ interface OpcionFiltro {
 }
 
 interface GrupoFiltro {
-  param: string;   // nombre del parámetro que se enviará al backend
+  param: string;
   label: string;
   opciones: OpcionFiltro[];
-  tipo: 'multi' | 'min';  // multi = selección múltiple, min = mínimo
+  tipo: 'multi' | 'min';
 }
 
 const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
@@ -73,10 +74,10 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
     {
       param: 'potencia_min', label: 'Potencia mínima', tipo: 'min',
       opciones: [
-        { label: '500 W+', valor: 500 },
-        { label: '600 W+', valor: 600 },
-        { label: '700 W+', valor: 700 },
-        { label: '800 W+', valor: 800 },
+        { label: '500 W+',  valor: 500  },
+        { label: '600 W+',  valor: 600  },
+        { label: '700 W+',  valor: 700  },
+        { label: '800 W+',  valor: 800  },
         { label: '1000 W+', valor: 1000 },
       ]
     }
@@ -85,9 +86,9 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
     {
       param: 'factor_forma_soportado', label: 'Factor forma', tipo: 'multi',
       opciones: [
-        { label: 'ATX',   valor: 'Mid Tower' },
-        { label: 'mATX',  valor: 'Micro Tower' },
-        { label: 'ITX',   valor: 'Mini-ITX' },
+        { label: 'ATX',  valor: 'Mid Tower'   },
+        { label: 'mATX', valor: 'Micro Tower' },
+        { label: 'ITX',  valor: 'Mini-ITX'    },
       ]
     }
   ],
@@ -108,7 +109,7 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PriceHistoryComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -152,16 +153,12 @@ export class SearchComponent implements OnInit {
   precioMin: number | null = null;
   precioMax: number | null = null;
 
-  // ── Filtros específicos ────────────────────────────────────────────────────
-  // Mapa: param → Set de valores seleccionados
-  filtrosActivos = signal<Map<string, Set<number | string>>>(new Map());
-  filtrosExpandidos = signal<Set<string>>(new Set());  // qué grupos están abiertos
+  filtrosActivos    = signal<Map<string, Set<number | string>>>(new Map());
+  filtrosExpandidos = signal<Set<string>>(new Set());
 
   get filtrosCategoria(): GrupoFiltro[] {
     return FILTROS_POR_CATEGORIA[this.categoriaActiva()] ?? [];
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
 
   componenteSeleccionado = signal<Componente | null>(null);
   precios                = signal<any[]>([]);
@@ -172,11 +169,11 @@ export class SearchComponent implements OnInit {
   guardadosMap = signal<Map<string, string>>(new Map());
   alertasMap   = signal<Map<string, string>>(new Map());
 
-  guardando        = signal(false);
-  eliminando       = signal(false);
-  guardandoAlerta  = signal(false);
-  mostrarAlerta    = signal(false);
-  precioObjetivo   = signal<number | null>(null);
+  guardando       = signal(false);
+  eliminando      = signal(false);
+  guardandoAlerta = signal(false);
+  mostrarAlerta   = signal(false);
+  precioObjetivo  = signal<number | null>(null);
 
   private busqueda$ = new Subject<string>();
 
@@ -196,8 +193,6 @@ export class SearchComponent implements OnInit {
       .subscribe(() => this.resetYCargar());
   }
 
-  // ── Filtros específicos ────────────────────────────────────────────────────
-
   toggleFiltroExpandido(param: string): void {
     this.filtrosExpandidos.update(s => {
       const n = new Set(s);
@@ -214,10 +209,9 @@ export class SearchComponent implements OnInit {
     this.filtrosActivos.update(m => {
       const n = new Map(m);
       if (tipo === 'min') {
-        // Para "mínimo" solo hay una selección a la vez (radio)
-        const set = new Set<number | string>();
+        const set   = new Set<number | string>();
         const actual = n.get(param);
-        if (!actual?.has(valor)) set.add(valor);  // toggle: si ya estaba, lo quita
+        if (!actual?.has(valor)) set.add(valor);
         n.set(param, set);
       } else {
         const set = new Set(n.get(param) ?? []);
@@ -248,8 +242,6 @@ export class SearchComponent implements OnInit {
     }
     return false;
   }
-
-  // ──────────────────────────────────────────────────────────────────────────
 
   private cargarEstadoGuardados(): void {
     this.guardadoService.listar().subscribe({
@@ -322,7 +314,6 @@ export class SearchComponent implements OnInit {
   cargarMas() { this.paginaActual.update(p => p + 1); this.cargar(true); }
 
   seleccionarCategoria(slug: string) {
-    // Limpiar filtros específicos al cambiar de categoría
     this.filtrosActivos.set(new Map());
     this.filtrosExpandidos.set(new Set());
     this.categoriaActiva.set(slug);

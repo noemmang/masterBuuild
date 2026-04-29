@@ -1,0 +1,546 @@
+// ═══════════════════════════════════════════════════════════════
+//  Comparador de Specs — spec-compare.component.scss
+// ═══════════════════════════════════════════════════════════════
+
+.compare-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 56px);
+    width: 100%;
+    align-items: start;
+  }
+  
+  // ── SIDEBAR ─────────────────────────────────────────────────────
+  .compare-sidebar {
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 2rem;
+  
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  }
+  
+  .sidebar-section {
+    padding: 1rem 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .sidebar-label {
+    font-size: 0.688rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    padding-bottom: 0.25rem;
+  }
+  
+  .cat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .cat-pill {
+    display: flex;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: color 0.12s, background 0.12s;
+    position: relative;
+  
+    &:hover { background: var(--surface2); color: var(--text); }
+  
+    &.active {
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      font-weight: 600;
+  
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 50%;
+        transform: translateY(-50%);
+        width: 3px; height: 60%;
+        background: var(--accent);
+        border-radius: 0 2px 2px 0;
+      }
+    }
+  }
+  
+  .busq-wrap { position: relative; }
+  
+  .busq-icon {
+    position: absolute;
+    left: 0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  
+  .busq-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--surface2);
+    font-size: 0.8rem;
+    color: var(--text);
+    outline: none;
+    transition: box-shadow 0.15s;
+  
+    &:focus { box-shadow: 0 0 0 2px var(--accent); }
+    &::placeholder { color: var(--text-muted); }
+  }
+  
+  .resultados-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 340px;
+    overflow-y: auto;
+    margin-top: 0.25rem;
+  
+    &::-webkit-scrollbar { width: 3px; }
+    &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  }
+  
+  .resultado-skeleton {
+    height: 44px;
+    background: var(--surface2);
+    border-radius: 8px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.45; }
+  }
+  
+  .resultado-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s;
+  
+    &:hover { background: var(--surface2); }
+    &.en-comparacion { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+    &.max-alcanzado { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  }
+  
+  .resultado-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  
+    &.empty { background: transparent; border: 1.5px solid var(--border); }
+  }
+  
+  .resultado-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .resultado-nombre {
+    font-size: 0.775rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .resultado-marca { font-size: 0.7rem; color: var(--text-muted); }
+  
+  .resultado-precio {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .resultados-empty {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 1rem 0;
+  }
+  
+  .comparando-actual {
+    border-top: 1px solid var(--border);
+    margin-top: 0.75rem;
+    padding-top: 1rem;
+  }
+  
+  .comparando-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.25rem;
+  }
+  
+  .comparando-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  
+  .comparando-nombre {
+    flex: 1;
+    font-size: 0.775rem;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .comparando-quitar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: color 0.12s;
+  
+    &:hover { color: var(--text); }
+  }
+  
+  // ── BARRA DE ÍNDICE STICKY ───────────────────────────────────────
+  .indice-barra {
+    position: sticky;
+    top: 56px;           // queda pegada bajo el topbar
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 0.25rem;
+    margin: 0 -1.5rem 2rem; // sangra hasta los bordes del compare-main
+    overflow-x: auto;
+    scrollbar-width: none;
+  
+    &::-webkit-scrollbar { display: none; }
+  }
+  
+  .indice-item {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.13s, border-color 0.13s;
+  
+    &:hover { color: var(--text); }
+  
+    &.activo {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+  }
+  
+  // ── ÁREA PRINCIPAL ───────────────────────────────────────────────
+  .compare-main {
+    padding: 0 1.5rem 3rem; // sin padding-top: la indice-barra debe tocar el top
+    min-width: 0;
+  }
+  
+  // El padding-top que antes tenía compare-main lo absorbemos aquí
+  .cols-header,
+  .estado-vacio {
+    margin-top: 1.5rem;
+  }
+  
+  .estado-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .vacio-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+  }
+  
+  .vacio-titulo { font-size: 1rem; font-weight: 600; color: var(--text); }
+  .vacio-sub    { font-size: 0.875rem; color: var(--text-muted); }
+  
+  // ── CABECERAS DE COLUMNA ─────────────────────────────────────────
+  .cols-header {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 2.5rem;
+    align-items: start;
+  }
+  
+  .col-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    min-width: 0;
+  }
+  
+  .col-card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .col-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  
+  .col-nombre {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+  }
+  
+  .col-quitar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    padding: 0.2rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.12s;
+  
+    &:hover { color: var(--text); }
+  }
+  
+  .col-sub   { font-size: 0.775rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .col-precio { font-size: 1.25rem; font-weight: 700; margin: 0; }
+  
+  // ── TABLA DE SPECS ───────────────────────────────────────────────
+  
+  .seccion-bloque {
+    margin-bottom: 2.75rem;
+  
+    &:last-of-type { margin-bottom: 0; }
+  }
+  
+  .seccion-header {
+    display: grid;
+    gap: 14px;
+    padding: 0.75rem 0 0.65rem;
+    border-bottom: 2px solid var(--border);
+    scroll-margin-top: 100px; // ancla no queda bajo topbar + barra índice
+  }
+  
+  .seccion-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  
+  .spec-row {
+    display: grid;
+    gap: 14px;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+    min-width: 0;
+  
+    &:last-child { border-bottom: none; }
+  }
+  
+  .spec-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .spec-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .spec-val {
+    font-size: 0.925rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  
+    &.mejor { color: inherit; font-weight: 700; }
+  }
+  
+  .barra-wrap {
+    height: 7px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .barra-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.45s ease;
+    min-width: 6px;
+  }
+  
+  // ── SECCIÓN TIENDAS ──────────────────────────────────────────────
+  .tiendas-section {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--border);
+    scroll-margin-top: 100px;
+  }
+  
+  .tiendas-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 1.25rem;
+  }
+  
+  .tiendas-cols {
+    display: grid;
+    gap: 20px;
+    align-items: start;
+  }
+  
+  .tienda-col { display: flex; flex-direction: column; gap: 8px; }
+  
+  .tienda-col-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.775rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .tienda-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  
+  .tienda-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s, transform 0.12s;
+    min-width: 0;
+  
+    &:hover {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      transform: translateY(-1px);
+    }
+  
+    &.mejor-precio {
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+      background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+    }
+  }
+  
+  .tienda-entry-left  { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .tienda-nombre {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .tienda-entry-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .tienda-precio      { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .tienda-arrow       { color: var(--text-muted); }
+  
+  .badge-mejor {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  
+  .badge-cupon {
+    font-size: 0.675rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--orange) 15%, transparent);
+    color: color-mix(in srgb, var(--orange) 80%, #7a2900);
+  }
+  
+  .tienda-cargando { display: flex; justify-content: center; padding: 0.75rem 0; }
+  .tienda-empty    { font-size: 0.8rem; color: var(--text-muted); padding: 0.5rem 0; }
+  
+  // ── Spinner ──────────────────────────────────────────────────────
+  .mini-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  
+  @keyframes spin { to { transform: rotate(360deg); } }

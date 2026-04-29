@@ -79,7 +79,6 @@
                     <path d="M8 21h8M12 17v4"/>
                   </svg>
                 }
-                <!-- Iconos de estado SIN fondo, solo el icono con color -->
                 <div class="card-estado-icons">
                   @if (comp.bajada_precio) { <span class="badge verde">↓</span> }
                   @if (comp.tiene_cupon)   { <span class="badge naranja">%</span> }
@@ -139,7 +138,6 @@
 
       @if (logueado) {
         <div class="panel-acciones">
-          <!-- Guardar / Eliminar -->
           @if (estaGuardado(componenteSeleccionado()!.uuid)) {
             <button class="btn-accion guardado" [disabled]="eliminando()" (click)="eliminarGuardado()">
               @if (eliminando()) { <span class="mini-spinner-sm"></span> }
@@ -161,7 +159,6 @@
               }
             </button>
           }
-          <!-- Alerta -->
           @if (tieneAlerta(componenteSeleccionado()!.uuid)) {
             <button class="btn-accion alerta-activa" (click)="eliminarAlerta()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -218,6 +215,13 @@
           }
         }
       </div>
+
+      <!-- ── Historial de precios — footer del panel ── -->
+      <app-price-history
+        [componenteUuid]="componenteSeleccionado()!.uuid"
+        [componenteNombre]="componenteSeleccionado()!.nombre">
+      </app-price-history>
+
     </aside>
   }
 </div>

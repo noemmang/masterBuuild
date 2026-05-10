@@ -7,9 +7,11 @@ use App\Http\Controllers\Api\Negocio\PrecioController;
 use App\Http\Controllers\Api\Negocio\GuardadoController;
 use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\CuponController;
+use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
 use App\Http\Controllers\Api\Configurador\RecomendadorController;
+use App\Http\Controllers\Api\Negocio\RegalosController;
 
 Route::prefix('v1')->group(function () {
 
@@ -29,6 +31,7 @@ Route::prefix('v1')->group(function () {
         Route::get('categoria/{categoria}',    [ComponenteController::class, 'porCategoria']);
         Route::get('{uuid}/precios',           [PrecioController::class, 'actuales']);
         Route::get('{uuid}/precios/historial', [PrecioController::class, 'historial']);
+        Route::get('{uuid}/regalos',           [RegalosController::class, 'porComponente']);
     });
 
     // ── Configurador — público ────────────────────────────────
@@ -49,18 +52,26 @@ Route::prefix('v1')->group(function () {
 
         // Guardados
         Route::prefix('guardados')->group(function () {
-            Route::get    ('/',        [GuardadoController::class, 'index']);
-            Route::post   ('/',        [GuardadoController::class, 'store']);
-            Route::patch  ('{uuid}',   [GuardadoController::class, 'update']);
-            Route::delete ('{uuid}',   [GuardadoController::class, 'destroy']);
+            Route::get    ('/',      [GuardadoController::class, 'index']);
+            Route::post   ('/',      [GuardadoController::class, 'store']);
+            Route::patch  ('{uuid}', [GuardadoController::class, 'update']);
+            Route::delete ('{uuid}', [GuardadoController::class, 'destroy']);
         });
 
         // Alertas de precio
         Route::prefix('alertas')->group(function () {
-            Route::get    ('/',        [AlertaController::class, 'index']);
-            Route::post   ('/',        [AlertaController::class, 'store']);
-            Route::patch  ('{uuid}',   [AlertaController::class, 'update']);
-            Route::delete ('{uuid}',   [AlertaController::class, 'destroy']);
+            Route::get    ('/',      [AlertaController::class, 'index']);
+            Route::post   ('/',      [AlertaController::class, 'store']);
+            Route::patch  ('{uuid}', [AlertaController::class, 'update']);
+            Route::delete ('{uuid}', [AlertaController::class, 'destroy']);
+        });
+
+        // Configuraciones guardadas
+        Route::prefix('configuraciones')->group(function () {
+            Route::get    ('/',      [ConfiguracionController::class, 'index']);
+            Route::post   ('/',      [ConfiguracionController::class, 'store']);
+            Route::patch  ('{uuid}', [ConfiguracionController::class, 'update']);
+            Route::delete ('{uuid}', [ConfiguracionController::class, 'destroy']);
         });
     });
 });

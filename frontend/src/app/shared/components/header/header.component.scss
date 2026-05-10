@@ -1,164 +1,171 @@
 .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    height: 56px;
-    background: color-mix(in srgb, var(--surface) 80%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  
-  .header-inner {
-    width: 100%;
-    height: 100%;
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-  
-  .logo {
-    font-size: 1.2rem;
-    font-weight: 700;
-    text-decoration: none;
-    letter-spacing: -0.5px;
-    flex-shrink: 0;
-  
-    .logo-master { color: var(--text); }
-    .logo-build  { color: var(--accent); }
-  }
-  
-  .nav {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex: 1;
-    justify-content: center;
-  }
-  
-  .nav-link {
-    padding: 0.4rem 0.85rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.15s, background 0.15s;
-  
-    &:hover { color: var(--text); background: var(--surface2); }
-    &.active { color: var(--text); background: var(--surface2); }
-  }
-  
-  .header-right {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-  }
-  
-  .btn-login {
-    padding: 0.4rem 1rem;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: opacity 0.15s;
-  
-    &:hover { opacity: 0.85; }
-  }
-  
-  .avatar-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.875rem;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  
-    &:hover { opacity: 0.85; }
-  }
-  
-  .dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    min-width: 200px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.5rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-  
-  .dropdown-user {
-    padding: 0.5rem 0.75rem 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-  
-  .dropdown-nombre {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-  
-  .dropdown-email {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-  
-  .dropdown-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0.25rem 0;
-  }
-  
-  .dropdown-item {
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    color: var(--text);
-    text-decoration: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-align: left;
-    width: 100%;
-    transition: background 0.15s;
-  
-    &:hover { background: var(--surface2); }
-    &.danger { color: var(--error); }
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 56px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
 
-  .btn-tema {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, color 0.15s;
-  
-    &:hover {
-      background: var(--surface2);
-      color: var(--text);
-    }
+.header-inner {
+  width: 100%;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+
+  .logo-master { color: var(--text); }
+  .logo-build  { color: var(--accent); }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover { color: var(--text); background: var(--surface2); }
+  &.active { color: var(--text); background: var(--surface2); }
+}
+
+.header-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn-login {
+  padding: 0.4rem 1rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.avatar-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.85; }
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.dropdown-user {
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.dropdown-nombre {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dropdown-email {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.25rem 0;
+}
+
+.dropdown-item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s;
+
+  &:hover { background: var(--surface2); }
+  &.danger { color: var(--error); }
+}
+
+.btn-tema {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--surface2);
+    color: var(--text);
   }
+}

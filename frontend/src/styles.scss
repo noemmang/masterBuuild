@@ -23,15 +23,52 @@
   --text-muted: #8B949E;
 }
 
+// Confinamos el scroll al body para que el scrollbar
+// quede dentro del área bajo el header fijo
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  height: 100%;
+  overflow-y: auto;
 }
 
 a { color: inherit; }
 
 .main-content {
   padding-top: 56px;
+}
+
+// ── Scrollbar global ──────────────────────────────────────────────────────────
+// Webkit (Chrome, Edge, Safari)
+::-webkit-scrollbar {
+  width:  5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+
+  &:hover { background: var(--text-muted); }
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }

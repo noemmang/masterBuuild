@@ -1,272 +1,333 @@
 <div class="prf-layout">
 
-    <!-- SIDEBAR -->
-    <aside class="prf-sidebar">
-  
-      <!-- Avatar y datos -->
-      <div class="prf-avatar-wrap">
-        <div class="prf-avatar">{{ inicialUsuario() }}</div>
-        <div class="prf-user-info">
-          <p class="prf-nombre">{{ usuario()?.nombre }}</p>
-          <p class="prf-email">{{ usuario()?.email }}</p>
-          <span class="prf-plan">Plan gratuito</span>
+  <!-- SIDEBAR -->
+  <aside class="prf-sidebar">
+
+    <!-- Avatar y datos -->
+    <div class="prf-avatar-wrap">
+      <div class="prf-avatar-container">
+        <div class="prf-avatar" [style.backgroundImage]="avatarUrl() ? 'url(' + avatarUrl() + ')' : 'none'">
+          @if (!avatarUrl()) { {{ inicialUsuario() }} }
         </div>
+        <button class="prf-avatar-edit" (click)="triggerAvatarInput()" title="Cambiar foto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <input #avatarInput type="file" accept="image/*" style="display:none" (change)="onAvatarChange($event)" />
       </div>
-  
-      <!-- Stats -->
-      <div class="prf-stats">
-        <div class="prf-stat">
-          <span class="prf-stat-val">{{ numGuardados() }}</span>
-          <span class="prf-stat-label">Guardados</span>
-        </div>
-        <div class="prf-stat">
-          <span class="prf-stat-val">{{ numAlertas() }}</span>
-          <span class="prf-stat-label">Alertas</span>
-        </div>
-        <div class="prf-stat">
-          <span class="prf-stat-val">{{ numConfiguraciones() }}</span>
-          <span class="prf-stat-label">Configs</span>
-        </div>
+      <div class="prf-user-info">
+        <p class="prf-nombre">{{ usuario()?.nombre }}</p>
+        <p class="prf-email">{{ usuario()?.email }}</p>
+        <span class="prf-plan">Plan gratuito</span>
       </div>
-  
-      @if (miembroDesde()) {
-        <p class="prf-miembro">Miembro desde {{ miembroDesde() }}</p>
-      }
-  
-      <!-- Navegación -->
-      <nav class="prf-nav">
-        <button class="prf-nav-item" [class.activo]="seccionActiva() === 'cuenta'" (click)="setSeccion('cuenta')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          Cuenta
-        </button>
-        <button class="prf-nav-item" [class.activo]="seccionActiva() === 'apariencia'" (click)="setSeccion('apariencia')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-          </svg>
-          Apariencia
-        </button>
-        <button class="prf-nav-item" [class.activo]="seccionActiva() === 'notificaciones'" (click)="setSeccion('notificaciones')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          Notificaciones
-        </button>
-        <button class="prf-nav-item" [class.activo]="seccionActiva() === 'privacidad'" (click)="setSeccion('privacidad')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          Privacidad
-        </button>
-      </nav>
-  
-      <button class="prf-logout" (click)="logout()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Cerrar sesión
-      </button>
-  
-    </aside>
-  
-    <!-- PANEL DERECHO -->
-    <div class="prf-main">
-  
-      <!-- ══ CUENTA ══ -->
-      @if (seccionActiva() === 'cuenta') {
-        <div class="prf-seccion">
-          <h2 class="prf-seccion-titulo">Cuenta</h2>
-  
-          <!-- Cambiar nombre -->
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo">Nombre de usuario</h3>
-            <p class="prf-bloque-desc">Nombre que aparece en tu perfil y en el avatar del header.</p>
-            <div class="prf-field-row">
-              <input
-                type="text"
-                class="prf-input"
-                [(ngModel)]="nuevoNombre"
-                [placeholder]="usuario()?.nombre ?? 'Tu nombre'"
-              />
-              <button
-                class="prf-btn-primary"
-                [disabled]="!nuevoNombre.trim() || guardandoNombre()"
-                (click)="guardarNombre()"
-              >
-                @if (guardandoNombre()) { <span class="prf-spinner"></span> }
-                @else if (nombreOk()) { ✓ Guardado }
-                @else { Guardar }
-              </button>
-            </div>
-            @if (errorNombre()) {
-              <p class="prf-error">{{ errorNombre() }}</p>
-            }
-          </div>
-  
-          <div class="prf-divider"></div>
-  
-          <!-- Cambiar contraseña -->
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo">Cambiar contraseña</h3>
-            <p class="prf-bloque-desc">Mínimo 8 caracteres.</p>
-            <div class="prf-fields">
-              <input
-                type="password"
-                class="prf-input"
-                [(ngModel)]="passActual"
-                placeholder="Contraseña actual"
-              />
-              <input
-                type="password"
-                class="prf-input"
-                [(ngModel)]="passNueva"
-                placeholder="Nueva contraseña"
-              />
-              <input
-                type="password"
-                class="prf-input"
-                [(ngModel)]="passConfirm"
-                placeholder="Confirmar nueva contraseña"
-              />
-              <button
-                class="prf-btn-primary"
-                [disabled]="guardandoPass()"
-                (click)="guardarContrasena()"
-              >
-                @if (guardandoPass()) { <span class="prf-spinner"></span> }
-                @else if (passOk()) { ✓ Contraseña actualizada }
-                @else { Cambiar contraseña }
-              </button>
-            </div>
-            @if (errorPass()) {
-              <p class="prf-error">{{ errorPass() }}</p>
-            }
-          </div>
-  
-          <div class="prf-divider"></div>
-  
-          <!-- Eliminar cuenta -->
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo prf-danger-titulo">Eliminar cuenta</h3>
-            <p class="prf-bloque-desc">Esta acción es irreversible. Se eliminarán todos tus datos, guardados y alertas.</p>
-            @if (!confirmarEliminar) {
-              <button class="prf-btn-danger" (click)="eliminarCuenta()">Eliminar mi cuenta</button>
-            } @else {
-              <div class="prf-confirmar-wrap">
-                <p class="prf-confirmar-texto">¿Estás seguro? Esta acción no se puede deshacer.</p>
-                <div class="prf-confirmar-btns">
-                  <button class="prf-btn-danger" [disabled]="eliminando()" (click)="eliminarCuenta()">
-                    @if (eliminando()) { <span class="prf-spinner"></span> }
-                    @else { Sí, eliminar cuenta }
-                  </button>
-                  <button class="prf-btn-secondary" (click)="confirmarEliminar = false">Cancelar</button>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-  
-      <!-- ══ APARIENCIA ══ -->
-      @if (seccionActiva() === 'apariencia') {
-        <div class="prf-seccion">
-          <h2 class="prf-seccion-titulo">Apariencia</h2>
-  
-          <div class="prf-bloque">
-            <div class="prf-toggle-row">
-              <div>
-                <p class="prf-toggle-label">Modo oscuro</p>
-                <p class="prf-toggle-desc">Cambia el tema de la interfaz a colores oscuros.</p>
-              </div>
-              <button class="prf-toggle" [class.activo]="modoOscuro()" (click)="toggleTema()">
-                <span class="prf-toggle-thumb"></span>
-              </button>
-            </div>
-          </div>
-  
-        </div>
-      }
-  
-      <!-- ══ NOTIFICACIONES ══ -->
-      @if (seccionActiva() === 'notificaciones') {
-        <div class="prf-seccion">
-          <h2 class="prf-seccion-titulo">Notificaciones</h2>
-          <p class="prf-seccion-desc">Configura qué notificaciones quieres recibir. El sistema de notificaciones está en desarrollo.</p>
-  
-          <div class="prf-bloque">
-            <div class="prf-toggle-row">
-              <div>
-                <p class="prf-toggle-label">Bajadas de precio</p>
-                <p class="prf-toggle-desc">Avísame cuando un componente guardado baje de precio.</p>
-              </div>
-              <button class="prf-toggle" [class.activo]="notifBajadaPrecio()" (click)="notifBajadaPrecio.update(v => !v)">
-                <span class="prf-toggle-thumb"></span>
-              </button>
-            </div>
-  
-            <div class="prf-divider"></div>
-  
-            <div class="prf-toggle-row">
-              <div>
-                <p class="prf-toggle-label">Nuevos cupones</p>
-                <p class="prf-toggle-desc">Avísame cuando haya nuevos cupones para mis componentes guardados.</p>
-              </div>
-              <button class="prf-toggle" [class.activo]="notifCupones()" (click)="notifCupones.update(v => !v)">
-                <span class="prf-toggle-thumb"></span>
-              </button>
-            </div>
-  
-            <div class="prf-divider"></div>
-  
-            <div class="prf-toggle-row">
-              <div>
-                <p class="prf-toggle-label">Regalos y bundles</p>
-                <p class="prf-toggle-desc">Avísame cuando un componente guardado incluya un regalo.</p>
-              </div>
-              <button class="prf-toggle" [class.activo]="notifRegalos()" (click)="notifRegalos.update(v => !v)">
-                <span class="prf-toggle-thumb"></span>
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-  
-      <!-- ══ PRIVACIDAD ══ -->
-      @if (seccionActiva() === 'privacidad') {
-        <div class="prf-seccion">
-          <h2 class="prf-seccion-titulo">Privacidad</h2>
-  
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo">Datos almacenados</h3>
-            <p class="prf-bloque-desc">MasterBuild almacena los siguientes datos asociados a tu cuenta:</p>
-            <ul class="prf-lista">
-              <li>Nombre y dirección de correo electrónico</li>
-              <li>Componentes guardados y notas asociadas</li>
-              <li>Alertas de precio configuradas</li>
-              <li>Configuraciones de PC guardadas</li>
-            </ul>
-          </div>
-  
-          <div class="prf-divider"></div>
-  
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo">Exportar datos</h3>
-            <p class="prf-bloque-desc">Descarga una copia de todos tus datos en formato JSON.</p>
-            <button class="prf-btn-secondary" disabled>
-              Exportar datos (próximamente)
-            </button>
-          </div>
-  
-          <div class="prf-divider"></div>
-  
-          <div class="prf-bloque">
-            <h3 class="prf-bloque-titulo">Cookies</h3>
-            <p class="prf-bloque-desc">Usamos únicamente cookies esenciales para mantener tu sesión. No usamos cookies de seguimiento ni publicidad.</p>
-          </div>
-  
-        </div>
-      }
-  
     </div>
+
+    <!-- Stats -->
+    <div class="prf-stats">
+      <div class="prf-stat">
+        <span class="prf-stat-val">{{ numGuardados() }}</span>
+        <span class="prf-stat-label">Guardados</span>
+      </div>
+      <div class="prf-stat">
+        <span class="prf-stat-val">{{ numAlertas() }}</span>
+        <span class="prf-stat-label">Alertas</span>
+      </div>
+      <div class="prf-stat">
+        <span class="prf-stat-val">{{ numConfiguraciones() }}</span>
+        <span class="prf-stat-label">Configs</span>
+      </div>
+    </div>
+
+    @if (miembroDesde()) {
+      <p class="prf-miembro">Miembro desde {{ miembroDesde() }}</p>
+    }
+
+    <!-- Índice de navegación -->
+    <nav class="prf-nav">
+      <p class="prf-nav-label">En esta página</p>
+      <a class="prf-nav-item" [class.activo]="seccionVisible() === 'perfil'" (click)="scrollTo('perfil')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Perfil
+      </a>
+      <a class="prf-nav-item" [class.activo]="seccionVisible() === 'seguridad'" (click)="scrollTo('seguridad')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Seguridad
+      </a>
+      <a class="prf-nav-item" [class.activo]="seccionVisible() === 'apariencia'" (click)="scrollTo('apariencia')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        Apariencia
+      </a>
+      <a class="prf-nav-item" [class.activo]="seccionVisible() === 'notificaciones'" (click)="scrollTo('notificaciones')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        Notificaciones
+      </a>
+      <a class="prf-nav-item" [class.activo]="seccionVisible() === 'privacidad'" (click)="scrollTo('privacidad')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Privacidad
+      </a>
+      <a class="prf-nav-item prf-nav-danger" (click)="scrollTo('eliminar')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+        Eliminar cuenta
+      </a>
+    </nav>
+
+    <button class="prf-logout" (click)="logout()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Cerrar sesión
+    </button>
+
+  </aside>
+
+  <!-- PANEL DERECHO - columna única con scroll -->
+  <div class="prf-main" #mainScroll (scroll)="onScroll()">
+
+    <!-- ══ PERFIL ══ -->
+    <section class="prf-seccion" id="perfil">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo">Perfil</h2>
+        <p class="prf-seccion-desc">Información básica de tu cuenta y foto de perfil.</p>
+      </div>
+
+      <!-- Foto de perfil -->
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Foto de perfil</h3>
+        <p class="prf-bloque-desc">Tu foto aparecerá en el header y en tu perfil. Máximo 2 MB.</p>
+        <div class="prf-avatar-edit-row">
+          <div class="prf-avatar-preview" [style.backgroundImage]="avatarUrl() ? 'url(' + avatarUrl() + ')' : 'none'">
+            @if (!avatarUrl()) { <span>{{ inicialUsuario() }}</span> }
+          </div>
+          <div class="prf-avatar-actions">
+            <button class="prf-btn-secondary" (click)="triggerAvatarInput()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Subir imagen
+            </button>
+            @if (avatarUrl()) {
+              <button class="prf-btn-ghost-danger" (click)="eliminarAvatar()">Eliminar foto</button>
+            }
+            @if (avatarError()) {
+              <p class="prf-error">{{ avatarError() }}</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="prf-divider"></div>
+
+      <!-- Nombre -->
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Nombre de usuario</h3>
+        <p class="prf-bloque-desc">Nombre que aparece en tu perfil y en el avatar del header.</p>
+        <div class="prf-field-row">
+          <input
+            type="text"
+            class="prf-input"
+            [(ngModel)]="nuevoNombre"
+            [placeholder]="usuario()?.nombre ?? 'Tu nombre'"
+          />
+          <button
+            class="prf-btn-primary"
+            [disabled]="!nuevoNombre.trim() || guardandoNombre()"
+            (click)="guardarNombre()"
+          >
+            @if (guardandoNombre()) { <span class="prf-spinner"></span> }
+            @else if (nombreOk()) { ✓ Guardado }
+            @else { Guardar }
+          </button>
+        </div>
+        @if (errorNombre()) {
+          <p class="prf-error">{{ errorNombre() }}</p>
+        }
+      </div>
+    </section>
+
+    <!-- ══ SEGURIDAD ══ -->
+    <section class="prf-seccion" id="seguridad">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo">Seguridad</h2>
+        <p class="prf-seccion-desc">Gestiona tu contraseña y acceso a la cuenta.</p>
+      </div>
+
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Cambiar contraseña</h3>
+        <p class="prf-bloque-desc">Mínimo 8 caracteres.</p>
+        <div class="prf-fields">
+          <input
+            type="password"
+            class="prf-input"
+            [(ngModel)]="passActual"
+            placeholder="Contraseña actual"
+          />
+          <input
+            type="password"
+            class="prf-input"
+            [(ngModel)]="passNueva"
+            placeholder="Nueva contraseña"
+          />
+          <input
+            type="password"
+            class="prf-input"
+            [(ngModel)]="passConfirm"
+            placeholder="Confirmar nueva contraseña"
+          />
+          <button
+            class="prf-btn-primary prf-btn-self-start"
+            [disabled]="guardandoPass()"
+            (click)="guardarContrasena()"
+          >
+            @if (guardandoPass()) { <span class="prf-spinner"></span> }
+            @else if (passOk()) { ✓ Contraseña actualizada }
+            @else { Cambiar contraseña }
+          </button>
+        </div>
+        @if (errorPass()) {
+          <p class="prf-error">{{ errorPass() }}</p>
+        }
+      </div>
+    </section>
+
+    <!-- ══ APARIENCIA ══ -->
+    <section class="prf-seccion" id="apariencia">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo">Apariencia</h2>
+        <p class="prf-seccion-desc">Personaliza el aspecto visual de la aplicación.</p>
+      </div>
+
+      <div class="prf-bloque">
+        <div class="prf-toggle-row">
+          <div>
+            <p class="prf-toggle-label">Modo oscuro</p>
+            <p class="prf-toggle-desc">Cambia el tema de la interfaz a colores oscuros.</p>
+          </div>
+          <button class="prf-toggle" [class.activo]="modoOscuro()" (click)="toggleTema()">
+            <span class="prf-toggle-thumb"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ NOTIFICACIONES ══ -->
+    <section class="prf-seccion" id="notificaciones">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo">Notificaciones</h2>
+        <p class="prf-seccion-desc">Configura qué notificaciones quieres recibir. El sistema de notificaciones está en desarrollo.</p>
+      </div>
+
+      <div class="prf-bloque">
+        <div class="prf-toggle-row">
+          <div>
+            <p class="prf-toggle-label">Bajadas de precio</p>
+            <p class="prf-toggle-desc">Avísame cuando un componente guardado baje de precio.</p>
+          </div>
+          <button class="prf-toggle" [class.activo]="notifBajadaPrecio()" (click)="notifBajadaPrecio.update(v => !v)">
+            <span class="prf-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="prf-divider"></div>
+
+        <div class="prf-toggle-row">
+          <div>
+            <p class="prf-toggle-label">Nuevos cupones</p>
+            <p class="prf-toggle-desc">Avísame cuando haya nuevos cupones para mis componentes guardados.</p>
+          </div>
+          <button class="prf-toggle" [class.activo]="notifCupones()" (click)="notifCupones.update(v => !v)">
+            <span class="prf-toggle-thumb"></span>
+          </button>
+        </div>
+
+        <div class="prf-divider"></div>
+
+        <div class="prf-toggle-row">
+          <div>
+            <p class="prf-toggle-label">Regalos y bundles</p>
+            <p class="prf-toggle-desc">Avísame cuando un componente guardado incluya un regalo.</p>
+          </div>
+          <button class="prf-toggle" [class.activo]="notifRegalos()" (click)="notifRegalos.update(v => !v)">
+            <span class="prf-toggle-thumb"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PRIVACIDAD ══ -->
+    <section class="prf-seccion" id="privacidad">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo">Privacidad</h2>
+        <p class="prf-seccion-desc">Información sobre los datos que almacenamos y cómo los usamos.</p>
+      </div>
+
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Datos almacenados</h3>
+        <p class="prf-bloque-desc">MasterBuild almacena los siguientes datos asociados a tu cuenta:</p>
+        <ul class="prf-lista">
+          <li>Nombre y dirección de correo electrónico</li>
+          <li>Foto de perfil (almacenada en base64)</li>
+          <li>Componentes guardados y notas asociadas</li>
+          <li>Alertas de precio configuradas</li>
+          <li>Configuraciones de PC guardadas</li>
+        </ul>
+      </div>
+
+      <div class="prf-divider"></div>
+
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Exportar datos</h3>
+        <p class="prf-bloque-desc">Descarga una copia de todos tus datos en formato JSON.</p>
+        <button class="prf-btn-secondary" disabled>
+          Exportar datos (próximamente)
+        </button>
+      </div>
+
+      <div class="prf-divider"></div>
+
+      <div class="prf-bloque">
+        <h3 class="prf-bloque-titulo">Cookies</h3>
+        <p class="prf-bloque-desc">Usamos únicamente cookies esenciales para mantener tu sesión. No usamos cookies de seguimiento ni publicidad.</p>
+      </div>
+    </section>
+
+    <!-- ══ ELIMINAR CUENTA ══ -->
+    <section class="prf-seccion prf-seccion-danger" id="eliminar">
+      <div class="prf-seccion-header">
+        <h2 class="prf-seccion-titulo prf-danger-titulo">Eliminar cuenta</h2>
+        <p class="prf-seccion-desc">Esta acción es irreversible. Se eliminarán todos tus datos, guardados y alertas.</p>
+      </div>
+
+      <div class="prf-bloque">
+        @if (!confirmarEliminar) {
+          <button class="prf-btn-danger" (click)="eliminarCuenta()">Eliminar mi cuenta</button>
+        } @else {
+          <div class="prf-confirmar-wrap">
+            <p class="prf-confirmar-texto">¿Estás seguro? Esta acción no se puede deshacer.</p>
+            <div class="prf-confirmar-btns">
+              <button class="prf-btn-danger" [disabled]="eliminando()" (click)="eliminarCuenta()">
+                @if (eliminando()) { <span class="prf-spinner"></span> }
+                @else { Sí, eliminar cuenta }
+              </button>
+              <button class="prf-btn-secondary" (click)="confirmarEliminar = false">Cancelar</button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
   </div>
+</div>

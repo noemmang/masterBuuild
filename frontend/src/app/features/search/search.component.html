@@ -69,41 +69,70 @@
       } @else {
         <div class="grid">
           @for (comp of componentes(); track comp.uuid) {
-            <div class="card" [class.selected]="componenteSeleccionado()?.uuid === comp.uuid" (click)="seleccionarComponente(comp)">
-              <div class="card-img">
-                @if (comp.imagen_url) {
-                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                } @else {
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
-                  </svg>
-                }
-                <div class="card-estado-icons">
-                  @if (comp.bajada_precio) { <span class="badge verde">↓</span> }
-                  @if (comp.tiene_cupon)   { <span class="badge naranja">%</span> }
-                  @if (logueado && estaGuardado(comp.uuid)) {
-                    <svg class="estado-icon guardado-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            <div
+              class="card-tooltip-wrap"
+              [attr.data-uuid]="comp.uuid"
+              [attr.data-tooltip]="comp.descripcion || null">
+
+              <div class="card" [class.selected]="componenteSeleccionado()?.uuid === comp.uuid" (click)="seleccionarComponente(comp)">
+                <div class="card-img">
+                  @if (comp.imagen_url) {
+                    <img [src]="comp.imagen_url" [alt]="comp.nombre" />
+                  } @else {
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                      <rect x="2" y="3" width="20" height="14" rx="2"/>
+                      <path d="M8 21h8M12 17v4"/>
                     </svg>
                   }
-                  @if (logueado && tieneAlerta(comp.uuid)) {
-                    <svg class="estado-icon alerta-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                  }
+
+                  <div class="card-estado-icons">
+                    <!-- Izquierda: guardado y alerta -->
+                    <div class="card-icons-left">
+                      @if (comp.bajada_precio) {
+                        <span class="badge verde">↓</span>
+                      }
+                      @if (logueado && estaGuardado(comp.uuid)) {
+                        <span class="badge badge-guardado" title="Guardado">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                          </svg>
+                        </span>
+                      }
+                      @if (logueado && tieneAlerta(comp.uuid)) {
+                        <span class="badge badge-alerta" title="Alerta de precio activa">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                          </svg>
+                        </span>
+                      }
+                    </div>
+                    <!-- Derecha: cupón y regalo -->
+                    <div class="card-icons-right">
+                      @if (comp.tiene_cupon) {
+                        <span class="badge naranja" title="Tiene cupón de descuento">%</span>
+                      }
+                      @if (comp.tiene_regalo) {
+                        <span class="badge regalo" title="Incluye regalo">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                          </svg>
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <span class="card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
+                  <h3 class="card-nombre">{{ comp.nombre }}</h3>
+                  @if (comp.marca) { <span class="card-marca">{{ comp.marca.nombre }}</span> }
+                  <div class="card-footer">
+                    <span class="card-precio"> {{ formatPrecio(comp.precio_min) }}</span>
+                    <span class="card-tiendas">{{ comp.num_tiendas }} tiendas</span>
+                  </div>
                 </div>
               </div>
-              <div class="card-body">
-                <span class="card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
-                <h3 class="card-nombre">{{ comp.nombre }}</h3>
-                @if (comp.marca) { <span class="card-marca">{{ comp.marca.nombre }}</span> }
-                <div class="card-footer">
-                  <span class="card-precio"> {{ formatPrecio(comp.precio_min) }}</span>
-                  <span class="card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                </div>
-              </div>
-            </div>
+
+            </div><!-- /card-tooltip-wrap -->
           }
         </div>
         @if (hayMas()) {
@@ -204,14 +233,89 @@
           <p class="panel-empty">Sin precios disponibles</p>
         } @else {
           @for (p of precios(); track p.uuid; let i = $index) {
-            <div class="precio-row" [class.mejor]="i === 0">
+
+            <!-- Fila principal de tienda -->
+            <div class="precio-row" [class.mejor]="i === 0" [class.tiene-extras]="p.cupon || p.regalo">
               <div class="precio-info">
                 @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
                 <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
-                @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+                <div class="precio-row-tags">
+                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+                  @if (p.cupon) {
+                    <span class="tag-cupon">
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                      </svg>
+                      Cupón
+                    </span>
+                  }
+                  @if (p.regalo) {
+                    <span class="tag-regalo">
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                      </svg>
+                      Regalo
+                    </span>
+                  }
+                </div>
               </div>
               <span class="precio-valor" [class.accent]="i === 0">{{ formatPrecio(p.precio) }}</span>
             </div>
+
+            <!-- Expansión combinada: cupón + regalo en un solo bloque -->
+            @if (p.cupon || p.regalo) {
+              <div class="precio-extra extras-combinados">
+                @if (p.cupon) {
+                  <div class="cupon-extra">
+                    <div class="extra-left">
+                      <span class="extra-label">Código descuento</span>
+                      <code class="cupon-codigo">{{ p.cupon.codigo }}</code>
+                      @if (p.cupon.tipo === 'porcentaje') {
+                        <span class="cupon-desc">−{{ p.cupon.descuento }}%</span>
+                      } @else {
+                        <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
+                      }
+                    </div>
+                    <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo)" [class.copiado]="copiado() === p.cupon.codigo">
+                      @if (copiado() === p.cupon.codigo) {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      } @else {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      }
+                      {{ copiado() === p.cupon.codigo ? 'Copiado' : 'Copiar' }}
+                    </button>
+                  </div>
+                }
+                @if (p.cupon && p.regalo) {
+                  <div class="extras-divider"></div>
+                }
+                @if (p.regalo) {
+                  <div class="regalo-extra">
+                    <div class="regalo-img-wrap">
+                      @if (p.regalo.imagen_url) {
+                        <img [src]="p.regalo.imagen_url" [alt]="p.regalo.nombre" class="regalo-img" />
+                      } @else {
+                        <div class="regalo-img-placeholder">🎁</div>
+                      }
+                    </div>
+                    <div class="regalo-info">
+                      <span class="extra-label">Regalo incluido</span>
+                      <span class="regalo-nombre">{{ p.regalo.nombre }}</span>
+                      @if (p.regalo.valor_estimado) {
+                        <span class="regalo-valor">Valor estimado: {{ formatPrecio(p.regalo.valor_estimado) }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
           }
         }
       </div>

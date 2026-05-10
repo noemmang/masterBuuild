@@ -1,323 +1,197 @@
 <!-- ══════════════════════════════════════════════════════════════
      PREVIEW INLINE — footer del panel lateral
      ══════════════════════════════════════════════════════════════ -->
-     <div class="ph-preview" (click)="abrirModal()">
+     <div class="ph-preview">
 
-        <div class="ph-preview-header">
-          <span class="ph-preview-label">Historial de precios</span>
-          <span class="ph-preview-expandir">
-            Ver análisis completo
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M7 17 17 7M7 7h10v10"/>
-            </svg>
-          </span>
-        </div>
-      
-        @if (cargando()) {
-          <div class="ph-preview-skeleton">
-            <div class="skeleton-line"></div>
-          </div>
-        } @else if (puntosPreview().length > 0) {
-      
-          <!-- Mini gráfico SVG -->
-          <div class="ph-preview-grafico">
-            <svg
-              viewBox="0 0 100 40"
-              preserveAspectRatio="none"
-              xmlns="http://www.w3.org/2000/svg">
-      
-              <!-- Área bajo la línea -->
-              <defs>
-                <linearGradient id="previewGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stop-color="var(--accent)" stop-opacity="0.2"/>
-                  <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-      
-              @if (puntosPreview().length > 1) {
-                <polygon
-                  [attr.points]="
-                    '0,40 ' +
-                    polylineMediaPreview() +
-                    ' 100,40'
-                  "
-                  fill="url(#previewGrad)"/>
-      
-                <polyline
-                  [attr.points]="polylineMediaPreview()"
-                  fill="none"
-                  stroke="var(--accent)"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-              }
-            </svg>
-          </div>
-      
-          <!-- Mini resumen -->
-          @if (historial()?.resumen) {
-            <div class="ph-preview-resumen">
-              <span class="ph-stat">
-                <span class="ph-stat-label">Mín</span>
-                <span class="ph-stat-val min">{{ formatPrecio(historial()!.resumen.min) }}</span>
-              </span>
-              <span class="ph-stat">
-                <span class="ph-stat-label">Actual</span>
-                <span class="ph-stat-val" [class.tendencia-baja]="tendencia() === 'baja'" [class.tendencia-sube]="tendencia() === 'sube'">
-                  {{ formatPrecio(historial()!.resumen.actual) }}
-                  @if (tendencia() === 'baja') { <span class="tend-icon">↓</span> }
-                  @if (tendencia() === 'sube') { <span class="tend-icon up">↑</span> }
-                </span>
-              </span>
-              <span class="ph-stat">
-                <span class="ph-stat-label">Máx</span>
-                <span class="ph-stat-val max">{{ formatPrecio(historial()!.resumen.max) }}</span>
-              </span>
-            </div>
-          }
-      
-        } @else if (!cargando()) {
-          <p class="ph-preview-empty">Sin datos de historial</p>
-        }
-      
+      <div class="ph-preview-header">
+        <span class="ph-preview-label">Historial de precios</span>
       </div>
-      
-      
-      <!-- ══════════════════════════════════════════════════════════════
-           MODAL COMPLETO
-           ══════════════════════════════════════════════════════════════ -->
-      @if (modalAbierto()) {
-        <div class="ph-overlay" (click)="cerrarModal()">
-          <div class="ph-modal" (click)="$event.stopPropagation()">
-      
-            <!-- ── Cabecera modal ── -->
-            <div class="ph-modal-header">
-              <div class="ph-modal-titulo">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                </svg>
-                <div>
-                  <p class="ph-modal-nombre">{{ componenteNombre }}</p>
-                  <p class="ph-modal-sub">Evolución del precio</p>
-                </div>
+    
+      @if (cargando()) {
+        <div class="ph-preview-skeleton">
+          <div class="skeleton-line"></div>
+        </div>
+      } @else if (puntosPreview().length > 0) {
+    
+        <!-- Mini resumen -->
+        @if (historial()?.resumen) {
+          <div class="ph-preview-resumen">
+            <span class="ph-stat">
+              <span class="ph-stat-label">Mín</span>
+              <span class="ph-stat-val min">{{ formatPrecio(historial()!.resumen.min) }}</span>
+            </span>
+            <span class="ph-stat">
+              <span class="ph-stat-label">Actual</span>
+              <span class="ph-stat-val" [class.tendencia-baja]="tendencia() === 'baja'" [class.tendencia-sube]="tendencia() === 'sube'">
+                {{ formatPrecio(historial()!.resumen.actual) }}
+                @if (tendencia() === 'baja') { <span class="tend-icon">↓</span> }
+                @if (tendencia() === 'sube') { <span class="tend-icon up">↑</span> }
+              </span>
+            </span>
+            <span class="ph-stat">
+              <span class="ph-stat-label">Máx</span>
+              <span class="ph-stat-val max">{{ formatPrecio(historial()!.resumen.max) }}</span>
+            </span>
+          </div>
+        }
+    
+      } @else if (!cargando()) {
+        <p class="ph-preview-empty">Sin datos de historial</p>
+      }
+    
+      <!-- ── Botón CTA explícito ── -->
+      <button class="ph-btn-historial" (click)="abrirModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        Ver análisis completo
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:auto">
+          <path d="M7 17 17 7M7 7h10v10"/>
+        </svg>
+      </button>
+    
+    </div>
+    
+    
+    <!-- ══════════════════════════════════════════════════════════════
+         MODAL COMPLETO
+         ══════════════════════════════════════════════════════════════ -->
+    @if (modalAbierto()) {
+      <div class="ph-overlay" (click)="cerrarModal()">
+        <div class="ph-modal" (click)="$event.stopPropagation()">
+    
+          <!-- ── Cabecera modal ── -->
+          <div class="ph-modal-header">
+            <div class="ph-modal-titulo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              <div>
+                <p class="ph-modal-nombre">{{ componenteNombre }}</p>
+                <p class="ph-modal-sub">Evolución del precio</p>
               </div>
-              <button class="ph-modal-close" (click)="cerrarModal()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M18 6 6 18M6 6l12 12"/>
-                </svg>
-              </button>
             </div>
-      
-            <!-- ── Controles ── -->
-            <div class="ph-modal-controles">
-              <!-- Selector de período -->
-              <div class="ph-periodos">
-                @for (p of PERIODOS; track p.value) {
+            <button class="ph-modal-close" (click)="cerrarModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+    
+          <!-- ── Controles ── -->
+          <div class="ph-modal-controles">
+            <!-- Selector de período -->
+            <div class="ph-periodos">
+              @for (p of PERIODOS; track p.value) {
+                <button
+                  class="ph-periodo-btn"
+                  [class.activo]="periodoActivo() === p.value"
+                  (click)="setPeriodo(p.value)">
+                  {{ p.label }}
+                </button>
+              }
+            </div>
+    
+            <!--
+              Selector de tienda: usa tiendasDisponibles (guardada en la primera carga sin filtro),
+              así los botones nunca desaparecen al filtrar.
+            -->
+            @if (tiendasDisponibles().length > 1) {
+              <div class="ph-tiendas">
+                <button
+                  class="ph-tienda-btn"
+                  [class.activo]="tiendaFiltro() === undefined"
+                  (click)="setTienda(undefined)">
+                  Todas
+                </button>
+                @for (t of tiendasDisponibles(); track t.uuid) {
                   <button
-                    class="ph-periodo-btn"
-                    [class.activo]="periodoActivo() === p.value"
-                    (click)="setPeriodo(p.value)">
-                    {{ p.label }}
+                    class="ph-tienda-btn"
+                    [class.activo]="tiendaFiltro() === t.uuid"
+                    (click)="setTienda(t.uuid)">
+                    {{ t.nombre }}
                   </button>
                 }
               </div>
-      
-              <!-- Selector de tienda -->
-              @if ((historial()?.tiendas?.length ?? 0) > 1) {
-                <div class="ph-tiendas">
-                  <button
-                    class="ph-tienda-btn"
-                    [class.activo]="tiendaFiltro() === undefined"
-                    (click)="setTienda(undefined)">
-                    Todas
-                  </button>
-                  @for (t of historial()!.tiendas; track t.uuid) {
-                    <button
-                      class="ph-tienda-btn"
-                      [class.activo]="tiendaFiltro() === t.uuid"
-                      (click)="setTienda(t.uuid)">
-                      {{ t.nombre }}
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-      
-            <!-- ── Tarjetas resumen ── -->
-            @if (historial()?.resumen) {
-              <div class="ph-resumen-cards">
-                <div class="ph-card ph-card-min">
-                  <span class="ph-card-label">Precio mínimo</span>
-                  <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.min) }}</span>
-                  <span class="ph-card-sub">en el período</span>
-                </div>
-                <div class="ph-card ph-card-actual">
-                  <span class="ph-card-label">Precio actual</span>
-                  <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.actual) }}</span>
-                  @if (porcentajeDesdeMax() !== null) {
-                    <span class="ph-card-sub" [class.negativo]="porcentajeDesdeMax()! < 0">
-                      {{ porcentajeDesdeMax()! > 0 ? '+' : '' }}{{ porcentajeDesdeMax() }}% vs máximo
-                    </span>
-                  }
-                </div>
-                <div class="ph-card ph-card-media">
-                  <span class="ph-card-label">Precio medio</span>
-                  <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.media) }}</span>
-                  <span class="ph-card-sub">media del período</span>
-                </div>
-                <div class="ph-card ph-card-max">
-                  <span class="ph-card-label">Precio máximo</span>
-                  <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.max) }}</span>
-                  <span class="ph-card-sub">en el período</span>
-                </div>
-              </div>
             }
-      
-            <!-- ── Gráfico principal ── -->
-            <div class="ph-modal-body">
-              @if (cargando()) {
-                <div class="ph-cargando">
-                  <div class="ph-spinner"></div>
-                </div>
-              } @else if (error()) {
-                <div class="ph-error">
-                  <p>No se pudieron cargar los datos</p>
-                </div>
-              } @else if (puntosGrafico().length === 0) {
-                <div class="ph-vacio">
-                  <p>Sin datos para el período seleccionado</p>
-                </div>
-              } @else {
-      
-                <!-- SVG principal con área min-max y línea media -->
-                <div class="grafico-svg-wrap">
-                  <svg
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="grafico-svg">
-      
-                    <defs>
-                      <linearGradient id="bandaGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stop-color="var(--accent)" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.04"/>
-                      </linearGradient>
-                      <linearGradient id="minGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.15"/>
-                        <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
-                      </linearGradient>
-                    </defs>
-      
-                    <!-- Banda min-max -->
-                    <polygon
-                      [attr.points]="
-                        polylineMax() + ' ' +
-                        puntosGrafico().slice().reverse().map(p => p.x + ',' + p.yMin).join(' ')
-                      "
-                      fill="url(#bandaGrad)"/>
-      
-                    <!-- Línea máximo -->
-                    <polyline
-                      [attr.points]="polylineMax()"
-                      fill="none"
-                      stroke="var(--accent)"
-                      stroke-width="0.8"
-                      stroke-dasharray="2,2"
-                      stroke-opacity="0.5"/>
-      
-                    <!-- Línea mínimo -->
-                    <polyline
-                      [attr.points]="polylineMin()"
-                      fill="none"
-                      stroke="#22c55e"
-                      stroke-width="0.8"
-                      stroke-dasharray="2,2"
-                      stroke-opacity="0.6"/>
-      
-                    <!-- Línea media — la principal -->
-                    <polyline
-                      [attr.points]="polylineMedia()"
-                      fill="none"
-                      stroke="var(--accent)"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"/>
-      
-                    <!-- Puntos interactivos -->
-                    @for (p of puntosGrafico(); track p.punto.periodo) {
-                      <circle
-                        [attr.cx]="p.x"
-                        [attr.cy]="p.yMedia"
-                        r="1.6"
-                        fill="var(--accent)"
-                        class="punto-interactivo"
-                        (mouseenter)="onMouseEnterPunto($event, p.punto)"
-                        (mousemove)="onMouseMovePunto($event)"
-                        (mouseleave)="onMouseLeavePunto()"/>
-                    }
-                  </svg>
-      
-                  <!-- Tooltip -->
-                  @if (tooltipPunto()) {
-                    <div
-                      class="ph-tooltip"
-                      [style.left.px]="tooltipX()"
-                      [style.top.px]="tooltipY()">
-                      <p class="ph-tooltip-periodo">{{ formatPeriodo(tooltipPunto()!.periodo) }}</p>
-                      <div class="ph-tooltip-fila">
-                        <span class="dot min"></span>
-                        <span>Mín</span>
-                        <span class="ph-tooltip-val">{{ formatPrecio(tooltipPunto()!.min) }}</span>
-                      </div>
-                      <div class="ph-tooltip-fila">
-                        <span class="dot media"></span>
-                        <span>Media</span>
-                        <span class="ph-tooltip-val">{{ formatPrecio(tooltipPunto()!.media) }}</span>
-                      </div>
-                      <div class="ph-tooltip-fila">
-                        <span class="dot max"></span>
-                        <span>Máx</span>
-                        <span class="ph-tooltip-val">{{ formatPrecio(tooltipPunto()!.max) }}</span>
-                      </div>
-                      <div class="ph-tooltip-fila ph-tooltip-tiendas">
-                        <span>{{ tooltipPunto()!.tiendas }} tienda{{ tooltipPunto()!.tiendas !== 1 ? 's' : '' }}</span>
-                      </div>
-                    </div>
-                  }
-                </div>
-      
-                <!-- Eje X — etiquetas de meses -->
-                <div class="ph-eje-x">
-                  @for (p of puntosGrafico(); track p.punto.periodo; let i = $index) {
-                    @if (i === 0 || i === puntosGrafico().length - 1 || i % Math.ceil(puntosGrafico().length / 5) === 0) {
-                      <span
-                        class="ph-eje-label"
-                        [style.left.%]="p.x">
-                        {{ formatPeriodo(p.punto.periodo) }}
-                      </span>
-                    }
-                  }
-                </div>
-      
-              }
-            </div>
-      
-            <!-- ── Leyenda ── -->
-            <div class="ph-leyenda">
-              <span class="ph-ley-item">
-                <svg width="20" height="4"><line x1="0" y1="2" x2="20" y2="2" stroke="var(--accent)" stroke-width="2"/></svg>
-                Precio medio
-              </span>
-              <span class="ph-ley-item">
-                <svg width="20" height="4"><line x1="0" y1="2" x2="20" y2="2" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3,2" stroke-opacity="0.6"/></svg>
-                Máximo
-              </span>
-              <span class="ph-ley-item">
-                <svg width="20" height="4"><line x1="0" y1="2" x2="20" y2="2" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="3,2" stroke-opacity="0.7"/></svg>
-                Mínimo
-              </span>
-            </div>
-      
           </div>
+    
+          <!-- ── Tarjetas resumen ── -->
+          @if (historial()?.resumen) {
+            <div class="ph-resumen-cards">
+              <div class="ph-card ph-card-min">
+                <span class="ph-card-label">Precio mínimo</span>
+                <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.min) }}</span>
+                <span class="ph-card-sub">en el período</span>
+              </div>
+              <div class="ph-card ph-card-actual">
+                <span class="ph-card-label">Precio actual</span>
+                <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.actual) }}</span>
+                @if (porcentajeDesdeMax() !== null) {
+                  <span class="ph-card-sub" [class.negativo]="porcentajeDesdeMax()! < 0">
+                    {{ porcentajeDesdeMax()! > 0 ? '+' : '' }}{{ porcentajeDesdeMax() }}% vs máximo
+                  </span>
+                }
+              </div>
+              <div class="ph-card ph-card-media">
+                <span class="ph-card-label">Precio medio</span>
+                <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.media) }}</span>
+                <span class="ph-card-sub">media del período</span>
+              </div>
+              <div class="ph-card ph-card-max">
+                <span class="ph-card-label">Precio máximo</span>
+                <span class="ph-card-val">{{ formatPrecio(historial()!.resumen.max) }}</span>
+                <span class="ph-card-sub">en el período</span>
+              </div>
+            </div>
+          }
+    
+          <!-- ── Gráfico ApexCharts ── -->
+          <div class="ph-modal-body">
+            @if (cargando()) {
+              <div class="ph-cargando">
+                <div class="ph-spinner"></div>
+              </div>
+            } @else if (error()) {
+              <div class="ph-error">
+                <p>No se pudieron cargar los datos</p>
+              </div>
+            } @else if (!historial() || historial()!.puntos.length === 0) {
+              <div class="ph-vacio">
+                <p>Sin datos para el período seleccionado</p>
+              </div>
+            } @else {
+              <!-- Contenedor de ApexCharts — el componente inyecta el chart aquí -->
+              <div id="ph-apex-chart" class="ph-apex-chart-container"></div>
+            }
+          </div>
+    
+          <!-- ── Leyenda ── -->
+          <div class="ph-leyenda">
+            <span class="ph-ley-item">
+              <svg width="20" height="4"><line x1="0" y1="2" x2="20" y2="2" stroke="var(--accent)" stroke-width="1.5"/></svg>
+              Precio medio
+            </span>
+            <span class="ph-ley-item">
+              <svg width="20" height="8">
+                <rect x="0" y="1" width="20" height="6" fill="var(--accent)" opacity="0.14" rx="1"/>
+              </svg>
+              Rango min–máx
+            </span>
+            <span class="ph-ley-item ph-ley-item-ref">
+              <svg width="20" height="4">
+                <line x1="0" y1="2" x2="20" y2="2" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 3"/>
+              </svg>
+              Precio máximo histórico
+            </span>
+            <span class="ph-ley-item ph-ley-item-ref">
+              <svg width="20" height="4">
+                <line x1="0" y1="2" x2="20" y2="2" stroke="#22c55e" stroke-width="1" stroke-dasharray="4 3"/>
+              </svg>
+              Precio mínimo histórico
+            </span>
+          </div>
+    
         </div>
-      }
+      </div>
+    }

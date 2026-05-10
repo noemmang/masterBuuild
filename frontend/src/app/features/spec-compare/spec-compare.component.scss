@@ -544,3 +544,10 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+// ── SECCIÓN HISTORIAL ────────────────────────────────────────────
+.historial-section {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border);
+  scroll-margin-top: 100px;
+}

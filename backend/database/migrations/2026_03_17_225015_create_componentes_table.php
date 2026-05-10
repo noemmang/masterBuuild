@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('fabricante_id')->nullable()->constrained('marcas')->restrictOnDelete();
             $table->string('categoria');
             $table->string('modelo')->nullable();
-            $table->string('imagen_url')->nullable();
+            $table->text('imagen_url')->nullable();
             $table->text('descripcion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();

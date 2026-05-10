@@ -121,6 +121,13 @@
           (click)="scrollASeccion($event, 'tiendas')">
           Tiendas
         </a>
+        <a
+          class="indice-item"
+          [class.activo]="seccionActiva === 'historial'"
+          href="#sec-historial"
+          (click)="scrollASeccion($event, 'historial')">
+          Historial
+        </a>
       </nav>
 
       <!-- ── CABECERAS ── -->
@@ -252,6 +259,26 @@
                   </a>
                 }
               }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ── HISTORIAL DE PRECIOS ── -->
+      <div class="historial-section" id="sec-historial">
+        <h4 class="tiendas-header">Historial de precios</h4>
+        <div class="tiendas-cols"
+          [style.grid-template-columns]="'repeat(' + comparando().length + ', minmax(0,1fr))'">
+          @for (c of comparando(); track c.detalle.uuid) {
+            <div class="tienda-col">
+              <div class="tienda-col-titulo">
+                <div class="tienda-col-dot" [style.background]="c.color"></div>
+                <span>{{ c.detalle.nombre }}</span>
+              </div>
+              <app-price-history
+                [componenteUuid]="c.detalle.uuid"
+                [componenteNombre]="c.detalle.nombre">
+              </app-price-history>
             </div>
           }
         </div>

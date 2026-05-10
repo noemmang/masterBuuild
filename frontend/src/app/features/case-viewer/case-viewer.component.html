@@ -9,44 +9,60 @@
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
       <input
+        class="cv-search-input"
         type="text"
-        placeholder="Buscar gabinete..."
-        [value]="busqueda()"
-        (input)="setBusqueda($any($event.target).value)"
+        [(ngModel)]="busqueda"
+        (ngModelChange)="onBusqueda()"
+        placeholder="Buscar gabinete…"
       />
     </div>
 
     <div class="cv-lista">
-      @for (g of gabinetesFiltrados(); track g.uuid) {
-        <div
-          class="cv-item"
-          [class.seleccionado]="g.seleccionado"
-          [class.lleno]="!g.seleccionado && numSeleccionados() >= 4"
-          (click)="toggleGabinete(g.uuid)"
-        >
-          <span class="cv-dot" [style.background]="g.color"></span>
-          <div class="cv-item-info">
-            <p class="cv-item-nombre">{{ g.nombre }}</p>
-            <p class="cv-item-dims">{{ g.ancho_mm }} × {{ g.alto_mm }} × {{ g.profundidad_mm }}mm</p>
-            <p class="cv-item-tipo">{{ g.tipo }} · {{ g.estructura }}</p>
-            <p class="cv-item-aio">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-              </svg>
-              AIO: {{ formatRadiadores(g.soporte_radiadores) }}
-            </p>
+      @if (cargandoBusq()) {
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="cv-item-skeleton"></div>
+        }
+      } @else {
+        @for (comp of resultados(); track comp.uuid) {
+          <div
+            class="cv-item"
+            [class.seleccionado]="estaEnComparacion(comp.uuid)"
+            [class.lleno]="!puedeAnadir() && !estaEnComparacion(comp.uuid)"
+            (click)="toggleComponente(comp)">
+            @if (estaEnComparacion(comp.uuid)) {
+              <div class="cv-dot" [style.background]="colorDeComp(comp.uuid)"></div>
+            } @else {
+              <div class="cv-dot empty"></div>
+            }
+            <div class="cv-item-info">
+              <p class="cv-item-nombre">{{ comp.nombre }}</p>
+              @if (comp.marca) {
+                <p class="cv-item-tipo">{{ comp.marca.nombre }}</p>
+              }
+              @if (comp.precio_min) {
+                <p class="cv-item-dims">{{ comp.precio_min | number:'1.0-0' }} €</p>
+              }
+            </div>
           </div>
-        </div>
+        }
+        @if (resultados().length === 0) {
+          <p class="cv-lista-empty">Sin resultados</p>
+        }
       }
     </div>
 
-    @if (gabinetesMostrados().length > 0) {
+    @if (comparando().length > 0) {
       <div class="cv-leyenda">
-        <p class="cv-leyenda-titulo">LEYENDA</p>
-        @for (g of gabinetesMostrados(); track g.uuid) {
+        <p class="cv-leyenda-titulo">COMPARANDO</p>
+        @for (g of comparando(); track g.uuid) {
           <div class="cv-leyenda-item">
             <span class="cv-dot" [style.background]="g.color"></span>
-            <span>{{ g.nombre }}</span>
+            <span class="cv-leyenda-nombre">{{ g.nombre }}</span>
+            <button class="cv-leyenda-quitar" (click)="quitarGabinete(g.uuid)" title="Quitar">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6 6 18M6 6l12 12"/>
+              </svg>
+            </button>
           </div>
         }
       </div>

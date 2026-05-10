@@ -8,6 +8,7 @@ export interface Usuario {
   nombre: string;
   email: string;
   plan: string;
+  avatar: string | null;
 }
 
 // Lo que devuelve realmente el backend
@@ -17,6 +18,7 @@ interface AuthResponse {
     uuid: string;
     name: string;
     email: string;
+    avatar: string | null;
   };
 }
 
@@ -59,6 +61,7 @@ export class AuthService {
       nombre: user.name,   // backend: name → frontend: nombre
       email:  user.email,
       plan:   'free',      // el backend aún no devuelve plan
+      avatar: user.avatar ?? null,
     };
   }
 

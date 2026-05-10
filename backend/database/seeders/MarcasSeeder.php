@@ -10,7 +10,7 @@ class MarcasSeeder extends Seeder
     public function run(): void
     {
         $marcas = [
-            // Fabricantes de chips
+            // ── Fabricantes de chips ──────────────────────────────────────
             [
                 'nombre'      => 'Intel',
                 'tipo'        => ['manufacturer', 'assembler'],
@@ -32,7 +32,8 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'US',
             ],
-            // Ensambladores
+
+            // ── Ensambladores GPU / Placa Base ────────────────────────────
             [
                 'nombre'      => 'ASUS',
                 'tipo'        => ['assembler'],
@@ -82,7 +83,43 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'US',
             ],
-            // Marcas de RAM
+            [
+                'nombre'      => 'INNO3D',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.inno3d.com',
+                'logo_url'    => null,
+                'pais_origen' => 'HK',
+            ],
+            [
+                'nombre'      => 'GALAX',
+                'tipo'        => ['assembler'], 
+                'website'     => 'https://www.galax.com',
+                'logo_url'    => null,
+                'pais_origen' => 'HK',
+            ],
+            [
+                'nombre'      => 'Gainward',
+                'tipo'        => ['assembler'], 
+                'website'     => 'https://www.gainward.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'PNY',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.pny.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'Colorful',
+                'tipo'        => ['assembler'], 
+                'website'     => 'https://www.colorful.cn',
+                'logo_url'    => null,
+                'pais_origen' => 'CN',
+            ],
+
+            // ── RAM ───────────────────────────────────────────────────────
             [
                 'nombre'      => 'Corsair',
                 'tipo'        => ['assembler'],
@@ -118,7 +155,29 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'TW',
             ],
-            // Marcas de almacenamiento
+            [
+                'nombre'      => 'Patriot', 
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.patriotmemory.com', 
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'Silicon Power',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.silicon-power.com', 
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'klevv',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.klevv.com/', 
+                'logo_url'    => null,
+                'pais_origen' => 'KR',
+            ],
+
+            // ── Almacenamiento ────────────────────────────────────────────
             [
                 'nombre'      => 'Samsung',
                 'tipo'        => ['manufacturer', 'assembler'],
@@ -127,7 +186,7 @@ class MarcasSeeder extends Seeder
                 'pais_origen' => 'KR',
             ],
             [
-                'nombre'      => 'WD',
+                'nombre'      => 'Western Digital',
                 'tipo'        => ['manufacturer', 'assembler'],
                 'website'     => 'https://www.westerndigital.com',
                 'logo_url'    => null,
@@ -147,7 +206,8 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'KR',
             ],
-            // Marcas de PSU
+
+            // ── PSU ───────────────────────────────────────────────────────
             [
                 'nombre'      => 'Seasonic',
                 'tipo'        => ['manufacturer', 'assembler'],
@@ -169,13 +229,28 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'US',
             ],
-            // Marcas de gabinetes
+            [
+                'nombre'      => 'XPG',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.xpg.com/',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+
+            // ── Gabinetes y refrigeración ─────────────────────────────────
             [
                 'nombre'      => 'Fractal Design',
                 'tipo'        => ['assembler'],
                 'website'     => 'https://www.fractal-design.com',
                 'logo_url'    => null,
                 'pais_origen' => 'SE',
+            ],
+            [
+                'nombre'      => 'ID-Cooling',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.idcooling.com',
+                'logo_url'    => null,
+                'pais_origen' => 'CN',
             ],
             [
                 'nombre'      => 'Lian Li',
@@ -211,6 +286,162 @@ class MarcasSeeder extends Seeder
                 'website'     => 'https://www.phanteks.com',
                 'logo_url'    => null,
                 'pais_origen' => 'NL',
+            ],
+            [
+                'nombre'      => 'Zotac',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.zotac.com',
+                'logo_url'    => null,
+                'pais_origen' => 'HK',
+            ],
+            [
+                'nombre'      => 'Palit',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.palit.com',
+                'logo_url'    => null,
+                'pais_origen' => 'HK',
+            ],
+            [
+                'nombre'      => 'ADATA',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.adata.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'Sabrent',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.sabrent.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'Lexar',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.lexar.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'Antec',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.antec.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'Arctic',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.arctic.de',
+                'logo_url'    => null,
+                'pais_origen' => 'CH',
+            ],
+            [
+                'nombre'      => 'Biostar',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.biostar.com.tw',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'EK Water Blocks',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.ekwb.com',
+                'logo_url'    => null,
+                'pais_origen' => 'SI',
+            ],
+            [
+                'nombre'      => 'Scythe',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.scythe-eu.com',
+                'logo_url'    => null,
+                'pais_origen' => 'JP',
+            ],
+            [
+                'nombre'      => 'Silverstone',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.silverstonetek.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'Thermalright',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.thermalright.com',
+                'logo_url'    => null,
+                'pais_origen' => 'CN',
+            ],
+            [
+                'nombre'      => 'Super Flower',
+                'tipo'        => ['manufacturer', 'assembler'],
+                'website'     => 'https://www.superflower.com.tw',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'DeepCool',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.deepcool.com',
+                'logo_url'    => null,
+                'pais_origen' => 'CN',
+            ],
+            [
+                'nombre'      => 'Thermaltake',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.thermaltake.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW', 
+            ],
+            [
+                'nombre'      => 'Watercool',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://watercool.de',
+                'logo_url'    => null,
+                'pais_origen' => 'DE',
+            ],
+
+            // ── Marcas de gabinetes SFF / ITX (nuevas) ───────────────────
+            [
+                'nombre'      => 'Cougar',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.cougargaming.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'Jonsbo',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.jonsbo.com',
+                'logo_url'    => null,
+                'pais_origen' => 'CN',
+            ],
+            [
+                'nombre'      => 'FormD',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://formdworks.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
+            [
+                'nombre'      => 'InWin',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.inwin-style.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
+            ],
+            [
+                'nombre'      => 'Dan Cases',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://dan-cases.com',
+                'logo_url'    => null,
+                'pais_origen' => 'DE',
+            ],
+            [
+                'nombre'      => 'NCASE',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://ncased.com',
+                'logo_url'    => null,
+                'pais_origen' => 'TW',
             ],
         ];
 

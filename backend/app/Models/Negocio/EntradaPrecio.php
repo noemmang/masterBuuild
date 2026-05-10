@@ -15,7 +15,6 @@ class EntradaPrecio extends BaseModel
         'cupon_id',
         'precio',
         'moneda',
-        'url',
         'en_stock',
         'precio_con_cupon',
         'scraped_at',

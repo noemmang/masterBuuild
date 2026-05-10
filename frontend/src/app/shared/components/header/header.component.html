@@ -35,7 +35,11 @@
 
       @if (auth.usuario()) {
         <button class="avatar-btn" (click)="toggleMenuUsuario()">
-          {{ auth.usuario()!.nombre.charAt(0).toUpperCase() }}
+          @if (auth.usuario()!.avatar) {
+            <img [src]="auth.usuario()!.avatar" alt="avatar" class="avatar-img" />
+          } @else {
+            {{ auth.usuario()!.nombre.charAt(0).toUpperCase() }}
+          }
         </button>
         @if (menuUsuarioAbierto) {
           <div class="dropdown">

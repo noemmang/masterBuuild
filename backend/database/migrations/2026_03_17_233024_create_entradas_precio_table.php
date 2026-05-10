@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('tienda_id')->constrained('tiendas')->cascadeOnDelete();
             $table->decimal('precio', 10, 2);
             $table->string('moneda', 3)->default('EUR');
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->boolean('en_stock')->default(true);
             $table->foreignId('cupon_id')->nullable()->constrained('cupones')->nullOnDelete();
             $table->decimal('precio_con_cupon', 10, 2)->nullable();

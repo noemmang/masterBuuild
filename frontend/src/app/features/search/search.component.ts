@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -7,8 +7,6 @@ import { GuardadoService } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-
-// ── Definición de filtros por categoría ─────────────────────────────────────
 
 interface OpcionFiltro {
   label: string;
@@ -117,6 +115,7 @@ export class SearchComponent implements OnInit {
 
   private auth            = inject(AuthService);
   private guardadoService = inject(GuardadoService);
+  private el              = inject(ElementRef);
 
   categorias = [
     { label: 'Todo',             slug: '' },
@@ -164,6 +163,9 @@ export class SearchComponent implements OnInit {
   precios                = signal<any[]>([]);
   cargandoPrecios        = signal(false);
 
+  /** Código de cupón copiado recientemente (se limpia tras 2 s) */
+  copiado = signal<string | null>(null);
+
   logueado = this.auth.estaAutenticado();
 
   guardadosMap = signal<Map<string, string>>(new Map());
@@ -184,11 +186,19 @@ export class SearchComponent implements OnInit {
       this.cargarEstadoGuardados();
       this.cargarEstadoAlertas();
     }
+
     this.route.queryParams.subscribe(params => {
       if (params['categoria']) this.categoriaActiva.set(params['categoria']);
       if (params['q'])         this.busqueda = params['q'];
-      this.resetYCargar();
+
+      const uuid = params['uuid'] as string | undefined;
+      if (uuid) {
+        this.resetYCargar(uuid);
+      } else {
+        this.resetYCargar();
+      }
     });
+
     this.busqueda$.pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => this.resetYCargar());
   }
@@ -209,7 +219,7 @@ export class SearchComponent implements OnInit {
     this.filtrosActivos.update(m => {
       const n = new Map(m);
       if (tipo === 'min') {
-        const set   = new Set<number | string>();
+        const set    = new Set<number | string>();
         const actual = n.get(param);
         if (!actual?.has(valor)) set.add(valor);
         n.set(param, set);
@@ -263,10 +273,10 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  resetYCargar() {
+  resetYCargar(autoSelectUuid?: string) {
     this.paginaActual.set(1);
     this.componentes.set([]);
-    this.cargar(false);
+    this.cargar(false, autoSelectUuid);
   }
 
   private buildFiltrosEspecificos(): Record<string, any> {
@@ -286,18 +296,22 @@ export class SearchComponent implements OnInit {
     return extra;
   }
 
-  cargar(acumular = false) {
+  cargar(acumular = false, autoSelectUuid?: string) {
     if (acumular) this.cargandoMas.set(true);
     else          this.cargando.set(true);
     if (!acumular) this.componenteSeleccionado.set(null);
 
-    this.componenteService.buscar({
-      categoria: this.categoriaActiva(),
-      q:         this.busqueda,
-      page:      this.paginaActual(),
-      orden:     this.ordenActivo,
+    const params = {
+      categoria:  this.categoriaActiva(),
+      q:          this.busqueda,
+      page:       this.paginaActual(),
+      orden:      this.ordenActivo,
+      precio_min: this.precioMin ?? undefined,
+      precio_max: this.precioMax ?? undefined,
       ...this.buildFiltrosEspecificos(),
-    }).subscribe({
+    };
+
+    this.componenteService.buscar(params).subscribe({
       next: (res) => {
         if (acumular) this.componentes.update(prev => [...prev, ...res.data]);
         else          this.componentes.set(res.data);
@@ -306,8 +320,43 @@ export class SearchComponent implements OnInit {
         this.hayMas.set(res.current_page < res.last_page);
         this.cargando.set(false);
         this.cargandoMas.set(false);
+
+        if (autoSelectUuid) {
+          const encontrado = res.data.find((c: Componente) => c.uuid === autoSelectUuid);
+          if (encontrado) {
+            this.seleccionarComponente(encontrado);
+          } else {
+            this.buscarYSeleccionarPorUuid(autoSelectUuid);
+          }
+        }
       },
       error: () => { this.cargando.set(false); this.cargandoMas.set(false); }
+    });
+  }
+
+  private buscarYSeleccionarPorUuid(uuid: string): void {
+    this.componenteService.getDetalle(uuid).subscribe({
+      next: (comp) => {
+        if (!this.categoriaActiva() && comp.categoria) {
+          this.categoriaActiva.set(comp.categoria);
+        }
+        this.busqueda = comp.nombre;
+        this.paginaActual.set(1);
+        this.componenteService.buscar({
+          categoria: comp.categoria,
+          q:         comp.nombre,
+          page:      1,
+        }).subscribe({
+          next: (res) => {
+            this.componentes.set(res.data);
+            this.totalResultados.set(res.total);
+            this.ultimaPagina.set(res.last_page);
+            this.hayMas.set(res.current_page < res.last_page);
+            const target = res.data.find((c: Componente) => c.uuid === uuid) ?? res.data[0];
+            if (target) this.seleccionarComponente(target);
+          }
+        });
+      }
     });
   }
 
@@ -327,6 +376,7 @@ export class SearchComponent implements OnInit {
     this.componenteSeleccionado.set(null);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
+    this.copiado.set(null);
   }
 
   seleccionarComponente(comp: Componente) {
@@ -334,13 +384,48 @@ export class SearchComponent implements OnInit {
     this.componenteSeleccionado.set(comp);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
+    this.copiado.set(null);
     this.cargandoPrecios.set(true);
     this.precios.set([]);
+
+    // Scroll hasta la card seleccionada
+    setTimeout(() => this.scrollToCard(comp.uuid), 50);
+
     this.componenteService.getPrecios(comp.uuid).subscribe({
-      next: (res) => { this.precios.set(res.precios || res); this.cargandoPrecios.set(false); },
-      error: () => this.cargandoPrecios.set(false)
+      next: (res) => {
+        const rawPrecios: any[] = res?.precios ?? [];
+        const ordenados = [...rawPrecios].sort((a, b) => a.precio - b.precio);
+        this.precios.set(ordenados);
+        this.cargandoPrecios.set(false);
+      },
+      error: () => this.cargandoPrecios.set(false),
     });
   }
+
+  private scrollToCard(uuid: string): void {
+    const card = this.el.nativeElement.querySelector(`[data-uuid="${uuid}"]`);
+    if (!card) return;
+    // El scroll vive en el body (styles.scss: body overflow-y:auto)
+    const scrollContainer = document.body;
+    const cardTop    = card.getBoundingClientRect().top + scrollContainer.scrollTop;
+    const headerH    = 56; // altura del header fijo
+    const topbarH    = 52; // altura del top-bar sticky
+    const offset     = headerH + topbarH + 16; // 16px de margen visual
+    scrollContainer.scrollTo({ top: cardTop - offset, behavior: 'smooth' });
+  }
+
+  // ── Copiar código de cupón ─────────────────────────────────────────────────
+
+  copiarCodigo(codigo: string): void {
+    navigator.clipboard.writeText(codigo).then(() => {
+      this.copiado.set(codigo);
+      setTimeout(() => {
+        if (this.copiado() === codigo) this.copiado.set(null);
+      }, 2000);
+    });
+  }
+
+  // ── Guardados / alertas ────────────────────────────────────────────────────
 
   estaGuardado(uuid: string): boolean { return this.guardadosMap().has(uuid); }
 

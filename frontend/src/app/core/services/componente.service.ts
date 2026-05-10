@@ -12,7 +12,9 @@ export interface Componente {
   precio_max: number | null;
   num_tiendas: number;
   tiene_cupon: boolean;
+  tiene_regalo: boolean;
   bajada_precio: boolean;
+  descripcion?: string | null;
 }
 
 export interface PaginatedResponse {
@@ -71,6 +73,18 @@ export interface EntradaPrecio {
   disponible: boolean;
   tienda: { nombre: string; website: string | null };
   cupon: { codigo: string; descuento: number; tipo: string } | null;
+  regalo: Regalo | null;
+}
+
+// ── Regalos ───────────────────────────────────────────────────────────────────
+
+export interface Regalo {
+  uuid: string;
+  nombre: string;
+  tipo: string;
+  imagen_url: string | null;
+  descripcion: string | null;
+  valor_estimado: number;
 }
 
 // ── Historial de precios ──────────────────────────────────────────────────────
@@ -96,6 +110,29 @@ export interface HistorialPrecios {
   tiendas: { uuid: string; nombre: string }[];
 }
 
+// ── Parámetros de búsqueda extendidos ────────────────────────────────────────
+
+export interface BuscarParams {
+  categoria?: string;
+  q?: string;
+  page?: number;
+  marca?: string;
+  orden?: string;
+  precio_min?: number | null;
+  precio_max?: number | null;
+
+  // ── Filtros de compatibilidad ─────────────────────
+  socket_id?: number;
+  tipo_memoria_id?: number;
+  longitud_max_mm?: number;
+  longitud_gpu_min_mm?: number;
+  factor_forma_soportado_id?: number;
+  potencia_min?: number;
+  tdp_min?: number;
+  altura_max_mm?: number;
+  radiador_mm?: string;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Injectable({ providedIn: 'root' })
@@ -104,30 +141,52 @@ export class ComponenteService {
 
   constructor(private http: HttpClient) {}
 
-  buscar(params: {
-    categoria?: string;
-    q?: string;
-    page?: number;
-    marca?: string;
-    orden?: string;
-  }): Observable<PaginatedResponse> {
+  buscar(params: BuscarParams): Observable<PaginatedResponse> {
+    return this.buscarConFiltros(params);
+  }
+
+  buscarConFiltros(params: BuscarParams): Observable<PaginatedResponse> {
     let httpParams = new HttpParams();
-    if (params.categoria) httpParams = httpParams.set('categoria', params.categoria);
-    if (params.q)         httpParams = httpParams.set('buscar', params.q);
-    if (params.page)      httpParams = httpParams.set('page', params.page.toString());
-    if (params.marca)     httpParams = httpParams.set('marca', params.marca);
-    if (params.orden)     httpParams = httpParams.set('ordenar', params.orden);
+
+    const set = (key: string, val: any) => {
+      if (val !== undefined && val !== null && val !== '') {
+        httpParams = httpParams.set(key, String(val));
+      }
+    };
+
+    set('categoria',                 params.categoria);
+    set('buscar',                    params.q);
+    set('page',                      params.page ?? 1);
+    set('marca',                     params.marca);
+    set('ordenar',                   params.orden);
+    set('precio_min',                params.precio_min);
+    set('precio_max',                params.precio_max);
+
+    // Compat
+    set('socket_id',                 params.socket_id);
+    set('tipo_memoria_id',           params.tipo_memoria_id);
+    set('longitud_max_mm',           params.longitud_max_mm);
+    set('longitud_gpu_min_mm',       params.longitud_gpu_min_mm);
+    set('factor_forma_soportado_id', params.factor_forma_soportado_id);
+    set('potencia_min',              params.potencia_min);
+    set('tdp_min',                   params.tdp_min);
+    set('altura_max_mm',             params.altura_max_mm);
+    set('radiador_mm',               params.radiador_mm);
 
     return this.http.get<any>(`${this.API}/componentes`, { params: httpParams }).pipe(
       map(res => ({
         ...res,
-        data: res.data.map((c: any) => this.mapearComponente(c))
+        data: res.data.map((c: any) => this.mapearComponente(c)),
       }))
     );
   }
 
   getPrecios(uuid: string): Observable<any> {
     return this.http.get(`${this.API}/componentes/${uuid}/precios`);
+  }
+
+  getRegalos(uuid: string): Observable<{ regalos: Regalo[] }> {
+    return this.http.get<{ regalos: Regalo[] }>(`${this.API}/componentes/${uuid}/regalos`);
   }
 
   getDetalle(uuid: string): Observable<ComponenteDetalle> {
@@ -161,6 +220,16 @@ export class ComponenteService {
 
   private mapearComponente(c: any): Componente {
     const precios: number[] = (c.precios_actuales ?? []).map((p: any) => Number(p.precio));
+    const tiendas = (c.precios_actuales ?? []).map((p: any) => p.tienda?.nombre).filter(Boolean);
+    const tiendas_unicas = new Set(tiendas).size;
+
+    console.log('mapeando', c.nombre, {
+      regalos_activos: c.regalos_activos,
+      cupones_activos: c.cupones_activos,
+      tiene_regalo: (c.regalos_activos ?? []).length > 0,
+      tiene_cupon: (c.cupones_activos ?? []).length > 0,
+    });
+
     return {
       uuid:          c.uuid,
       nombre:        c.nombre,
@@ -169,9 +238,11 @@ export class ComponenteService {
       marca:         c.marca ?? null,
       precio_min:    precios.length > 0 ? Math.min(...precios) : null,
       precio_max:    precios.length > 0 ? Math.max(...precios) : null,
-      num_tiendas:   precios.length,
-      tiene_cupon:   (c.cupones_activos ?? []).length > 0,
+      num_tiendas:   tiendas_unicas || precios.length,
+      tiene_cupon:  (c.cupones_activos ?? []).length > 0 || (c.precios_actuales ?? []).some((p: any) => p.cupon_id !== null),
+      tiene_regalo: (c.regalos_activos ?? []).length > 0 || (c.precios_actuales ?? []).some((p: any) => p.tiene_regalo === true),
       bajada_precio: false,
+      descripcion:   c.descripcion ?? null,
     };
   }
 }

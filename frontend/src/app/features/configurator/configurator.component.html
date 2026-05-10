@@ -3,7 +3,7 @@
   [class.precios-open]="componenteDetalle() && !panelAbierto()"
   [class.ambos-open]="panelAbierto() && componenteDetalle()">
 
-  <!-- SIDEBAR -->
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
   <aside class="cfg-sidebar">
     <p class="cfg-sidebar-title">Configurador</p>
 
@@ -12,33 +12,52 @@
         <div
           class="slot-item"
           [class.active]="slotActivo().id === slot.id"
-          [class.filled]="!!slot.componente"
+          [class.filled]="slot.entradas.length > 0"
           (click)="cargarSlot(slot)">
 
           <div class="slot-info">
-            <span class="slot-label">{{ slot.label }}</span>
-            @if (slot.componente) {
-              <span class="slot-nombre">{{ slot.componente.nombre }}</span>
-            } @else if (slotActivo().id === slot.id) {
-              <span class="slot-placeholder">Seleccionando...</span>
+            <span class="slot-label">
+              {{ slot.label }}
+              @if (esApilable(slot) && slot.entradas.length > 0) {
+                <span class="slot-badge-count">×{{ slot.entradas.reduce((s, e) => s + e.cantidad, 0) }}</span>
+              }
+            </span>
+
+            @if (slot.entradas.length === 0) {
+              @if (slotActivo().id === slot.id) {
+                <span class="slot-placeholder">Seleccionando…</span>
+              } @else {
+                <span class="slot-placeholder">Pendiente</span>
+              }
+            } @else if (!esApilable(slot) || slot.entradas.length === 1) {
+              <span class="slot-nombre">{{ slot.entradas[0].componente.nombre }}</span>
             } @else {
-              <span class="slot-placeholder">Pendiente</span>
+              <span class="slot-nombre">{{ slot.entradas.length }} modelos</span>
             }
           </div>
 
-          <!-- Iconos de estado sin fondo -->
+          <!-- Iconos estado -->
           @if (slot.componente) {
             <div class="slot-estado-icons">
               @if (logueado && estaGuardado(slot.componente.uuid)) {
-                <svg class="estado-icon guardado-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <svg class="estado-icon guardado-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
                 </svg>
               }
               @if (logueado && tieneAlerta(slot.componente.uuid)) {
-                <svg class="estado-icon alerta-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <svg class="estado-icon alerta-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
               }
+            </div>
+          }
+
+          <!-- Controles de cantidad inline cuando hay 1 sola entrada apilable -->
+          @if (esApilable(slot) && slot.entradas.length === 1) {
+            <div class="slot-qty-inline" (click)="$event.stopPropagation()">
+              <button class="qty-btn" (click)="cambiarCantidad(slot, 0, -1)">−</button>
+              <span class="qty-val">{{ slot.entradas[0].cantidad }}</span>
+              <button class="qty-btn" (click)="cambiarCantidad(slot, 0, +1)">+</button>
             </div>
           }
 
@@ -46,18 +65,52 @@
             <span class="slot-precio">{{ formatPrecio(slot.precio) }}</span>
           }
 
-          @if (slot.componente) {
-            <button class="slot-quitar" (click)="quitarComponente(slot, $event)">
+          @if (slot.entradas.length > 0) {
+            <button class="slot-quitar" (click)="quitarComponente(slot, $event, 0)">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <path d="M18 6 6 18M6 6l12 12"/>
               </svg>
             </button>
           }
         </div>
+
+        <!-- Sub-filas solo cuando hay MÚLTIPLES modelos distintos -->
+        @if (esApilable(slot) && slot.entradas.length > 1) {
+          @for (entrada of slot.entradas; track entrada.componente.uuid; let i = $index) {
+            <div class="slot-subitem" [class.active]="slotActivo().id === slot.id">
+              <span class="slot-sub-nombre">{{ entrada.componente.nombre }}</span>
+              <div class="slot-sub-controles">
+                <button class="qty-btn" (click)="cambiarCantidad(slot, i, -1); $event.stopPropagation()">−</button>
+                <span class="qty-val">{{ entrada.cantidad }}</span>
+                <button class="qty-btn" (click)="cambiarCantidad(slot, i, +1); $event.stopPropagation()">+</button>
+                <button class="slot-quitar-sub" (click)="quitarComponente(slot, $event, i)">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+              <span class="slot-sub-precio">{{ formatPrecio((entrada.componente.precio_min ?? 0) * entrada.cantidad) }}</span>
+            </div>
+          }
+        }
       }
     </div>
 
+    <!-- ── Footer sidebar ── -->
     <div class="cfg-sidebar-footer">
+
+      <!-- Desglose de precio -->
+      @if (desglosePrecio().length > 0) {
+        <div class="desglose-wrap">
+          @for (d of desglosePrecio(); track d.label) {
+            <div class="desglose-row">
+              <span class="desglose-label">{{ d.label }}</span>
+              <span class="desglose-val">{{ formatPrecio(d.subtotal) }}</span>
+            </div>
+          }
+        </div>
+      }
+
       <div class="total-row">
         <span class="total-label">Total estimado</span>
         <span class="total-valor">{{ formatPrecio(totalEstimado()) || '—' }}</span>
@@ -81,30 +134,68 @@
 
       <div class="cfg-btns">
         <button class="btn-auto">Auto</button>
-        <button class="btn-guardar">Guardar config</button>
+        <button class="btn-guardar"
+          [disabled]="numSeleccionados === 0 || guardandoConfig()"
+          (click)="abrirModalGuardar()">
+          @if (guardandoConfig()) { <span class="mini-spinner-sm"></span> }
+          @else { Guardar config }
+        </button>
       </div>
     </div>
   </aside>
 
-  <!-- ÁREA PRINCIPAL -->
+  <!-- ══════════════════ ÁREA PRINCIPAL ══════════════════ -->
   <div class="cfg-main">
     <div class="cfg-topbar">
+
+      <!-- Buscador -->
       <div class="cfg-search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        <input type="text" [(ngModel)]="busqueda" (input)="onBusqueda()" placeholder="Buscar..." />
+        <input type="text" [(ngModel)]="busqueda" (input)="onBusqueda()" placeholder="Buscar {{ labelSlotActivo() }}…" />
+        @if (busqueda) {
+          <button class="cfg-clear-btn" (click)="busqueda=''; onFiltroChange()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        }
       </div>
+
+      <!-- Precio -->
       <div class="precio-range">
         <input type="number" [(ngModel)]="precioMin" (change)="onFiltroChange()" placeholder="Min €" class="precio-input" />
         <span class="precio-sep">—</span>
         <input type="number" [(ngModel)]="precioMax" (change)="onFiltroChange()" placeholder="Max €" class="precio-input" />
       </div>
+
+      <!-- Orden -->
       <select [(ngModel)]="ordenActivo" (change)="onFiltroChange()" class="orden-select">
         @for (o of ordenes; track o.value) {
           <option [value]="o.value">{{ o.label }}</option>
         }
       </select>
+
+      <!-- Toggle solo compatibles -->
+      @if (numSeleccionados > 0) {
+        <button
+          class="btn-compat-filter"
+          [class.activo]="soloCompatibles()"
+          (click)="toggleSoloCompatibles()"
+          title="Filtrar solo compatibles">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 3H2l8 9.46V19l4 2v-8.54z"/>
+          </svg>
+          @if (soloCompatibles()) { Compatibles } @else { Todos }
+        </button>
+      }
+
+      @if (!cargando()) {
+        <span class="cfg-resultados">{{ componentes().length }} resultados</span>
+      }
+
+      <!-- Botón panel compatibilidad -->
       <button class="btn-compat-icon" (click)="togglePanel()" [class.tiene-errores]="numErrores() > 0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 0 0 1.946-.806 3.42 3.42 0 0 1 4.438 0 3.42 3.42 0 0 0 1.946.806 3.42 3.42 0 0 1 3.138 3.138 3.42 3.42 0 0 0 .806 1.946 3.42 3.42 0 0 1 0 4.438 3.42 3.42 0 0 0-.806 1.946 3.42 3.42 0 0 1-3.138 3.138 3.42 3.42 0 0 0-1.946.806 3.42 3.42 0 0 1-4.438 0 3.42 3.42 0 0 0-1.946-.806 3.42 3.42 0 0 1-3.138-3.138 3.42 3.42 0 0 0-.806-1.946 3.42 3.42 0 0 1 0-4.438 3.42 3.42 0 0 0 .806-1.946 3.42 3.42 0 0 1 3.138-3.138z"/>
@@ -113,6 +204,7 @@
       </button>
     </div>
 
+    <!-- Grid de componentes -->
     <div class="cfg-grid-area">
       @if (cargando()) {
         <div class="cfg-grid">
@@ -123,8 +215,9 @@
           @for (comp of componentes(); track comp.uuid) {
             <div
               class="cfg-card"
-              [class.selected]="slotActivo().componente?.uuid === comp.uuid"
+              [class.selected]="yaSeleccionado(comp.uuid)"
               (click)="seleccionarComponente(comp)">
+
               <div class="cfg-card-img">
                 @if (comp.imagen_url) {
                   <img [src]="comp.imagen_url" [alt]="comp.nombre" />
@@ -134,21 +227,46 @@
                     <path d="M8 21h8M12 17v4"/>
                   </svg>
                 }
-                <!-- Iconos estado sin fondo -->
-                <div class="cfg-card-estado">
-                  @if (comp.tiene_cupon) { <span class="cfg-badge naranja">%</span> }
-                  @if (logueado && estaGuardado(comp.uuid)) {
-                    <svg class="estado-icon guardado-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                    </svg>
-                  }
-                  @if (logueado && tieneAlerta(comp.uuid)) {
-                    <svg class="estado-icon alerta-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                  }
+
+                <!-- ── Iconos de estado: mismo patrón izq/der que search ── -->
+                <div class="card-estado-icons">
+                  <!-- Izquierda: guardado y alerta -->
+                  <div class="card-icons-left">
+                    @if (logueado && estaGuardado(comp.uuid)) {
+                      <span class="cfg-badge badge-guardado" title="Guardado">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                      </span>
+                    }
+                    @if (logueado && tieneAlerta(comp.uuid)) {
+                      <span class="cfg-badge badge-alerta" title="Alerta de precio activa">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                      </span>
+                    }
+                  </div>
+                  <!-- Derecha: cupón y regalo -->
+                  <div class="card-icons-right">
+                    @if (comp.tiene_cupon) {
+                      <span class="cfg-badge naranja" title="Tiene cupón de descuento">%</span>
+                    }
+                    @if (comp.tiene_regalo) {
+                      <span class="cfg-badge regalo" title="Incluye regalo">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                        </svg>
+                      </span>
+                    }
+                  </div>
                 </div>
+
+                @if (esApilable(slotActivo()) && cantidadEnSlot(comp.uuid) > 0) {
+                  <div class="card-qty-badge">×{{ cantidadEnSlot(comp.uuid) }}</div>
+                }
               </div>
+
               <div class="cfg-card-body">
                 <span class="cfg-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
                 <h3 class="cfg-card-nombre">{{ comp.nombre }}</h3>
@@ -157,6 +275,20 @@
                   <span class="cfg-card-precio">{{ formatPrecio(comp.precio_min) || 'Sin precio' }}</span>
                   <span class="cfg-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
                 </div>
+
+                @if (esApilable(slotActivo()) && yaSeleccionado(comp.uuid)) {
+                  <div class="card-qty-controls" (click)="$event.stopPropagation()">
+                    <button class="qty-btn"
+                      (click)="cambiarCantidad(slotActivo(), slotActivo().entradas.findIndex(e => e.componente.uuid === comp.uuid), -1)">
+                      −
+                    </button>
+                    <span class="qty-val">{{ cantidadEnSlot(comp.uuid) }}</span>
+                    <button class="qty-btn"
+                      (click)="cambiarCantidad(slotActivo(), slotActivo().entradas.findIndex(e => e.componente.uuid === comp.uuid), +1)">
+                      +
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           }
@@ -165,7 +297,7 @@
     </div>
   </div>
 
-  <!-- PANEL COMPATIBILIDAD -->
+  <!-- ══════════════════ PANEL COMPATIBILIDAD ══════════════════ -->
   @if (panelAbierto()) {
     <aside class="compat-panel">
       <div class="compat-head">
@@ -176,13 +308,14 @@
           </svg>
         </button>
       </div>
+
       @if (!compatibilidad()) {
         <p class="panel-empty">Añade componentes para ver la compatibilidad</p>
       } @else {
         <p class="compat-resumen">
-          @if (numErrores() > 0) { <span class="dot rojo"></span> {{ numErrores() }} error · }
-          @if (numAdvert() > 0)  { <span class="dot naranja"></span> {{ numAdvert() }} advertencia · }
-          <span class="dot verde"></span> {{ compatibilidad()!.notas.length }} OK
+          @if (numErrores() > 0)  { <span class="dot rojo"></span>&nbsp;{{ numErrores() }} error&nbsp;·&nbsp; }
+          @if (numAdvert() > 0)   { <span class="dot naranja"></span>&nbsp;{{ numAdvert() }} advert.&nbsp;·&nbsp; }
+          <span class="dot verde"></span>&nbsp;{{ compatibilidad()!.notas.length }} OK
         </p>
         <div class="compat-lista">
           @for (e of compatibilidad()!.errores; track e.tipo) {
@@ -195,6 +328,7 @@
             <div class="compat-row nota"><span class="dot gris"></span><span>{{ n.mensaje }}</span></div>
           }
         </div>
+
         @if (compatibilidad()!.consumo_total_watts > 0) {
           <div class="compat-consumo">
             <p class="consumo-label">CONSUMO ESTIMADO</p>
@@ -208,7 +342,7 @@
     </aside>
   }
 
-  <!-- PANEL PRECIOS -->
+  <!-- ══════════════════ PANEL PRECIOS ══════════════════ -->
   @if (componenteDetalle()) {
     <aside class="precio-panel">
       <div class="panel-head">
@@ -226,16 +360,13 @@
         </button>
       </div>
 
-      <!-- Acciones guardar / alerta -->
       @if (logueado) {
         <div class="panel-acciones">
           @if (estaGuardado(componenteDetalle()!.uuid)) {
             <button class="btn-accion guardado" [disabled]="eliminandoGuardado()" (click)="eliminarGuardado()">
               @if (eliminandoGuardado()) { <span class="mini-spinner-sm"></span> }
               @else {
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                 Guardado
               }
             </button>
@@ -243,25 +374,19 @@
             <button class="btn-accion" [disabled]="guardando()" (click)="guardarComponente()">
               @if (guardando()) { <span class="mini-spinner-sm"></span> }
               @else {
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                 Guardar
               }
             </button>
           }
           @if (tieneAlerta(componenteDetalle()!.uuid)) {
             <button class="btn-accion alerta-activa" (click)="eliminarAlerta()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               Alerta activa
             </button>
           } @else {
             <button class="btn-accion" (click)="toggleFormAlerta()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               Alerta precio
             </button>
           }
@@ -271,18 +396,16 @@
           <div class="alerta-form">
             <p class="alerta-form-label">Avísame cuando baje de</p>
             <div class="alerta-input-wrap">
-              <input
-                type="number"
-                class="alerta-input"
+              <input type="number" class="alerta-input"
                 [value]="precioObjetivo()"
                 (input)="setPrecioObjetivo($any($event.target).value)"
-                placeholder="Precio objetivo"
-              />
+                placeholder="Precio objetivo" />
               <span class="alerta-euro">€</span>
             </div>
-            <button class="btn-alerta-guardar" [disabled]="!precioObjetivo() || guardandoAlerta()" (click)="guardarAlerta()">
-              @if (guardandoAlerta()) { <span class="mini-spinner-sm"></span> }
-              @else { Crear alerta }
+            <button class="btn-alerta-guardar"
+              [disabled]="!precioObjetivo() || guardandoAlerta()"
+              (click)="guardarAlerta()">
+              @if (guardandoAlerta()) { <span class="mini-spinner-sm"></span> } @else { Crear alerta }
             </button>
           </div>
         }
@@ -295,17 +418,137 @@
           <p class="panel-empty">Sin precios disponibles</p>
         } @else {
           @for (p of precios(); track p.uuid; let i = $index) {
-            <div class="precio-row" [class.mejor]="i === 0">
+
+            <div class="precio-row" [class.mejor]="i === 0" [class.tiene-extras]="p.cupon || p.regalo">
               <div class="precio-info">
                 @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
                 <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
-                @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+                <div class="precio-row-tags">
+                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+                  @if (p.cupon) {
+                    <span class="tag-cupon">
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                      </svg>
+                      Cupón
+                    </span>
+                  }
+                  @if (p.regalo) {
+                    <span class="tag-regalo">
+                      <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                      </svg>
+                      Regalo
+                    </span>
+                  }
+                </div>
               </div>
               <span class="precio-valor" [class.accent]="i === 0">{{ formatPrecio(p.precio) }}</span>
             </div>
+
+            <!-- Expansión combinada: cupón + regalo en un solo bloque -->
+            @if (p.cupon || p.regalo) {
+              <div class="precio-extra extras-combinados">
+                @if (p.cupon) {
+                  <div class="cupon-extra">
+                    <div class="extra-left">
+                      <span class="extra-label">Código descuento</span>
+                      <code class="cupon-codigo">{{ p.cupon.codigo }}</code>
+                      @if (p.cupon.tipo === 'porcentaje') {
+                        <span class="cupon-desc">−{{ p.cupon.descuento }}%</span>
+                      } @else {
+                        <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
+                      }
+                    </div>
+                    <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo)" [class.copiado]="copiado() === p.cupon.codigo">
+                      @if (copiado() === p.cupon.codigo) {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      } @else {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                      }
+                      {{ copiado() === p.cupon.codigo ? 'Copiado' : 'Copiar' }}
+                    </button>
+                  </div>
+                }
+                @if (p.cupon && p.regalo) {
+                  <div class="extras-divider"></div>
+                }
+                @if (p.regalo) {
+                  <div class="regalo-extra">
+                    <div class="regalo-img-wrap">
+                      @if (p.regalo.imagen_url) {
+                        <img [src]="p.regalo.imagen_url" [alt]="p.regalo.nombre" class="regalo-img" />
+                      } @else {
+                        <div class="regalo-img-placeholder">🎁</div>
+                      }
+                    </div>
+                    <div class="regalo-info">
+                      <span class="extra-label">Regalo incluido</span>
+                      <span class="regalo-nombre">{{ p.regalo.nombre }}</span>
+                      @if (p.regalo.valor_estimado) {
+                        <span class="regalo-valor">Valor estimado: {{ formatPrecio(p.regalo.valor_estimado) }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
           }
         }
       </div>
+
+      <app-price-history
+        [componenteUuid]="componenteDetalle()!.uuid"
+        [componenteNombre]="componenteDetalle()!.nombre">
+      </app-price-history>
     </aside>
   }
+
+  <!-- ══════════════════ MODAL GUARDAR CONFIGURACIÓN ══════════════════ -->
+  @if (modalGuardarAbierto()) {
+    <div class="cfg-modal-backdrop" (click)="cerrarModalGuardar()">
+      <div class="cfg-modal" (click)="$event.stopPropagation()">
+        <div class="cfg-modal-head">
+          <span>Guardar configuración</span>
+          <button class="cfg-modal-close" (click)="cerrarModalGuardar()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="cfg-modal-body">
+          <label class="cfg-modal-label">Nombre</label>
+          <input class="cfg-modal-input"
+            [value]="nombreConfig()"
+            (input)="nombreConfig.set($any($event.target).value)"
+            placeholder="Ej: PC Gaming 2025"
+            maxlength="80" />
+          <label class="cfg-modal-label" style="margin-top:0.6rem">Notas (opcional)</label>
+          <textarea class="cfg-modal-textarea"
+            [value]="notasConfig()"
+            (input)="notasConfig.set($any($event.target).value)"
+            placeholder="Añade notas o comentarios..."
+            rows="3"
+            maxlength="500"></textarea>
+        </div>
+        <div class="cfg-modal-footer">
+          <button class="cfg-modal-cancel" (click)="cerrarModalGuardar()">Cancelar</button>
+          <button class="cfg-modal-save"
+            [disabled]="!nombreConfig().trim() || guardandoConfig()"
+            (click)="confirmarGuardarConfig()">
+            @if (guardandoConfig()) { <span class="mini-spinner-sm"></span> }
+            @else { Guardar }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

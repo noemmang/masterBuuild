@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, forkJoin, of, take } from 'rxjs';
+import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
 import { catchError } from 'rxjs/operators';
 import {
   ComponenteService,
@@ -255,7 +256,7 @@ export interface ComponenteEnComparacion {
 @Component({
   selector: 'app-spec-compare',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PriceHistoryComponent],
   templateUrl: './spec-compare.component.html',
   styleUrl: './spec-compare.component.scss',
 })

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -6,37 +6,45 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { GuardadoService } from '../../core/services/guardado.service';
 
-type Seccion = 'cuenta' | 'apariencia' | 'notificaciones' | 'privacidad';
+type Seccion = 'perfil' | 'seguridad' | 'apariencia' | 'notificaciones' | 'privacidad' | 'eliminar';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss'
+  templateUrl: './Profile.component.html',
+  styleUrl: './Profile.component.scss'
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, AfterViewInit {
 
-  private auth           = inject(AuthService);
+  @ViewChild('mainScroll') mainScrollRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('avatarInput') avatarInputRef!: ElementRef<HTMLInputElement>;
+
+  private auth            = inject(AuthService);
   private guardadoService = inject(GuardadoService);
-  private http           = inject(HttpClient);
-  private router         = inject(Router);
+  private http            = inject(HttpClient);
+  private router          = inject(Router);
 
-  seccionActiva = signal<Seccion>('cuenta');
+  // Sección visible en el scroll-spy
+  seccionVisible = signal<Seccion>('perfil');
 
   usuario = this.auth.usuario;
 
   // Stats
-  numGuardados      = signal(0);
-  numAlertas        = signal(0);
+  numGuardados       = signal(0);
+  numAlertas         = signal(0);
   numConfiguraciones = signal(0);
-  miembroDesde      = signal('');
+  miembroDesde       = signal('');
+
+  // Avatar
+  avatarUrl   = signal<string>(this.auth.usuario()?.avatar ?? '');
+  avatarError = signal('');
 
   // Cuenta - cambiar nombre
-  nuevoNombre   = '';
+  nuevoNombre     = '';
   guardandoNombre = signal(false);
-  nombreOk      = signal(false);
-  errorNombre   = signal('');
+  nombreOk        = signal(false);
+  errorNombre     = signal('');
 
   // Cuenta - cambiar contraseña
   passActual    = '';
@@ -58,17 +66,111 @@ export class ProfileComponent implements OnInit {
   confirmarEliminar = false;
   eliminando        = signal(false);
 
+  private secciones: Seccion[] = ['perfil', 'seguridad', 'apariencia', 'notificaciones', 'privacidad', 'eliminar'];
+
   ngOnInit(): void {
     this.modoOscuro.set(localStorage.getItem('tema') === 'dark');
+    this.avatarUrl.set(this.auth.usuario()?.avatar ?? '');
     this.cargarStats();
   }
+
+  ngAfterViewInit(): void {
+    // El scroll-spy se activa con el evento (scroll) en el template
+  }
+
+  // ── Scroll-spy ────────────────────────────────────────────────
+
+  onScroll(): void {
+    const container = this.mainScrollRef.nativeElement;
+    const scrollTop = container.scrollTop;
+
+    for (const id of [...this.secciones].reverse()) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop - 80 <= scrollTop) {
+        this.seccionVisible.set(id);
+        return;
+      }
+    }
+    this.seccionVisible.set('perfil');
+  }
+
+  scrollTo(id: Seccion): void {
+    const container = this.mainScrollRef.nativeElement;
+    const el = document.getElementById(id);
+    if (el) {
+      container.scrollTo({ top: el.offsetTop - 16, behavior: 'smooth' });
+    }
+  }
+
+  // ── Avatar ────────────────────────────────────────────────────
+
+  triggerAvatarInput(): void {
+    this.avatarInputRef.nativeElement.click();
+  }
+
+  onAvatarChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.avatarError.set('');
+
+    if (file.size > 2 * 1024 * 1024) {
+      this.avatarError.set('La imagen no puede superar 2 MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      this.avatarUrl.set(base64);
+      this.guardarAvatar(base64);
+    };
+    reader.readAsDataURL(file);
+
+    // Limpiar input para permitir resubir el mismo fichero
+    input.value = '';
+  }
+
+  private guardarAvatar(base64: string): void {
+    this.http.patch('/api/v1/auth/me', { avatar: base64 }).subscribe({
+      next: () => {
+        const u = this.usuario();
+        if (u) {
+          const actualizado = { ...u, avatar: base64 };
+          localStorage.setItem('usuario', JSON.stringify(actualizado));
+          this.auth.usuario.set(actualizado);
+        }
+      },
+      error: () => {
+        this.avatarError.set('No se pudo guardar la foto de perfil.');
+        this.avatarUrl.set(this.auth.usuario()?.avatar ?? '');
+      }
+    });
+  }
+
+  eliminarAvatar(): void {
+    this.http.patch('/api/v1/auth/me', { avatar: null }).subscribe({
+      next: () => {
+        this.avatarUrl.set('');
+        const u = this.usuario();
+        if (u) {
+          const actualizado = { ...u, avatar: '' };
+          localStorage.setItem('usuario', JSON.stringify(actualizado));
+          this.auth.usuario.set(actualizado);
+        }
+      },
+      error: () => this.avatarError.set('No se pudo eliminar la foto.')
+    });
+  }
+
+  // ── Stats ────────────────────────────────────────────────────
 
   private cargarStats(): void {
     this.guardadoService.listar().subscribe({
       next: (gs) => {
         this.numGuardados.set(gs.length);
         if (gs.length > 0) {
-          // Fecha más antigua = fecha de registro aproximada
           const fechas = gs.map(g => new Date(g.guardado_en).getTime());
           const primera = new Date(Math.min(...fechas));
           this.miembroDesde.set(primera.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }));
@@ -80,17 +182,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  setSeccion(s: Seccion): void {
-    this.seccionActiva.set(s);
-    // Resetear estados al cambiar de sección
-    this.nombreOk.set(false);
-    this.errorNombre.set('');
-    this.passOk.set(false);
-    this.errorPass.set('');
-    this.confirmarEliminar = false;
-  }
-
-  // ── Cambiar nombre ────────────────────────────────────────
+  // ── Cambiar nombre ────────────────────────────────────────────
 
   guardarNombre(): void {
     if (!this.nuevoNombre.trim()) return;
@@ -98,7 +190,6 @@ export class ProfileComponent implements OnInit {
     this.errorNombre.set('');
     this.http.patch('/api/v1/auth/me', { name: this.nuevoNombre }).subscribe({
       next: () => {
-        // Actualizar el signal del usuario localmente
         const u = this.usuario();
         if (u) {
           const actualizado = { ...u, nombre: this.nuevoNombre };
@@ -117,7 +208,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // ── Cambiar contraseña ────────────────────────────────────
+  // ── Cambiar contraseña ────────────────────────────────────────
 
   guardarContrasena(): void {
     this.errorPass.set('');
@@ -140,23 +231,21 @@ export class ProfileComponent implements OnInit {
       password_confirmation: this.passConfirm,
     }).subscribe({
       next: () => {
-        this.passActual = '';
-        this.passNueva  = '';
+        this.passActual  = '';
+        this.passNueva   = '';
         this.passConfirm = '';
         this.guardandoPass.set(false);
         this.passOk.set(true);
         setTimeout(() => this.passOk.set(false), 3000);
       },
       error: (err) => {
-        this.errorPass.set(
-          err.error?.message ?? 'No se pudo cambiar la contraseña.'
-        );
+        this.errorPass.set(err.error?.message ?? 'No se pudo cambiar la contraseña.');
         this.guardandoPass.set(false);
       }
     });
   }
 
-  // ── Apariencia ────────────────────────────────────────────
+  // ── Apariencia ────────────────────────────────────────────────
 
   toggleTema(): void {
     if (this.modoOscuro()) {
@@ -170,7 +259,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  // ── Eliminar cuenta ───────────────────────────────────────
+  // ── Eliminar cuenta ───────────────────────────────────────────
 
   eliminarCuenta(): void {
     if (!this.confirmarEliminar) { this.confirmarEliminar = true; return; }
@@ -186,7 +275,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // ── Logout ────────────────────────────────────────────────
+  // ── Logout ────────────────────────────────────────────────────
 
   logout(): void {
     this.auth.logout().subscribe({
@@ -195,7 +284,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // ── Helpers ───────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────
 
   inicialUsuario(): string {
     return this.usuario()?.nombre?.charAt(0).toUpperCase() ?? '?';

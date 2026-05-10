@@ -220,17 +220,37 @@ $panel-w:   300px;
   position: relative;
   color: var(--border);
 
-  img { max-height: 100%; max-width: 100%; object-fit: contain; padding: 0.75rem; }
+  img { height: 100%; width: 100%; object-fit: cover; }
 }
 
-.card-badges {
+// ── Iconos de estado en tarjeta ─────────────────────────────────────────────
+// Contenedor principal: ocupa todo el área de la imagen
+.card-estado-icons {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  inset: 6px;
   display: flex;
-  gap: 0.25rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
 }
 
+// Izquierda: bajada precio, guardado, alerta
+.card-icons-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+// Derecha: cupón, regalo
+.card-icons-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+// Badge base
 .badge {
   width: 22px;
   height: 22px;
@@ -240,8 +260,24 @@ $panel-w:   300px;
   display: flex;
   align-items: center;
   justify-content: center;
-  &.verde   { background: var(--success); color: #fff; }
-  &.naranja { background: var(--orange);  color: #fff; }
+  pointer-events: auto;
+
+  &.verde    { background: var(--success); color: #fff; }
+  &.naranja  { background: var(--orange);  color: #fff; }
+  &.regalo   { background: var(--success); color: #fff; svg { display: block; } }
+
+  // Nuevos: guardado y alerta con fondo, mismo tamaño que cupón/regalo
+  &.badge-guardado {
+    background: var(--accent);
+    color: #fff;
+    svg { display: block; }
+  }
+
+  &.badge-alerta {
+    background: var(--orange);
+    color: #fff;
+    svg { display: block; }
+  }
 }
 
 .card-body {
@@ -335,9 +371,10 @@ $panel-w:   300px;
 // PANEL PRECIOS
 .panel-precios {
   position: sticky;
+  z-index: 1000;
   top: 56px;
   height: calc(100vh - 56px);
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex;
@@ -398,6 +435,8 @@ $panel-w:   300px;
 
 .panel-body {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -416,6 +455,11 @@ $panel-w:   300px;
   background: var(--bg);
   gap: 0.5rem;
   &.mejor { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  &.tiene-extras {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: 1px solid var(--border);
+  }
 }
 
 .precio-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
@@ -448,8 +492,218 @@ $panel-w:   300px;
   &.accent { color: var(--accent); }
 }
 
-// ── Añadir al final de search.component.scss ─────────────────
+// ── Tags en precio-row (cupón / regalo inline) ──────────────────────────────
+.precio-row-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.1rem;
+  flex-wrap: wrap;
+}
 
+.tag-cupon,
+.tag-regalo {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tag-cupon {
+  background: color-mix(in srgb, var(--orange) 15%, transparent);
+  color: var(--orange);
+}
+
+.tag-regalo {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+// ── Bloque expansión combinado (cupón + regalo en un solo contenedor) ────────
+.precio-extra {
+  background: var(--bg);
+  border-radius: 0 0 10px 10px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.15rem;
+  animation: fadeInDown 0.15s ease;
+}
+
+.extras-combinados {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// Separador entre cupón y regalo cuando ambos existen
+.extras-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 0;
+}
+
+// Cupón dentro del bloque combinado
+.cupon-extra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.extra-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.extra-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.cupon-codigo {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--orange);
+  background: color-mix(in srgb, var(--orange) 12%, transparent);
+  padding: 2px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.cupon-desc {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.btn-copiar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover { border-color: var(--orange); color: var(--orange); }
+
+  &.copiado {
+    border-color: var(--success);
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 8%, transparent);
+  }
+}
+
+// Regalo dentro del bloque combinado
+.regalo-extra {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.regalo-img-wrap {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.regalo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.regalo-img-placeholder {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.regalo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.regalo-nombre {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.regalo-valor {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+// ── Tooltip descripción sobre tarjeta ───────────────────────────────────────
+.card-tooltip-wrap {
+  position: relative;
+
+  &[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    white-space: normal;
+    width: 220px;
+    text-align: left;
+    pointer-events: none;
+    animation: fadeIn 0.12s ease;
+  }
+
+  &[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 101;
+    border: 6px solid transparent;
+    border-top-color: var(--border);
+    pointer-events: none;
+  }
+}
+
+// ── Panel acciones ───────────────────────────────────────────────────────────
 .panel-acciones {
   display: flex;
   gap: 6px;
@@ -472,23 +726,29 @@ $panel-w:   300px;
   cursor: pointer;
   transition: all 0.15s;
 
-  &:hover:not(:disabled) {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
+  &:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
   &:disabled { opacity: 0.6; cursor: default; }
 
   &.guardado {
     border-color: var(--success);
     color: var(--success);
     background: color-mix(in srgb, var(--success) 8%, transparent);
+    &:hover:not(:disabled) {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 8%, transparent);
+    }
   }
 
   &.alerta-activa {
     border-color: var(--orange);
     color: var(--orange);
     background: color-mix(in srgb, var(--orange) 8%, transparent);
+    &:hover:not(:disabled) {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 8%, transparent);
+    }
   }
 }
 
@@ -498,11 +758,12 @@ $panel-w:   300px;
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: spin-sm 0.7s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin-sm { to { transform: rotate(360deg); } }
 
+// ── Formulario alerta inline ─────────────────────────────────────────────────
 .alerta-form {
   margin: 8px 14px 0;
   background: var(--surface2);
@@ -511,26 +772,21 @@ $panel-w:   300px;
   display: flex;
   flex-direction: column;
   gap: 7px;
-  animation: fadeIn 0.15s ease;
+  animation: fadeInDown 0.15s ease;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn     { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-.alerta-form-label {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin: 0;
-}
+.alerta-form-label { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
 
 .alerta-input-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 0 10px;
-
   &:focus-within { border-color: var(--accent); }
 }
 
@@ -543,14 +799,9 @@ $panel-w:   300px;
   font-weight: 600;
   color: var(--text);
   padding: 7px 0;
-  width: 100%;
 }
 
-.alerta-euro {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
+.alerta-euro { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
 .btn-alerta-guardar {
   width: 100%;
@@ -563,109 +814,19 @@ $panel-w:   300px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
-
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.4; cursor: default; }
-}
-
-.badge-guardado {
-  background: var(--accent);
-  color: #fff;
-  border-radius: 4px;
-  padding: 2px 4px;
-  display: flex;
-  align-items: center;
-}
- 
-.panel-acciones {
-  display: flex;
-  gap: 6px;
-  padding: 10px 14px 0;
-}
- 
-.btn-accion {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 7px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
- 
-  &:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  &:disabled { opacity: 0.6; cursor: default; }
- 
-  &.guardado {
-    border-color: var(--success);
-    color: var(--success);
-    background: color-mix(in srgb, var(--success) 8%, transparent);
-    &:hover:not(:disabled) { border-color: var(--error); color: var(--error); background: color-mix(in srgb, var(--error) 8%, transparent); }
-  }
- 
-  &.alerta-activa {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: color-mix(in srgb, var(--orange) 8%, transparent);
-    &:hover:not(:disabled) { border-color: var(--error); color: var(--error); background: color-mix(in srgb, var(--error) 8%, transparent); }
-  }
-}
- 
-.mini-spinner-sm {
-  width: 12px; height: 12px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
- 
-@keyframes spin { to { transform: rotate(360deg); } }
- 
-.alerta-form {
-  margin: 8px 14px 0;
-  background: var(--surface2);
-  border-radius: 8px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  animation: fadeIn 0.15s ease;
-}
- 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
- 
-.alerta-form-label { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
- 
-.alerta-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 0 10px;
-  &:focus-within { border-color: var(--accent); }
-}
- 
-.alerta-input {
-  flex: 1; border: none; background: transparent; outline: none;
-  font-size: 0.9rem; font-weight: 600; color: var(--text); padding: 7px 0; width: 100%;
-}
- 
-.alerta-euro { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
- 
-.btn-alerta-guardar {
-  width: 100%; padding: 7px; border-radius: 7px; border: none;
-  background: var(--accent); color: #fff; font-size: 0.78rem; font-weight: 600;
-  cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center;
   &:hover:not(:disabled) { opacity: 0.85; }
   &:disabled { opacity: 0.4; cursor: default; }
+}
+
+// ── Misc heredados ───────────────────────────────────────────────────────────
+.slot-estado-icons {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
 }
 
 .alerta-footer-actions {
@@ -673,143 +834,17 @@ $panel-w:   300px;
   align-items: center;
   gap: 8px;
 }
- 
+
 .btn-eliminar-alerta {
-  background: none; border: none; cursor: pointer;
-  color: var(--text-muted); display: flex; align-items: center;
-  padding: 4px; border-radius: 5px; transition: color 0.12s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 5px;
+  transition: color 0.12s;
   &:hover { color: var(--error); }
   &:disabled { opacity: 0.4; cursor: default; }
 }
- 
-.card-estado-icons,
-.cfg-card-estado {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
-}
- 
-.estado-icon {
-  display: block;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-}
- 
-.guardado-icon { color: var(--accent); }
-.alerta-icon   { color: var(--orange); }
- 
-// Iconos en sidebar del configurador
-.slot-estado-icons {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  flex-shrink: 0;
-}
- 
-// Panel acciones (guardar / alerta)
-.panel-acciones {
-  display: flex;
-  gap: 6px;
-  padding: 10px 14px 0;
-}
- 
-.btn-accion {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 7px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
- 
-  &:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  &:disabled { opacity: 0.6; cursor: default; }
- 
-  &.guardado {
-    border-color: var(--success);
-    color: var(--success);
-    background: color-mix(in srgb, var(--success) 8%, transparent);
-    &:hover:not(:disabled) {
-      border-color: var(--error);
-      color: var(--error);
-      background: color-mix(in srgb, var(--error) 8%, transparent);
-    }
-  }
- 
-  &.alerta-activa {
-    border-color: var(--orange);
-    color: var(--orange);
-    background: color-mix(in srgb, var(--orange) 8%, transparent);
-    &:hover:not(:disabled) {
-      border-color: var(--error);
-      color: var(--error);
-      background: color-mix(in srgb, var(--error) 8%, transparent);
-    }
-  }
-}
- 
-.mini-spinner-sm {
-  width: 12px; height: 12px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin-sm 0.7s linear infinite;
-}
- 
-@keyframes spin-sm { to { transform: rotate(360deg); } }
- 
-// Formulario alerta inline
-.alerta-form {
-  margin: 8px 14px 0;
-  background: var(--surface2);
-  border-radius: 8px;
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  animation: fadeInDown 0.15s ease;
-}
- 
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: none; }
-}
- 
-.alerta-form-label { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
- 
-.alerta-input-wrap {
-  display: flex;
-  align-items: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 0 10px;
-  &:focus-within { border-color: var(--accent); }
-}
- 
-.alerta-input {
-  flex: 1; border: none; background: transparent; outline: none;
-  font-size: 0.9rem; font-weight: 600; color: var(--text); padding: 7px 0;
-}
- 
-.alerta-euro { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
- 
-.btn-alerta-guardar {
-  width: 100%; padding: 7px; border-radius: 7px; border: none;
-  background: var(--accent); color: #fff; font-size: 0.78rem; font-weight: 600;
-  cursor: pointer; transition: opacity 0.15s;
-  display: flex; align-items: center; justify-content: center;
-  &:hover:not(:disabled) { opacity: 0.85; }
-  &:disabled { opacity: 0.4; cursor: default; }
-}
- 

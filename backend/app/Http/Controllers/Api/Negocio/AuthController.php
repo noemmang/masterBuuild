@@ -30,9 +30,10 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user'  => [
-                'uuid'  => $user->uuid,
-                'name'  => $user->name,
-                'email' => $user->email,
+                'uuid'   => $user->uuid,
+                'name'   => $user->name,
+                'email'  => $user->email,
+                'avatar' => $user->avatar,
             ],
         ], 201);
     }
@@ -56,9 +57,10 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'user'  => [
-                'uuid'  => $user->uuid,
-                'name'  => $user->name,
-                'email' => $user->email,
+                'uuid'   => $user->uuid,
+                'name'   => $user->name,
+                'email'  => $user->email,
+                'avatar' => $user->avatar,
             ],
         ]);
     }
@@ -75,20 +77,38 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'uuid'  => $request->user()->uuid,
-            'name'  => $request->user()->name,
-            'email' => $request->user()->email,
+            'uuid'   => $request->user()->uuid,
+            'name'   => $request->user()->name,
+            'email'  => $request->user()->email,
+            'avatar' => $request->user()->avatar,
         ]);
     }
 
-    // Actualizar nombre (y opcionalmente email)
+    // Actualizar nombre, email y/o avatar
     public function updateMe(Request $request)
     {
         $user = $request->user();
 
         $data = $request->validate([
-            'name'  => 'sometimes|required|string|max:100',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'name'   => 'sometimes|required|string|max:100',
+            'email'  => 'sometimes|required|email|unique:users,email,' . $user->id,
+            // Avatar como data URI base64 (ej: "data:image/jpeg;base64,...")
+            // nullable permite enviarlo como null para eliminarlo
+            'avatar' => [
+                'sometimes',
+                'nullable',
+                'string',
+                // Validar que sea una data URI de imagen o null
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && !preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/', $value)) {
+                        $fail('El avatar debe ser una imagen en formato base64 (JPEG, PNG, GIF o WEBP).');
+                    }
+                    // Comprobar tamaño aproximado: base64 infla ~33%, límite ~2 MB → ~2.7 MB en base64
+                    if ($value !== null && strlen($value) > 2_800_000) {
+                        $fail('La imagen no puede superar 2 MB.');
+                    }
+                },
+            ],
         ]);
 
         $user->update($data);
@@ -96,9 +116,10 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Perfil actualizado correctamente',
             'user'    => [
-                'uuid'  => $user->uuid,
-                'name'  => $user->name,
-                'email' => $user->email,
+                'uuid'   => $user->uuid,
+                'name'   => $user->name,
+                'email'  => $user->email,
+                'avatar' => $user->avatar,
             ],
         ]);
     }
@@ -109,11 +130,10 @@ class AuthController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
-            'current_password'      => 'required|string',
-            'password'              => 'required|string|min:8|confirmed',
+            'current_password' => 'required|string',
+            'password'         => 'required|string|min:8|confirmed',
         ]);
 
-        // Verificar contraseña actual
         if (!Hash::check($data['current_password'], $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['La contraseña actual no es correcta.'],
@@ -137,10 +157,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
-        // Revocar todos los tokens
         $user->tokens()->delete();
-
-        // Eliminar datos relacionados (soft delete en cascada)
         $user->delete();
 
         return response()->json([

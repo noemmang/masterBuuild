@@ -266,12 +266,12 @@ class ConfiguradorController extends Controller
             ->with($relacion)
             ->first();
 
-        if (!$componente) return null;
+        if (!$componente || !$componente->$relacion) return null; // ← esta línea
 
         return (object)[
-            'uuid'  => $componente->uuid,
-            'nombre'=> $componente->nombre,
-            'specs' => $componente->$relacion,
+            'uuid'   => $componente->uuid,
+            'nombre' => $componente->nombre,
+            'specs'  => $componente->$relacion,
         ];
     }
 }

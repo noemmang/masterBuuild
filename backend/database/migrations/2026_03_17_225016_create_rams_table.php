@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('modulos');
             $table->integer('capacidad_total_gb');
             $table->integer('velocidad_mhz');
-            $table->integer('latencia_cas');
+            $table->string('latencia_cas');
             $table->decimal('voltaje', 4, 2);
             $table->string('factor_forma');
             $table->integer('altura_mm')->nullable();

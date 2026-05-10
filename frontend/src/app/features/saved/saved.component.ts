@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { GuardadoService, ComponenteGuardado, AlertaPrecio } from '../../core/services/guardado.service';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { GuardadoService, ComponenteGuardado, AlertaPrecio, ConfiguracionGuardada } from '../../core/services/guardado.service';
 
 type Pestana = 'componentes' | 'configuraciones' | 'alertas';
 
@@ -18,6 +18,7 @@ export class SavedComponent implements OnInit {
   pestanaActiva = signal<Pestana>('componentes');
   cargando      = signal(true);
   cargandoAlertas = signal(false);
+  cargandoConfigs = signal(false);
   error         = signal('');
 
   // ── Componentes guardados ──────────────────────────────────
@@ -26,36 +27,34 @@ export class SavedComponent implements OnInit {
   notasTmp      = '';
   eliminando    = signal<string | null>(null);
 
-  // ── Configuraciones (mock) ─────────────────────────────────
-  configuraciones = signal<any[]>([
-    {
-      uuid: 'cfg-1', nombre: 'PC Gaming 2025', compatible: true, total: 1842,
-      slots: [
-        { categoria: 'CPU',            nombre: 'AMD Ryzen 7 9800X3D',      ok: true },
-        { categoria: 'GPU',            nombre: 'RTX 5080',                  ok: true },
-        { categoria: 'RAM',            nombre: 'Kingston Fury 32GB DDR5',   ok: true },
-        { categoria: 'Placa Base',     nombre: 'ASUS ROG Strix X870-E',     ok: true },
-        { categoria: 'Almacenamiento', nombre: 'Samsung 990 Pro 2TB',       ok: true },
-        { categoria: 'PSU',            nombre: 'Corsair RM1000x',           ok: true },
-        { categoria: 'Gabinete',       nombre: 'Fractal Define 7',          ok: true },
-        { categoria: 'Refrigeración',  nombre: 'Arctic Liquid Freezer III', ok: true },
-      ],
-    },
-  ]);
+  // ── Configuraciones (backend real) ─────────────────────────
+  configuraciones    = signal<ConfiguracionGuardada[]>([]);
+  editandoNotasCfg   = signal<string | null>(null);
+  notasTmpCfg        = '';
+  eliminandoCfg      = signal<string | null>(null);
 
   // ── Alertas (backend real) ─────────────────────────────────
-  alertas       = signal<AlertaPrecio[]>([]);
-  eliminandoAlerta = signal<string | null>(null);
+  alertas           = signal<AlertaPrecio[]>([]);
+  eliminandoAlerta  = signal<string | null>(null);
 
   numGuardados       = computed(() => this.guardados().length);
   numConfiguraciones = computed(() => this.configuraciones().length);
   numAlertas         = computed(() => this.alertas().filter(a => a.activa).length);
 
-  constructor(private guardadoService: GuardadoService, private router: Router) {}
+  constructor(
+    private guardadoService: GuardadoService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    // Leer queryParam ?tab= para abrir pestaña correcta al volver del configurador
+    this.route.queryParams.subscribe(params => {
+      if (params['tab']) this.pestanaActiva.set(params['tab'] as Pestana);
+    });
     this.cargarGuardados();
     this.cargarAlertas();
+    this.cargarConfiguraciones();
   }
 
   // ── Carga ──────────────────────────────────────────────────
@@ -76,6 +75,14 @@ export class SavedComponent implements OnInit {
     });
   }
 
+  cargarConfiguraciones(): void {
+    this.cargandoConfigs.set(true);
+    this.guardadoService.listarConfiguraciones().subscribe({
+      next: (data) => { this.configuraciones.set(data); this.cargandoConfigs.set(false); },
+      error: () => this.cargandoConfigs.set(false)
+    });
+  }
+
   // ── Eliminar guardado ──────────────────────────────────────
 
   eliminar(uuid: string): void {
@@ -86,7 +93,7 @@ export class SavedComponent implements OnInit {
     });
   }
 
-  // ── Notas ──────────────────────────────────────────────────
+  // ── Notas componentes ──────────────────────────────────────
 
   empezarEditarNotas(g: ComponenteGuardado): void {
     this.editandoNotas.set(g.uuid);
@@ -103,6 +110,36 @@ export class SavedComponent implements OnInit {
   }
 
   cancelarNotas(): void { this.editandoNotas.set(null); }
+
+  // ── Configuraciones ────────────────────────────────────────
+
+  eliminarConfiguracion(uuid: string): void {
+    this.eliminandoCfg.set(uuid);
+    this.guardadoService.eliminarConfiguracion(uuid).subscribe({
+      next: () => { this.configuraciones.update(cs => cs.filter(c => c.uuid !== uuid)); this.eliminandoCfg.set(null); },
+      error: () => this.eliminandoCfg.set(null)
+    });
+  }
+
+  empezarEditarNotasCfg(cfg: ConfiguracionGuardada): void {
+    this.editandoNotasCfg.set(cfg.uuid);
+    this.notasTmpCfg = cfg.notas ?? '';
+  }
+
+  guardarNotasCfg(uuid: string): void {
+    this.guardadoService.actualizarNotasConfiguracion(uuid, this.notasTmpCfg || null).subscribe({
+      next: () => {
+        this.configuraciones.update(cs => cs.map(c => c.uuid === uuid ? { ...c, notas: this.notasTmpCfg || null } : c));
+        this.editandoNotasCfg.set(null);
+      }
+    });
+  }
+
+  cancelarNotasCfg(): void { this.editandoNotasCfg.set(null); }
+
+  abrirEnConfigurador(cfg: ConfiguracionGuardada): void {
+    this.router.navigate(['/configurador'], { queryParams: { cfg: cfg.uuid } });
+  }
 
   // ── Alertas ────────────────────────────────────────────────
 
@@ -122,10 +159,12 @@ export class SavedComponent implements OnInit {
     });
   }
 
-  // ── Navegación desde cards ─────────────────────────────────
+  // ── Navegación ─────────────────────────────────────────────
 
-  abrirEnBuscador(componenteUuid: string): void {
-    this.router.navigate(['/buscar'], { queryParams: { uuid: componenteUuid } });
+  abrirEnBuscador(componenteUuid: string, categoria?: string): void {
+    const queryParams: Record<string, string> = { uuid: componenteUuid };
+    if (categoria) queryParams['categoria'] = categoria;
+    this.router.navigate(['/buscar'], { queryParams });
   }
 
   // ── Helpers ────────────────────────────────────────────────

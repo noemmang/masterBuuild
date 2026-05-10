@@ -1,10 +1,14 @@
 import {
-  Component, OnDestroy, ElementRef, ViewChild,
+  Component, OnInit, OnDestroy, ElementRef, ViewChild,
   AfterViewInit, signal, computed, ChangeDetectionStrategy, NgZone
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as THREE from 'three';
+import { ComponenteService, Componente, ComponenteDetalle } from '../../core/services/componente.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
+import { of, forkJoin } from 'rxjs';
 
 interface Gabinete {
   uuid: string;
@@ -16,41 +20,13 @@ interface Gabinete {
   profundidad_mm: number;
   longitud_gpu_max_mm: number;
   altura_cooler_max_mm: number;
-  soporte_radiadores: number[]; // ej: [240, 280, 360]
+  soporte_radiadores: number[];
   color: string;
-  seleccionado: boolean;
 }
 
-type Vista = 'frente' | 'lateral' | 'superior' | '3d';
+type Vista = 'frente' | 'lateral' | 'superior' | '3d' | '3d-esquina';
 
 const COLORES = ['#4A90D9', '#E8A84C', '#6DBF8A', '#D96A6A'];
-
-const GABINETES_MOCK: Omit<Gabinete, 'color' | 'seleccionado'>[] = [
-  {
-    uuid: '1', nombre: 'Fractal Define 7 XL', tipo: 'Full Tower', estructura: 'ATX/E-ATX',
-    ancho_mm: 232, alto_mm: 568, profundidad_mm: 583,
-    longitud_gpu_max_mm: 491, altura_cooler_max_mm: 185,
-    soporte_radiadores: [120, 140, 240, 280, 360, 420],
-  },
-  {
-    uuid: '2', nombre: 'Lian Li O11 Dynamic EVO', tipo: 'Mid Tower', estructura: 'ATX · Sandwich',
-    ancho_mm: 285, alto_mm: 459, profundidad_mm: 459,
-    longitud_gpu_max_mm: 420, altura_cooler_max_mm: 165,
-    soporte_radiadores: [120, 240, 360],
-  },
-  {
-    uuid: '3', nombre: 'Lian Li Terra', tipo: 'ITX', estructura: 'ITX · Sandwich',
-    ancho_mm: 195, alto_mm: 340, profundidad_mm: 290,
-    longitud_gpu_max_mm: 322, altura_cooler_max_mm: 130,
-    soporte_radiadores: [120, 240],
-  },
-  {
-    uuid: '4', nombre: 'be quiet! Silent Base 802', tipo: 'Mid Tower', estructura: 'ATX',
-    ancho_mm: 243, alto_mm: 513, profundidad_mm: 553,
-    longitud_gpu_max_mm: 369, altura_cooler_max_mm: 185,
-    soporte_radiadores: [120, 140, 240, 280, 360],
-  },
-];
 
 @Component({
   selector: 'app-case-viewer',
@@ -60,14 +36,18 @@ const GABINETES_MOCK: Omit<Gabinete, 'color' | 'seleccionado'>[] = [
   styleUrl: './case-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CaseViewerComponent implements AfterViewInit, OnDestroy {
+export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  gabinetes = signal<Gabinete[]>(
-    GABINETES_MOCK.map((g, i) => ({ ...g, color: COLORES[i], seleccionado: i < 2 }))
-  );
+  // ── Búsqueda ──────────────────────────────────────────────────
+  busqueda      = '';
+  resultados    = signal<Componente[]>([]);
+  cargandoBusq  = signal(false);
+  private busq$ = new Subject<string>();
 
-  busqueda           = signal('');
+  // ── Gabinetes en comparación ──────────────────────────────────
+  comparando    = signal<Gabinete[]>([]);
+
   vistaActual        = signal<Vista>('3d');
   mostrarDiferencias = signal(false);
   readonly escala    = 10;
@@ -78,31 +58,30 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
   private meshes: Map<string, THREE.Group> = new Map();
   private animFrame!: number;
   private resizeObs!: ResizeObserver;
+  private sceneReady = false;
 
   private isDragging = false;
   private prevMouse  = { x: 0, y: 0 };
-  private spherical  = { theta: Math.PI / 4, phi: Math.PI / 3 };
+  private spherical      = { theta: Math.PI / 4, phi: Math.PI / 3 };
+  private orbitalTarget  = new THREE.Vector3(0, 30, 0);
   private readonly ORBIT_RADIUS = 180;
 
   readonly vistas: { key: Vista; label: string }[] = [
     { key: 'frente',   label: 'Frente'   },
     { key: 'lateral',  label: 'Lateral'  },
     { key: 'superior', label: 'Superior' },
-    { key: '3d',       label: '3D'       },
+    { key: '3d',         label: '3D'         },
+    { key: '3d-esquina', label: '3D esquina' },
   ];
 
-  gabinetesFiltrados = computed(() =>
-    this.gabinetes().filter(g =>
-      g.nombre.toLowerCase().includes(this.busqueda().toLowerCase())
-    )
+  // Ordenados por profundidad descendente: en la vista lateral (cámara en X)
+  // el ancho visual de cada gabinete es su profundidad_mm, así el más largo
+  // queda siempre delante y no queda tapado por uno más corto pero más alto.
+  gabinetesMostrados = computed(() =>
+    [...this.comparando()].sort((a, b) => b.profundidad_mm - a.profundidad_mm)
   );
 
-  // Ordenados de mayor a menor alto_mm para que en lateral el más pequeño no quede tapado
-  gabinetesMostrados = computed(() =>
-    this.gabinetes()
-      .filter(g => g.seleccionado)
-      .sort((a, b) => b.alto_mm - a.alto_mm)
-  );
+  puedeAnadir = computed(() => this.comparando().length < 4);
 
   diferencias = computed(() => {
     const gs = this.gabinetesMostrados();
@@ -128,35 +107,18 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
     };
   });
 
-  // Formato legible de AIOs: [240, 280, 360] → "240 / 280 / 360mm"
-  getRadiadoresVisibles(radiadores: number[]): number[] {
-    if (!radiadores || radiadores.length === 0) return [];
-  
-    const rads = [...radiadores].sort((a, b) => a - b);
-  
-    const grupo120 = rads.filter(r => r % 120 === 0);
-    const grupo140 = rads.filter(r => r % 140 === 0);
-  
-    const max120 = grupo120.length ? Math.max(...grupo120) : null;
-    const max140 = grupo140.length ? Math.max(...grupo140) : null;
-  
-    if (max120 && max140) return [max120, max140];
-    if (max120) return [max120];
-  
-    return [];
-  }
+  constructor(private svc: ComponenteService, private ngZone: NgZone) {}
 
-  formatRadiadores(radiadores: number[]): string {
-    const visibles = this.getRadiadoresVisibles(radiadores);
-    if (!visibles.length) return 'Sin AIO';
-    return visibles.join(' / ') + 'mm';
+  ngOnInit(): void {
+    this.ejecutarBusqueda('');
+    this.busq$.pipe(debounceTime(350), distinctUntilChanged())
+      .subscribe(q => this.ejecutarBusqueda(q));
   }
-
-  constructor(private ngZone: NgZone) {}
 
   ngAfterViewInit(): void {
     this.initThree();
     this.construirEscena();
+    this.sceneReady = true;
     this.setVista('3d');
     this.ngZone.runOutsideAngular(() => this.animate());
     this.resizeObs = new ResizeObserver(() => this.onResize());
@@ -168,6 +130,132 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
     cancelAnimationFrame(this.animFrame);
     this.resizeObs?.disconnect();
     this.renderer?.dispose();
+  }
+
+  // ── Búsqueda ──────────────────────────────────────────────────
+
+  onBusqueda(): void {
+    this.busq$.next(this.busqueda);
+  }
+
+  private ejecutarBusqueda(q: string): void {
+    this.cargandoBusq.set(true);
+    this.svc.buscar({ categoria: 'gabinete', q, page: 1 })
+      .pipe(catchError(() => of({ data: [] as Componente[] })))
+      .subscribe(res => {
+        this.resultados.set(res.data);
+        this.cargandoBusq.set(false);
+      });
+  }
+
+  // ── Selección ─────────────────────────────────────────────────
+
+  estaEnComparacion(uuid: string): boolean {
+    return this.comparando().some(g => g.uuid === uuid);
+  }
+
+  colorDeComp(uuid: string): string {
+    const idx = this.comparando().findIndex(g => g.uuid === uuid);
+    return idx >= 0 ? COLORES[idx] : '';
+  }
+
+  toggleComponente(comp: Componente): void {
+    if (this.estaEnComparacion(comp.uuid)) {
+      this.quitarGabinete(comp.uuid);
+    } else if (this.puedeAnadir()) {
+      this.anadirGabinete(comp);
+    }
+  }
+
+  private anadirGabinete(comp: Componente): void {
+    const colorAsignado = COLORES[this.comparando().length] as string;
+
+    // Placeholder inmediato mientras llega el detalle
+    const placeholder: Gabinete = {
+      uuid: comp.uuid, nombre: comp.nombre,
+      tipo: '—', estructura: '—',
+      ancho_mm: 200, alto_mm: 400, profundidad_mm: 400,
+      longitud_gpu_max_mm: 0, altura_cooler_max_mm: 0,
+      soporte_radiadores: [], color: colorAsignado,
+    };
+    this.comparando.update(arr => [...arr, placeholder]);
+    if (this.sceneReady) this.construirEscena();
+
+    // Cargar detalle completo
+    this.svc.getDetalle(comp.uuid)
+      .pipe(catchError(() => of(null)))
+      .subscribe(detalle => {
+        if (!detalle) return;
+        const gab = this.mapDetalleToGabinete(detalle, colorAsignado);
+
+        // ── FIX: NgZone.run() garantiza que el signal se actualiza dentro de la
+        // zona de Angular, evitando la race condition con el loop de Three.js
+        // que corre fuera de zona (runOutsideAngular). Sin esto, construirEscena()
+        // puede ejecutarse antes de que el signal tenga los datos reales.
+        this.ngZone.run(() => {
+          this.comparando.update(arr =>
+            arr.map(g => g.uuid === comp.uuid ? gab : g)
+          );
+          if (this.sceneReady) this.construirEscena();
+        });
+      });
+  }
+
+  private mapDetalleToGabinete(d: ComponenteDetalle, color: string): Gabinete {
+    const g = (d as any).gabinete ?? {};
+
+    const toInt = (v: any, fallback: number): number =>
+      (v !== null && v !== undefined && !isNaN(Number(v))) ? Number(v) : fallback;
+
+    return {
+      uuid:                 d.uuid,
+      nombre:               d.nombre,
+      tipo:                 g.tipo_gabinete?.nombre ?? '—',
+      estructura:           g.estructura_gabinete?.nombre ?? '—',
+      ancho_mm:             toInt(g.ancho_mm,              200),
+      alto_mm:              toInt(g.alto_mm,               400),
+      profundidad_mm:       toInt(g.profundidad_mm,        400),
+      longitud_gpu_max_mm:  toInt(g.longitud_gpu_max_mm,     0),
+      altura_cooler_max_mm: toInt(g.altura_cooler_max_mm,    0),
+      soporte_radiadores:   Array.isArray(g.soporte_radiadores) ? g.soporte_radiadores : [],
+      color,
+    };
+  }
+
+  quitarGabinete(uuid: string): void {
+    this.comparando.update(arr =>
+      arr.filter(g => g.uuid !== uuid)
+         .map((g, i) => ({ ...g, color: COLORES[i] }))
+    );
+    if (this.sceneReady) this.construirEscena();
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+
+  numSeleccionados(): number { return this.comparando().length; }
+
+  toggleDiferencias(): void { this.mostrarDiferencias.update(v => !v); }
+
+  pct(valor: number, max: number): number {
+    return Math.round((valor / max) * 100);
+  }
+
+  getRadiadoresVisibles(radiadores: number[]): number[] {
+    if (!radiadores || radiadores.length === 0) return [];
+    const rads = [...radiadores].sort((a, b) => a - b);
+    const grupo120 = rads.filter(r => r % 120 === 0);
+    const grupo140 = rads.filter(r => r % 140 === 0);
+    const max120 = grupo120.length ? Math.max(...grupo120) : null;
+    const max140 = grupo140.length ? Math.max(...grupo140) : null;
+    if (max120 && max140) return [max120, max140];
+    if (max120) return [max120];
+    return [];
+  }
+
+  formatRadiadores(radiadores: number[]): string {
+    const visibles = this.getRadiadoresVisibles(radiadores);
+    if (!visibles.length) return 'Sin AIO';
+    return visibles.join(' / ') + 'mm';
   }
 
   // ── Three.js ──────────────────────────────────────────────────
@@ -203,17 +291,26 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
     this.meshes.forEach(g => this.scene.remove(g));
     this.meshes.clear();
 
-    // Ordenados de mayor a menor: el más grande va primero (izquierda/fondo)
-    const mostrados = [...this.gabinetes().filter(g => g.seleccionado)]
-      .sort((a, b) => b.alto_mm - a.alto_mm);
+    const esEsquina = this.vistaActual() === '3d-esquina';
+    const mostrados = [...this.comparando()].sort((a, b) => b.profundidad_mm - a.profundidad_mm);
 
-    const totalAncho = mostrados.reduce((s, g) => s + g.ancho_mm / this.escala, 0);
-    let offsetX = -totalAncho / 2;
+    // Modo normal: centrado en X=0. Modo esquina: todos arrancan desde X=0.
+    const totalAncho = mostrados.reduce((s, g) => s + (g.ancho_mm || 200) / this.escala, 0);
+    let offsetX = esEsquina ? 0 : -totalAncho / 2;
+
+    // Centro de giro: en esquina los cubos van de X=0 a X=totalAncho y de Z=0 a Z=maxProfundidad
+    if (esEsquina) {
+      const maxProf = Math.max(...mostrados.map(g => (g.profundidad_mm || 400))) / this.escala;
+      const midH    = Math.max(...mostrados.map(g => (g.alto_mm        || 400))) / this.escala / 2;
+      this.orbitalTarget.set(totalAncho / 2, midH, maxProf / 2);
+    } else {
+      this.orbitalTarget.set(0, 30, 0);
+    }
 
     mostrados.forEach(gab => {
-      const w = gab.ancho_mm       / this.escala;
-      const h = gab.alto_mm        / this.escala;
-      const d = gab.profundidad_mm / this.escala;
+      const w = (gab.ancho_mm       || 200) / this.escala;
+      const h = (gab.alto_mm        || 400) / this.escala;
+      const d = (gab.profundidad_mm || 400) / this.escala;
 
       const color = new THREE.Color(gab.color);
       const group = new THREE.Group();
@@ -227,7 +324,9 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
         new THREE.LineBasicMaterial({ color: edgeColor })
       ));
 
-      group.position.set(offsetX + w / 2, h / 2, 0);
+      // En modo esquina la cara trasera queda en Z=0 (misma "pared"); en normal el centro en Z=0.
+      const posZ = esEsquina ? d / 2 : 0;
+      group.position.set(offsetX + w / 2, h / 2, posZ);
       offsetX += w;
 
       this.scene.add(group);
@@ -239,15 +338,14 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
     this.vistaActual.set(vista);
     this.construirEscena();
 
-    const d      = this.ORBIT_RADIUS;
-    const target = new THREE.Vector3(0, 30, 0);
-
-    if (vista === '3d') {
+    if (vista === '3d' || vista === '3d-esquina') {
       this.updateOrbitalCamera();
       return;
     }
 
-    const configs: Record<Exclude<Vista, '3d'>, { pos: THREE.Vector3; up: THREE.Vector3 }> = {
+    const d      = this.ORBIT_RADIUS;
+    const target = new THREE.Vector3(0, 30, 0);
+    const configs: Record<Exclude<Vista, '3d' | '3d-esquina'>, { pos: THREE.Vector3; up: THREE.Vector3 }> = {
       frente:   { pos: new THREE.Vector3(0, 30, d),    up: new THREE.Vector3(0, 1, 0) },
       lateral:  { pos: new THREE.Vector3(d, 30, 0),    up: new THREE.Vector3(0, 1, 0) },
       superior: { pos: new THREE.Vector3(0, d, 0.01),  up: new THREE.Vector3(0, 0, -1) },
@@ -261,14 +359,15 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
 
   private updateOrbitalCamera(): void {
     const { theta, phi } = this.spherical;
-    const r = this.ORBIT_RADIUS;
+    const r  = this.ORBIT_RADIUS;
+    const t  = this.orbitalTarget;
     this.camera.position.set(
-      r * Math.sin(phi) * Math.sin(theta),
-      r * Math.cos(phi) + 30,
-      r * Math.sin(phi) * Math.cos(theta)
+      t.x + r * Math.sin(phi) * Math.sin(theta),
+      t.y + r * Math.cos(phi),
+      t.z + r * Math.sin(phi) * Math.cos(theta)
     );
     this.camera.up.set(0, 1, 0);
-    this.camera.lookAt(0, 30, 0);
+    this.camera.lookAt(t);
     this.camera.updateProjectionMatrix();
   }
 
@@ -291,13 +390,11 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
     this.renderer.setSize(w, h);
   }
 
-  // ── Orbital drag ──────────────────────────────────────────────
-
   private bindMouse(): void {
     const canvas = this.canvasRef.nativeElement;
 
     canvas.addEventListener('mousedown', (e) => {
-      if (this.vistaActual() !== '3d') return;
+      if (this.vistaActual() !== '3d' && this.vistaActual() !== '3d-esquina') return;
       this.isDragging = true;
       this.prevMouse = { x: e.clientX, y: e.clientY };
     });
@@ -307,15 +404,13 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
       const dy = e.clientY - this.prevMouse.y;
       this.prevMouse = { x: e.clientX, y: e.clientY };
       this.spherical.theta -= dx * 0.01;
-      this.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05,
-        this.spherical.phi - dy * 0.01
-      ));
+      this.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, this.spherical.phi - dy * 0.01));
       this.updateOrbitalCamera();
     });
     window.addEventListener('mouseup', () => { this.isDragging = false; });
 
     canvas.addEventListener('touchstart', (e) => {
-      if (this.vistaActual() !== '3d') return;
+      if (this.vistaActual() !== '3d' && this.vistaActual() !== '3d-esquina') return;
       this.isDragging = true;
       this.prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     });
@@ -325,42 +420,9 @@ export class CaseViewerComponent implements AfterViewInit, OnDestroy {
       const dy = e.touches[0].clientY - this.prevMouse.y;
       this.prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       this.spherical.theta -= dx * 0.01;
-      this.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05,
-        this.spherical.phi - dy * 0.01
-      ));
+      this.spherical.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, this.spherical.phi - dy * 0.01));
       this.updateOrbitalCamera();
     });
     window.addEventListener('touchend', () => { this.isDragging = false; });
-  }
-
-  // ── UI ────────────────────────────────────────────────────────
-
-  toggleGabinete(uuid: string): void {
-    const target = this.gabinetes().find(g => g.uuid === uuid)!;
-    if (!target.seleccionado && this.numSeleccionados() >= 4) return;
-    this.gabinetes.update(gs =>
-      gs.map(g => g.uuid === uuid ? { ...g, seleccionado: !g.seleccionado } : g)
-    );
-    this.construirEscena();
-  }
-
-  toggleDiferencias(): void {
-    this.mostrarDiferencias.update(v => !v);
-  }
-
-  anadirGabinete(): void {
-    console.log('Abrir selector de gabinetes');
-  }
-
-  setBusqueda(v: string): void {
-    this.busqueda.set(v);
-  }
-
-  numSeleccionados(): number {
-    return this.gabinetes().filter(g => g.seleccionado).length;
-  }
-
-  pct(valor: number, max: number): number {
-    return Math.round((valor / max) * 100);
   }
 }

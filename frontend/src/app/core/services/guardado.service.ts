@@ -2,17 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// ── Interfaces ────────────────────────────────────────────────────────────────
+
 export interface ComponenteGuardado {
   uuid: string;
   notas: string | null;
-  guardado_en: string;
+  guardado_en: string; 
   componente: {
     uuid: string;
     nombre: string;
     categoria: string;
+    marca: string | null;
     imagen_url: string | null;
-    marca: string;
     mejor_precio: number | null;
+    precio_actual: number | null;
     tienda: string | null;
     con_cupon: boolean;
     con_regalo: boolean;
@@ -21,58 +24,111 @@ export interface ComponenteGuardado {
 
 export interface AlertaPrecio {
   uuid: string;
-  activa: boolean;
   precio_objetivo: number;
+  activa: boolean;
   disparada: boolean;
-  disparada_en: string | null;
   componente: {
     uuid: string;
     nombre: string;
     categoria: string;
-    imagen_url: string | null;
     precio_actual: number | null;
-    tienda: string | null;
   };
 }
 
+export interface ComponenteSlotGuardado {
+  uuid: string;
+  nombre: string;
+  cantidad: number;
+  precio: number | null;
+}
+
+export interface SlotGuardado {
+  categoria: string;
+  label: string;
+  componentes: ComponenteSlotGuardado[];
+}
+
+export interface ConfiguracionGuardada {
+  uuid: string;
+  nombre: string;
+  notas: string | null;
+  total: number;
+  compatible: boolean;
+  creada_en: string;
+  slots: SlotGuardado[];
+}
+
+export interface GuardarConfiguracionPayload {
+  nombre: string;
+  notas: string | null;
+  total: number;
+  compatible: boolean;
+  slots: SlotGuardado[];
+}
+
+// ── Servicio ──────────────────────────────────────────────────────────────────
+
 @Injectable({ providedIn: 'root' })
 export class GuardadoService {
-  private readonly API       = '/api/v1/guardados';
-  private readonly API_ALERT = '/api/v1/alertas';
+
+  private readonly base = '/api/v1';
 
   constructor(private http: HttpClient) {}
 
-  // ── Guardados ──────────────────────────────────────────────
+  // ── Componentes guardados ─────────────────────────────────────
+
   listar(): Observable<ComponenteGuardado[]> {
-    return this.http.get<ComponenteGuardado[]>(this.API);
+    return this.http.get<ComponenteGuardado[]>(`${this.base}/guardados`);
   }
 
-  guardar(componente_uuid: string, notas?: string): Observable<{ message: string; uuid: string }> {
-    return this.http.post<{ message: string; uuid: string }>(this.API, { componente_uuid, notas });
+  guardar(componenteUuid: string): Observable<{ uuid: string }> {
+    return this.http.post<{ uuid: string }>(`${this.base}/guardados`, { componente_uuid: componenteUuid });
   }
 
-  actualizarNotas(uuid: string, notas: string | null): Observable<{ message: string }> {
-    return this.http.patch<{ message: string }>(`${this.API}/${uuid}`, { notas });
+  eliminar(uuid: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/guardados/${uuid}`);
   }
 
-  eliminar(uuid: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.API}/${uuid}`);
+  actualizarNotas(uuid: string, notas: string | null): Observable<void> {
+    return this.http.patch<void>(`${this.base}/guardados/${uuid}`, { notas });
   }
 
-  // ── Alertas ────────────────────────────────────────────────
+  // ── Alertas de precio ─────────────────────────────────────────
+
   listarAlertas(): Observable<AlertaPrecio[]> {
-    return this.http.get<AlertaPrecio[]>(this.API_ALERT);
+    return this.http.get<AlertaPrecio[]>(`${this.base}/alertas`);
   }
 
-  crearAlerta(componente_uuid: string, precio_objetivo: number): Observable<{ message: string; uuid: string }> {
-    return this.http.post<{ message: string; uuid: string }>(this.API_ALERT, { componente_uuid, precio_objetivo });
+  crearAlerta(componenteUuid: string, precioObjetivo: number): Observable<{ uuid: string }> {
+    return this.http.post<{ uuid: string }>(`${this.base}/alertas`, {
+      componente_uuid:  componenteUuid,
+      precio_objetivo:  precioObjetivo,
+    });
   }
 
-  toggleAlerta(uuid: string, activa: boolean): Observable<{ message: string }> {
-    return this.http.patch<{ message: string }>(`${this.API_ALERT}/${uuid}`, { activa });
+  eliminarAlerta(uuid: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/alertas/${uuid}`);
   }
 
-  eliminarAlerta(uuid: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.API_ALERT}/${uuid}`);
+  toggleAlerta(uuid: string, activa: boolean): Observable<void> {
+    return this.http.patch<void>(`${this.base}/alertas/${uuid}`, { activa });
+  }
+
+  // ── Configuraciones guardadas ─────────────────────────────────
+
+  listarConfiguraciones(): Observable<ConfiguracionGuardada[]> {
+    return this.http.get<ConfiguracionGuardada[]>(`${this.base}/configuraciones`);
+  }
+
+  guardarConfiguracion(payload: GuardarConfiguracionPayload): Observable<{ uuid: string }> {
+    return this.http.post<{ uuid: string }>(`${this.base}/configuraciones`, payload);
+  }
+
+  eliminarConfiguracion(uuid: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/configuraciones/${uuid}`);
+  }
+
+  actualizarNotasConfiguracion(uuid: string, notas: string | null): Observable<void> {
+    return this.http.patch<void>(`${this.base}/configuraciones/${uuid}`, { notas });
   }
 }

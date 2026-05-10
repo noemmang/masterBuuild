@@ -24,7 +24,7 @@ interface Gabinete {
   color: string;
 }
 
-type Vista = 'frente' | 'lateral' | 'superior' | '3d' | '3d-esquina';
+type Vista = 'frente' | 'lateral' | 'superior' | '3d';
 
 const COLORES = ['#4A90D9', '#E8A84C', '#6DBF8A', '#D96A6A'];
 
@@ -70,8 +70,7 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'frente',   label: 'Frente'   },
     { key: 'lateral',  label: 'Lateral'  },
     { key: 'superior', label: 'Superior' },
-    { key: '3d',         label: '3D'         },
-    { key: '3d-esquina', label: '3D esquina' },
+    { key: '3d',       label: '3D'       },
   ];
 
   // Ordenados por profundidad descendente: en la vista lateral (cámara en X)
@@ -117,7 +116,6 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initThree();
-    this.construirEscena();
     this.sceneReady = true;
     this.setVista('3d');
     this.ngZone.runOutsideAngular(() => this.animate());
@@ -291,21 +289,21 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     this.meshes.forEach(g => this.scene.remove(g));
     this.meshes.clear();
 
-    const esEsquina = this.vistaActual() === '3d-esquina';
     const mostrados = [...this.comparando()].sort((a, b) => b.profundidad_mm - a.profundidad_mm);
 
-    // Modo normal: centrado en X=0. Modo esquina: todos arrancan desde X=0.
-    const totalAncho = mostrados.reduce((s, g) => s + (g.ancho_mm || 200) / this.escala, 0);
-    let offsetX = esEsquina ? 0 : -totalAncho / 2;
-
-    // Centro de giro: en esquina los cubos van de X=0 a X=totalAncho y de Z=0 a Z=maxProfundidad
-    if (esEsquina) {
-      const maxProf = Math.max(...mostrados.map(g => (g.profundidad_mm || 400))) / this.escala;
-      const midH    = Math.max(...mostrados.map(g => (g.alto_mm        || 400))) / this.escala / 2;
-      this.orbitalTarget.set(totalAncho / 2, midH, maxProf / 2);
-    } else {
-      this.orbitalTarget.set(0, 30, 0);
+    if (mostrados.length === 0) {
+      this.orbitalTarget.set(20, 20, 20);
+      if (this.sceneReady) this.aplicarCamaraPara(this.vistaActual());
+      return;
     }
+
+    // Modo esquina: todos arrancan desde X=0, cara trasera en Z=0 (misma "pared")
+    const totalAncho = mostrados.reduce((s, g) => s + (g.ancho_mm || 200) / this.escala, 0);
+    let offsetX = 0;
+
+    const maxProf = Math.max(...mostrados.map(g => g.profundidad_mm || 400)) / this.escala;
+    const midH    = Math.max(...mostrados.map(g => g.alto_mm        || 400)) / this.escala / 2;
+    this.orbitalTarget.set(totalAncho / 2, midH, maxProf / 2);
 
     mostrados.forEach(gab => {
       const w = (gab.ancho_mm       || 200) / this.escala;
@@ -324,31 +322,36 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
         new THREE.LineBasicMaterial({ color: edgeColor })
       ));
 
-      // En modo esquina la cara trasera queda en Z=0 (misma "pared"); en normal el centro en Z=0.
-      const posZ = esEsquina ? d / 2 : 0;
-      group.position.set(offsetX + w / 2, h / 2, posZ);
+      group.position.set(offsetX + w / 2, h / 2, d / 2);
       offsetX += w;
 
       this.scene.add(group);
       this.meshes.set(gab.uuid, group);
     });
+
+    // Actualizar cámara automáticamente al reconstruir la escena
+    if (this.sceneReady) {
+      this.aplicarCamaraPara(this.vistaActual());
+    }
   }
 
   setVista(vista: Vista): void {
     this.vistaActual.set(vista);
     this.construirEscena();
+  }
 
-    if (vista === '3d' || vista === '3d-esquina') {
+  private aplicarCamaraPara(vista: Vista): void {
+    if (vista === '3d') {
       this.updateOrbitalCamera();
       return;
     }
 
     const d      = this.ORBIT_RADIUS;
-    const target = new THREE.Vector3(0, 30, 0);
-    const configs: Record<Exclude<Vista, '3d' | '3d-esquina'>, { pos: THREE.Vector3; up: THREE.Vector3 }> = {
-      frente:   { pos: new THREE.Vector3(0, 30, d),    up: new THREE.Vector3(0, 1, 0) },
-      lateral:  { pos: new THREE.Vector3(d, 30, 0),    up: new THREE.Vector3(0, 1, 0) },
-      superior: { pos: new THREE.Vector3(0, d, 0.01),  up: new THREE.Vector3(0, 0, -1) },
+    const target = this.orbitalTarget;
+    const configs: Record<Exclude<Vista, '3d'>, { pos: THREE.Vector3; up: THREE.Vector3 }> = {
+      frente:   { pos: new THREE.Vector3(target.x, target.y, target.z + d), up: new THREE.Vector3(0, 1, 0) },
+      lateral:  { pos: new THREE.Vector3(target.x + d, target.y, target.z), up: new THREE.Vector3(0, 1, 0) },
+      superior: { pos: new THREE.Vector3(target.x, target.y + d, target.z + 0.01), up: new THREE.Vector3(0, 0, -1) },
     };
     const { pos, up } = configs[vista];
     this.camera.position.copy(pos);
@@ -394,7 +397,7 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     const canvas = this.canvasRef.nativeElement;
 
     canvas.addEventListener('mousedown', (e) => {
-      if (this.vistaActual() !== '3d' && this.vistaActual() !== '3d-esquina') return;
+      if (this.vistaActual() !== '3d') return;
       this.isDragging = true;
       this.prevMouse = { x: e.clientX, y: e.clientY };
     });
@@ -410,7 +413,7 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     window.addEventListener('mouseup', () => { this.isDragging = false; });
 
     canvas.addEventListener('touchstart', (e) => {
-      if (this.vistaActual() !== '3d' && this.vistaActual() !== '3d-esquina') return;
+      if (this.vistaActual() !== '3d') return;
       this.isDragging = true;
       this.prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     });

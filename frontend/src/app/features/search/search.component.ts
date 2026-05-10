@@ -7,6 +7,7 @@ import { GuardadoService } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 
 interface OpcionFiltro {
   label: string;
@@ -107,7 +108,7 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, PriceHistoryComponent],
+  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -162,6 +163,9 @@ export class SearchComponent implements OnInit {
   componenteSeleccionado = signal<Componente | null>(null);
   precios                = signal<any[]>([]);
   cargandoPrecios        = signal(false);
+
+  /** Precio (tienda) seleccionado en el panel */
+  precioSeleccionado = signal<any | null>(null);
 
   /** Código de cupón copiado recientemente (se limpia tras 2 s) */
   copiado = signal<string | null>(null);
@@ -372,11 +376,28 @@ export class SearchComponent implements OnInit {
   onBusqueda()     { this.busqueda$.next(this.busqueda); }
   onFiltroChange() { this.resetYCargar(); }
 
+  seleccionarPrecio(precio: any): void {
+    if (this.precioSeleccionado()?.uuid === precio.uuid) {
+      this.precioSeleccionado.set(null);
+      // Volver al precio del primero si el form está abierto
+      if (this.mostrarAlerta() && this.precios().length > 0) {
+        this.precioObjetivo.set(Math.round(this.precios()[0].precio * 0.9));
+      }
+    } else {
+      this.precioSeleccionado.set(precio);
+      // Actualizar el precio objetivo si el form de alerta está abierto
+      if (this.mostrarAlerta()) {
+        this.precioObjetivo.set(Math.round(precio.precio * 0.9));
+      }
+    }
+  }
+
   cerrarPanel() {
     this.componenteSeleccionado.set(null);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
     this.copiado.set(null);
+    this.precioSeleccionado.set(null);
   }
 
   seleccionarComponente(comp: Componente) {
@@ -385,6 +406,7 @@ export class SearchComponent implements OnInit {
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
     this.copiado.set(null);
+    this.precioSeleccionado.set(null);
     this.cargandoPrecios.set(true);
     this.precios.set([]);
 
@@ -433,7 +455,9 @@ export class SearchComponent implements OnInit {
     const comp = this.componenteSeleccionado();
     if (!comp || this.guardando()) return;
     this.guardando.set(true);
-    this.guardadoService.guardar(comp.uuid).subscribe({
+    const precioRef = this.precioSeleccionado() ?? this.precios()[0] ?? null;
+    const tiendaUuid = precioRef?.tienda?.uuid ?? null;
+    this.guardadoService.guardar(comp.uuid, tiendaUuid).subscribe({
       next: (res) => { this.guardadosMap.update(m => new Map(m).set(comp.uuid, res.uuid)); this.guardando.set(false); },
       error: (err) => { if (err.status === 422) this.cargarEstadoGuardados(); this.guardando.set(false); }
     });
@@ -456,7 +480,8 @@ export class SearchComponent implements OnInit {
   toggleFormAlerta(): void {
     this.mostrarAlerta.update(v => !v);
     if (this.mostrarAlerta() && this.precios().length > 0) {
-      this.precioObjetivo.set(Math.round(this.precios()[0].precio * 0.9));
+      const precioRef = this.precioSeleccionado() ?? this.precios()[0];
+      this.precioObjetivo.set(Math.round(precioRef.precio * 0.9));
     }
   }
 

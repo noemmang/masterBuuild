@@ -84,7 +84,7 @@ class PrecioController extends Controller
             ->get()
             ->map(fn($p) => [
                 'uuid'        => $p->uuid,
-                'tienda'      => $p->tienda ? ['nombre' => $p->tienda->nombre] : null,
+                'tienda'      => $p->tienda ? ['uuid' => $p->tienda->uuid, 'nombre' => $p->tienda->nombre] : null,
                 'precio'      => (float) $p->precio,
                 'en_stock'    => $p->en_stock,
                 'url'         => $p->url,

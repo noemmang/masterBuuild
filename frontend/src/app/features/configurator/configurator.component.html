@@ -29,15 +29,15 @@
               } @else {
                 <span class="slot-placeholder">Pendiente</span>
               }
-            } @else if (!esApilable(slot) || slot.entradas.length === 1) {
+            } @else if (!esApilable(slot)) {
               <span class="slot-nombre">{{ slot.entradas[0].componente.nombre }}</span>
             } @else {
-              <span class="slot-nombre">{{ slot.entradas.length }} modelos</span>
+              <span class="slot-nombre">{{ slot.entradas.length }} modelo{{ slot.entradas.length > 1 ? 's' : '' }}</span>
             }
           </div>
 
-          <!-- Iconos estado -->
-          @if (slot.componente) {
+          <!-- Iconos estado (solo para slots no apilables) -->
+          @if (!esApilable(slot) && slot.componente) {
             <div class="slot-estado-icons">
               @if (logueado && estaGuardado(slot.componente.uuid)) {
                 <svg class="estado-icon guardado-icon" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
@@ -52,30 +52,25 @@
             </div>
           }
 
-          <!-- Controles de cantidad inline cuando hay 1 sola entrada apilable -->
-          @if (esApilable(slot) && slot.entradas.length === 1) {
-            <div class="slot-qty-inline" (click)="$event.stopPropagation()">
-              <button class="qty-btn" (click)="cambiarCantidad(slot, 0, -1)">−</button>
-              <span class="qty-val">{{ slot.entradas[0].cantidad }}</span>
-              <button class="qty-btn" (click)="cambiarCantidad(slot, 0, +1)">+</button>
-            </div>
-          }
-
-          @if (slot.precio) {
-            <span class="slot-precio">{{ formatPrecio(slot.precio) }}</span>
-          }
-
+          <!-- Derecha: precio total + quitar (para apilables el quitar elimina todas las entradas) -->
           @if (slot.entradas.length > 0) {
-            <button class="slot-quitar" (click)="quitarComponente(slot, $event, 0)">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M18 6 6 18M6 6l12 12"/>
-              </svg>
-            </button>
+            <div class="slot-right" (click)="$event.stopPropagation()">
+              @if (slot.precio) {
+                <span class="slot-precio">{{ formatPrecio(slot.precio) }}</span>
+              }
+              @if (!esApilable(slot)) {
+                <button class="slot-quitar" (click)="quitarComponente(slot, $event, 0)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                  </svg>
+                </button>
+              }
+            </div>
           }
         </div>
 
-        <!-- Sub-filas solo cuando hay MÚLTIPLES modelos distintos -->
-        @if (esApilable(slot) && slot.entradas.length > 1) {
+        <!-- Sub-filas para slots apilables: siempre desde la primera entrada -->
+        @if (esApilable(slot) && slot.entradas.length > 0) {
           @for (entrada of slot.entradas; track entrada.componente.uuid; let i = $index) {
             <div class="slot-subitem" [class.active]="slotActivo().id === slot.id">
               <span class="slot-sub-nombre">{{ entrada.componente.nombre }}</span>
@@ -98,18 +93,6 @@
 
     <!-- ── Footer sidebar ── -->
     <div class="cfg-sidebar-footer">
-
-      <!-- Desglose de precio -->
-      @if (desglosePrecio().length > 0) {
-        <div class="desglose-wrap">
-          @for (d of desglosePrecio(); track d.label) {
-            <div class="desglose-row">
-              <span class="desglose-label">{{ d.label }}</span>
-              <span class="desglose-val">{{ formatPrecio(d.subtotal) }}</span>
-            </div>
-          }
-        </div>
-      }
 
       <div class="total-row">
         <span class="total-label">Total estimado</span>
@@ -177,6 +160,8 @@
         }
       </select>
 
+
+
       <!-- Toggle solo compatibles -->
       @if (numSeleccionados > 0) {
         <button
@@ -214,9 +199,13 @@
         <div class="cfg-grid">
           @for (comp of componentes(); track comp.uuid) {
             <div
-              class="cfg-card"
-              [class.selected]="yaSeleccionado(comp.uuid)"
-              (click)="seleccionarComponente(comp)">
+              class="card-tooltip-wrap"
+              [attr.data-tooltip]="comp.descripcion || null"
+              [appTooltip]="comp.descripcion || ''">
+              <div
+                class="cfg-card"
+                [class.selected]="yaSeleccionado(comp.uuid)"
+                (click)="seleccionarComponente(comp)">
 
               <div class="cfg-card-img">
                 @if (comp.imagen_url) {
@@ -268,7 +257,7 @@
               </div>
 
               <div class="cfg-card-body">
-                <span class="cfg-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
+                <span class="cfg-card-cat" style="font-size:0.62rem">{{ comp.categoria.replace('_', ' ') }}</span>
                 <h3 class="cfg-card-nombre">{{ comp.nombre }}</h3>
                 @if (comp.marca) { <span class="cfg-card-marca">{{ comp.marca.nombre }}</span> }
                 <div class="cfg-card-footer">
@@ -290,7 +279,8 @@
                   </div>
                 }
               </div>
-            </div>
+              </div>
+            </div><!-- /card-tooltip-wrap -->
           }
         </div>
       }
@@ -411,6 +401,7 @@
         }
       }
 
+      <div class="panel-scroll">
       <div class="panel-body">
         @if (cargandoPrecios()) {
           <div class="panel-cargando"><div class="mini-spinner accent"></div></div>
@@ -419,95 +410,109 @@
         } @else {
           @for (p of precios(); track p.uuid; let i = $index) {
 
-            <div class="precio-row" [class.mejor]="i === 0" [class.tiene-extras]="p.cupon || p.regalo">
-              <div class="precio-info">
-                @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
-                <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
-                <div class="precio-row-tags">
-                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+            <!-- Card de tienda: agrupa fila + extras -->
+            <div class="precio-card"
+                 [class.mejor]="i === 0"
+                 [class.seleccionado]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0"
+                 (click)="seleccionarPrecio(p)">
+
+              <!-- Fila principal de tienda -->
+              <div class="precio-row" [class.tiene-extras]="p.cupon || p.regalo">
+                <div class="precio-info">
+                  @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
+                  @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
+                  <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
+                  <div class="precio-row-tags">
+                    @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
+                    @if (p.cupon) {
+                      <span class="tag-cupon">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                          <line x1="7" y1="7" x2="7.01" y2="7"/>
+                        </svg>
+                        Cupón
+                      </span>
+                    }
+                    @if (p.regalo) {
+                      <span class="tag-regalo">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                          <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+                        </svg>
+                        Regalo
+                      </span>
+                    }
+                  </div>
+                </div>
+                <span class="precio-valor" [class.accent]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0">{{ formatPrecio(p.precio) }}</span>
+              </div>
+
+              <!-- Expansión combinada: cupón + regalo en un solo bloque -->
+              @if (p.cupon || p.regalo) {
+                <div class="precio-extra extras-combinados">
                   @if (p.cupon) {
-                    <span class="tag-cupon">
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                        <line x1="7" y1="7" x2="7.01" y2="7"/>
-                      </svg>
-                      Cupón
-                    </span>
+                    <div class="cupon-extra">
+                      <div class="extra-left">
+                        <span class="extra-label">Código descuento</span>
+                        <code class="cupon-codigo">{{ p.cupon.codigo }}</code>
+                        @if (p.cupon.tipo === 'porcentaje') {
+                          <span class="cupon-desc">−{{ p.cupon.descuento }}%</span>
+                        } @else {
+                          <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
+                        }
+                      </div>
+                      <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo); $event.stopPropagation()" [class.copiado]="copiado() === p.cupon.codigo">
+                        @if (copiado() === p.cupon.codigo) {
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M20 6 9 17l-5-5"/>
+                          </svg>
+                        } @else {
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                          </svg>
+                        }
+                        {{ copiado() === p.cupon.codigo ? 'Copiado' : 'Copiar' }}
+                      </button>
+                    </div>
+                  }
+                  @if (p.cupon && p.regalo) {
+                    <div class="extras-divider"></div>
                   }
                   @if (p.regalo) {
-                    <span class="tag-regalo">
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                        <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-                      </svg>
-                      Regalo
-                    </span>
+                    <div class="regalo-extra">
+                      <div class="regalo-img-wrap">
+                        @if (p.regalo.imagen_url) {
+                          <img [src]="p.regalo.imagen_url" [alt]="p.regalo.nombre" class="regalo-img" />
+                        } @else {
+                          <div class="regalo-img-placeholder">🎁</div>
+                        }
+                      </div>
+                      <div class="regalo-info">
+                        <span class="extra-label">Regalo incluido</span>
+                        <span class="regalo-nombre">{{ p.regalo.nombre }}</span>
+                        @if (p.regalo.valor_estimado) {
+                          <span class="regalo-valor">Valor estimado: {{ formatPrecio(p.regalo.valor_estimado) }}</span>
+                        }
+                      </div>
+                    </div>
                   }
                 </div>
-              </div>
-              <span class="precio-valor" [class.accent]="i === 0">{{ formatPrecio(p.precio) }}</span>
-            </div>
+              }
 
-            <!-- Expansión combinada: cupón + regalo en un solo bloque -->
-            @if (p.cupon || p.regalo) {
-              <div class="precio-extra extras-combinados">
-                @if (p.cupon) {
-                  <div class="cupon-extra">
-                    <div class="extra-left">
-                      <span class="extra-label">Código descuento</span>
-                      <code class="cupon-codigo">{{ p.cupon.codigo }}</code>
-                      @if (p.cupon.tipo === 'porcentaje') {
-                        <span class="cupon-desc">−{{ p.cupon.descuento }}%</span>
-                      } @else {
-                        <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
-                      }
-                    </div>
-                    <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo)" [class.copiado]="copiado() === p.cupon.codigo">
-                      @if (copiado() === p.cupon.codigo) {
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                          <path d="M20 6 9 17l-5-5"/>
-                        </svg>
-                      } @else {
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                      }
-                      {{ copiado() === p.cupon.codigo ? 'Copiado' : 'Copiar' }}
-                    </button>
-                  </div>
-                }
-                @if (p.cupon && p.regalo) {
-                  <div class="extras-divider"></div>
-                }
-                @if (p.regalo) {
-                  <div class="regalo-extra">
-                    <div class="regalo-img-wrap">
-                      @if (p.regalo.imagen_url) {
-                        <img [src]="p.regalo.imagen_url" [alt]="p.regalo.nombre" class="regalo-img" />
-                      } @else {
-                        <div class="regalo-img-placeholder">🎁</div>
-                      }
-                    </div>
-                    <div class="regalo-info">
-                      <span class="extra-label">Regalo incluido</span>
-                      <span class="regalo-nombre">{{ p.regalo.nombre }}</span>
-                      @if (p.regalo.valor_estimado) {
-                        <span class="regalo-valor">Valor estimado: {{ formatPrecio(p.regalo.valor_estimado) }}</span>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
+            </div><!-- /precio-card -->
 
           }
         }
       </div>
 
+      </div><!-- /panel-scroll -->
+
+      <!-- ── Historial de precios — footer del panel ── -->
       <app-price-history
         [componenteUuid]="componenteDetalle()!.uuid"
         [componenteNombre]="componenteDetalle()!.nombre">
       </app-price-history>
+
     </aside>
   }
 

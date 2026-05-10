@@ -6,8 +6,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ComponenteService, Componente, ComponenteDetalle } from '../../core/services/componente.service';
 import { GuardadoService, SlotGuardado, ConfiguracionGuardada } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
+import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
+import { TooltipDirective } from '../../shared/directives/tooltip.directive';
+
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -64,7 +66,7 @@ interface FiltrosCompat {
 @Component({
   selector: 'app-configurator',
   standalone: true,
-  imports: [CommonModule, FormsModule, PriceHistoryComponent],
+  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent],
   templateUrl: './configurator.component.html',
   styleUrl: './configurator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,7 +88,7 @@ export class ConfiguratorComponent implements OnInit {
     crearSlot('almacenamiento', 'Almacenamiento', 'almacenamiento'),
     crearSlot('psu',            'PSU',            'psu'),
     crearSlot('gabinete',       'Gabinete',       'gabinete'),
-    crearSlot('refrigeracion',  'Refrigeración',  'refrigeracion_aire'),
+    crearSlot('refrigeracion',  'Refrigeración',  'refrigeracion'),  // carga aire + líquida en paralelo
     crearSlot('ventilador',     'Ventiladores',   'ventilador'),
   ];
 
@@ -124,6 +126,7 @@ export class ConfiguratorComponent implements OnInit {
   componenteDetalle = signal<Componente | null>(null);
   precios           = signal<any[]>([]);
   cargandoPrecios   = signal(false);
+  precioSeleccionado = signal<any | null>(null);
 
   Math = Math;
 
@@ -315,18 +318,44 @@ export class ConfiguratorComponent implements OnInit {
   cargarSlot(slot: Slot) {
     this.slotActivo.set(slot);
     this.cargando.set(true);
-    this.componenteDetalle.set(null);
-    this.mostrarAlerta.set(false);
 
-    const params: Record<string, any> = {
-      categoria: slot.categoria,
-      q:         this.busqueda,
-      page:      1,
-      orden:     this.ordenActivo,
+    const baseParams = (): Record<string, any> => {
+      const p: Record<string, any> = {
+        q:     this.busqueda,
+        page:  1,
+        orden: this.ordenActivo,
+      };
+      if (this.precioMin) p['precio_min'] = this.precioMin;
+      if (this.precioMax) p['precio_max'] = this.precioMax;
+      return p;
     };
-    if (this.precioMin) params['precio_min'] = this.precioMin;
-    if (this.precioMax) params['precio_max'] = this.precioMax;
 
+    // El slot de refrigeración carga aire y líquida en paralelo y mergea los resultados
+    if (slot.id === 'refrigeracion') {
+      const paramsAire    = { ...baseParams(), categoria: 'refrigeracion_aire' };
+      const paramsLiquida = { ...baseParams(), categoria: 'refrigeracion_liquida' };
+
+      if (this.soloCompatibles()) {
+        this.aplicarFiltrosCompatParaSlot('refrigeracion_aire',    this.filtrosCompat(), paramsAire);
+        this.aplicarFiltrosCompatParaSlot('refrigeracion_liquida', this.filtrosCompat(), paramsLiquida);
+      }
+
+      forkJoin([
+        this.componenteService.buscarConFiltros(paramsAire),
+        this.componenteService.buscarConFiltros(paramsLiquida),
+      ]).subscribe({
+        next: ([resAire, resLiquida]) => {
+          const merged = this.intercalarResultados(resAire.data, resLiquida.data);
+          this.componentes.set(merged);
+          this.cargando.set(false);
+          this.cdr.markForCheck();
+        },
+        error: () => { this.cargando.set(false); this.cdr.markForCheck(); },
+      });
+      return;
+    }
+
+    const params = { ...baseParams(), categoria: slot.categoria };
     if (this.soloCompatibles()) {
       this.aplicarFiltrosCompatParaSlot(slot.id, this.filtrosCompat(), params);
     }
@@ -335,6 +364,17 @@ export class ConfiguratorComponent implements OnInit {
       next: (res) => { this.componentes.set(res.data); this.cargando.set(false); this.cdr.markForCheck(); },
       error: ()    => { this.cargando.set(false); this.cdr.markForCheck(); },
     });
+  }
+
+  /** Intercala dos arrays: [a0, b0, a1, b1, …] */
+  private intercalarResultados<T>(a: T[], b: T[]): T[] {
+    const result: T[] = [];
+    const max = Math.max(a.length, b.length);
+    for (let i = 0; i < max; i++) {
+      if (i < a.length) result.push(a[i]);
+      if (i < b.length) result.push(b[i]);
+    }
+    return result;
   }
 
   private aplicarFiltrosCompatParaSlot(
@@ -364,11 +404,14 @@ export class ConfiguratorComponent implements OnInit {
       case 'psu':
         if (fc.potencia_min) params['potencia_min'] = fc.potencia_min;
         break;
-      case 'refrigeracion':
+      case 'refrigeracion_aire':
         if (fc.socket_id)     params['socket_id']    = fc.socket_id;
         if (fc.tdp_min)       params['tdp_min']       = fc.tdp_min;
         if (fc.altura_max_mm) params['altura_max_mm'] = fc.altura_max_mm;
-        if (fc.radiador_mm)   params['radiador_mm']   = fc.radiador_mm;
+        break;
+      case 'refrigeracion_liquida':
+        if (fc.socket_id)   params['socket_id']  = fc.socket_id;
+        if (fc.radiador_mm) params['radiador_mm'] = fc.radiador_mm;
         break;
     }
   }
@@ -380,6 +423,8 @@ export class ConfiguratorComponent implements OnInit {
     this.soloCompatibles.update(v => !v);
     this.cargarSlot(this.slotActivo());
   }
+
+
 
   // ── Selección / eliminación ───────────────────────────────────
 
@@ -502,9 +547,10 @@ export class ConfiguratorComponent implements OnInit {
       }
     }
 
+    const prevJson = JSON.stringify(this.filtrosCompat());
     this.filtrosCompat.set(fc);
 
-    if (this.soloCompatibles()) {
+    if (this.soloCompatibles() && JSON.stringify(fc) !== prevJson) {
       this.cargarSlot(this.slotActivo());
     }
   }
@@ -519,8 +565,9 @@ export class ConfiguratorComponent implements OnInit {
 
     if (Object.keys(slotMap).length === 0) { this.compatibilidad.set(null); return; }
 
-    const categoriaRefrig = this.slots.find(s => s.id === 'refrigeracion')?.categoria;
-    const tipoRefrig = categoriaRefrig === 'refrigeracion_liquida' ? 'liquida' : 'aire';
+    // Inferir tipo de refrigeración desde la categoría real del componente seleccionado
+    const compRefrig = this.slots.find(s => s.id === 'refrigeracion')?.componente;
+    const tipoRefrig = compRefrig?.categoria === 'refrigeracion_liquida' ? 'liquida' : 'aire';
 
     const payload = {
       cpu_uuid:           slotMap['cpu']           ?? null,
@@ -545,13 +592,12 @@ export class ConfiguratorComponent implements OnInit {
   // ── Precios / detalle ─────────────────────────────────────────
 
   abrirPrecios(comp: Componente) {
-    if (this.componenteDetalle()?.uuid === comp.uuid) {
-      this.componenteDetalle.set(null);
-      return;
-    }
+    // Si ya está abierto para este componente, no recargamos
+    if (this.componenteDetalle()?.uuid === comp.uuid) return;
     this.componenteDetalle.set(comp);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
+    this.precioSeleccionado.set(null);
     this.cargandoPrecios.set(true);
     this.precios.set([]);
     this.componenteService.getPrecios(comp.uuid).subscribe({
@@ -563,6 +609,27 @@ export class ConfiguratorComponent implements OnInit {
   cerrarDetalle() {
     this.componenteDetalle.set(null);
     this.mostrarAlerta.set(false);
+    this.precioSeleccionado.set(null);
+  }
+
+  seleccionarPrecio(precio: any): void {
+    this.precioSeleccionado.set(precio);
+
+    // Actualizar precio_min del componente en el slot activo y recalcular total
+    const comp = this.componenteDetalle();
+    if (!comp) return;
+
+    const slot = this.slots.find(s =>
+      s.entradas.some(e => e.componente.uuid === comp.uuid)
+    );
+    if (!slot) return;
+
+    const entrada = slot.entradas.find(e => e.componente.uuid === comp.uuid);
+    if (entrada) {
+      entrada.componente.precio_min = precio.precio;
+      this.recalcularTotal();
+      this.cdr.markForCheck();
+    }
   }
 
   // ── Guardar componente ────────────────────────────────────────

@@ -72,7 +72,8 @@
             <div
               class="card-tooltip-wrap"
               [attr.data-uuid]="comp.uuid"
-              [attr.data-tooltip]="comp.descripcion || null">
+              [attr.data-tooltip]="comp.descripcion || null"
+              [appTooltip]="comp.descripcion || ''">
 
               <div class="card" [class.selected]="componenteSeleccionado()?.uuid === comp.uuid" (click)="seleccionarComponente(comp)">
                 <div class="card-img">
@@ -122,7 +123,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <span class="card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
+                  <span class="card-cat" style="font-size:0.62rem">{{ comp.categoria.replace('_', ' ') }}</span>
                   <h3 class="card-nombre">{{ comp.nombre }}</h3>
                   @if (comp.marca) { <span class="card-marca">{{ comp.marca.nombre }}</span> }
                   <div class="card-footer">
@@ -226,6 +227,7 @@
         }
       }
 
+      <div class="panel-scroll">
       <div class="panel-body">
         @if (cargandoPrecios()) {
           <div class="panel-cargando"><div class="mini-spinner accent"></div></div>
@@ -234,13 +236,20 @@
         } @else {
           @for (p of precios(); track p.uuid; let i = $index) {
 
-            <!-- Fila principal de tienda -->
-            <div class="precio-row" [class.mejor]="i === 0" [class.tiene-extras]="p.cupon || p.regalo">
+            <!-- Card de tienda: agrupa fila + extras -->
+            <div class="precio-card"
+                 [class.mejor]="i === 0"
+                 [class.seleccionado]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0"
+                 (click)="seleccionarPrecio(p)">
+
+              <!-- Fila principal de tienda -->
+              <div class="precio-row" [class.tiene-extras]="p.cupon || p.regalo">
               <div class="precio-info">
                 @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
+                @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
                 <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
                 <div class="precio-row-tags">
-                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta">ver oferta</a> }
+                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
                   @if (p.cupon) {
                     <span class="tag-cupon">
                       <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -260,7 +269,7 @@
                   }
                 </div>
               </div>
-              <span class="precio-valor" [class.accent]="i === 0">{{ formatPrecio(p.precio) }}</span>
+              <span class="precio-valor" [class.accent]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0">{{ formatPrecio(p.precio) }}</span>
             </div>
 
             <!-- Expansión combinada: cupón + regalo en un solo bloque -->
@@ -277,7 +286,7 @@
                         <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
                       }
                     </div>
-                    <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo)" [class.copiado]="copiado() === p.cupon.codigo">
+                    <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo); $event.stopPropagation()" [class.copiado]="copiado() === p.cupon.codigo">
                       @if (copiado() === p.cupon.codigo) {
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                           <path d="M20 6 9 17l-5-5"/>
@@ -316,9 +325,13 @@
               </div>
             }
 
+            </div><!-- /precio-card -->
+
           }
         }
       </div>
+
+      </div><!-- /panel-scroll -->
 
       <!-- ── Historial de precios — footer del panel ── -->
       <app-price-history

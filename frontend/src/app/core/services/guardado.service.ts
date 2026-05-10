@@ -81,8 +81,10 @@ export class GuardadoService {
     return this.http.get<ComponenteGuardado[]>(`${this.base}/guardados`);
   }
 
-  guardar(componenteUuid: string): Observable<{ uuid: string }> {
-    return this.http.post<{ uuid: string }>(`${this.base}/guardados`, { componente_uuid: componenteUuid });
+  guardar(componenteUuid: string, tiendaUuid?: string | null): Observable<{ uuid: string }> {
+    const body: any = { componente_uuid: componenteUuid };
+    if (tiendaUuid) body.tienda_uuid = tiendaUuid;
+    return this.http.post<{ uuid: string }>(`${this.base}/guardados`, body);
   }
 
   eliminar(uuid: string): Observable<void> {

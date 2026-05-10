@@ -24,10 +24,14 @@ class GuardadoController extends Controller
                     'categoria'     => $g->componente->categoria,
                     'imagen_url'    => $g->componente->imagen_url,
                     'marca'         => $g->componente->marca->nombre,
-                    'mejor_precio'  => $g->componente->preciosActuales
-                        ->sortBy('precio')->first()?->precioEfectivo(),
-                    'tienda'        => $g->componente->preciosActuales
-                        ->sortBy('precio')->first()?->tienda->nombre,
+                    'mejor_precio'  => $g->tienda_id
+                        ? ($g->componente->preciosActuales->firstWhere('tienda_id', $g->tienda_id)?->precioEfectivo()
+                          ?? $g->componente->preciosActuales->sortBy('precio')->first()?->precioEfectivo())
+                        : $g->componente->preciosActuales->sortBy('precio')->first()?->precioEfectivo(),
+                    'tienda'        => $g->tienda_id
+                        ? ($g->componente->preciosActuales->firstWhere('tienda_id', $g->tienda_id)?->tienda->nombre
+                          ?? $g->componente->preciosActuales->sortBy('precio')->first()?->tienda->nombre)
+                        : $g->componente->preciosActuales->sortBy('precio')->first()?->tienda->nombre,
                     'con_cupon'     => $g->componente->cuponesActivos->isNotEmpty(),
                     'con_regalo'    => $g->componente->regalosActivos->isNotEmpty(),
                 ],
@@ -42,6 +46,7 @@ class GuardadoController extends Controller
         $data = $request->validate([
             'componente_uuid' => 'required|string',
             'notas'           => 'nullable|string|max:500',
+            'tienda_uuid'     => 'nullable|string',
         ]);
 
         $componente = Componente::where('uuid', $data['componente_uuid'])
@@ -59,9 +64,17 @@ class GuardadoController extends Controller
             ], 422);
         }
 
+        // Resolver tienda si se proporcionó uuid
+        $tiendaId = null;
+        if (!empty($data['tienda_uuid'])) {
+            $tienda = \App\Models\Negocio\Tienda::where('uuid', $data['tienda_uuid'])->first();
+            $tiendaId = $tienda?->id;
+        }
+
         $guardado = ComponenteGuardado::create([
             'user_id'      => $request->user()->id,
             'componente_id'=> $componente->id,
+            'tienda_id'    => $tiendaId,
             'notas'        => $data['notas'] ?? null,
         ]);
 

@@ -175,8 +175,9 @@ class ComponentesSeeder extends Seeder
      */
     protected function generarHistorialPrecios(int $componenteId, array $historial): void
     {
+        $batch = [];
         foreach ($historial as $entrada) {
-            $tiendaId   = $this->tiendas[$entrada['tienda']] ?? null;
+            $tiendaId = $this->tiendas[$entrada['tienda']] ?? null;
             if (!$tiendaId) continue;
 
             $desde        = $entrada['desde'];
@@ -191,10 +192,22 @@ class ComponentesSeeder extends Seeder
                 $precioActual = round($precioActual + $delta, 2);
                 $precioActual = max($precioBase * 0.60, min($precioBase * 1.60, $precioActual));
 
-                EntradaPrecio::create([ 'componente_id' => $componenteId, 'tienda_id' => $tiendaId, 'cupon_id' => null, 'precio' => $precioActual, 'moneda' => 'EUR', 'en_stock' => (mt_rand(1, 10) > 1), 'precio_con_cupon' => null, 'scraped_at'       => $cursor->copy()->addDays(rand(0, 3)), ]);
-
+                $batch[] = [
+                    'componente_id'    => $componenteId,
+                    'tienda_id'        => $tiendaId,
+                    'cupon_id'         => null,
+                    'precio'           => $precioActual,
+                    'moneda'           => 'EUR',
+                    'en_stock'         => (mt_rand(1, 10) > 1),
+                    'precio_con_cupon' => null,
+                    'scraped_at'       => $cursor->copy()->addDays(rand(0, 3))->toDateTimeString(),
+                ];
                 $cursor->addMonths(2);
             }
+        }
+
+        foreach (array_chunk($batch, 500) as $chunk) {
+            EntradaPrecio::insert($chunk);
         }
     }
 

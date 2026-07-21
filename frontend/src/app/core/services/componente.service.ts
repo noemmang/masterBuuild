@@ -110,6 +110,19 @@ export interface HistorialPrecios {
   tiendas: { uuid: string; nombre: string }[];
 }
 
+// ── Visor de gabinete (endpoint ligero para el comparador 3D) ─────────────────
+
+export interface GabineteVisor {
+  uuid:                 string;
+  nombre:               string;
+  ancho_mm:             number | null;
+  alto_mm:              number | null;
+  profundidad_mm:       number | null;
+  longitud_gpu_max_mm:  number | null;
+  altura_cooler_max_mm: number | null;
+  soporte_radiadores:   number[];
+}
+
 // ── Parámetros de búsqueda extendidos ────────────────────────────────────────
 
 export interface BuscarParams {
@@ -203,6 +216,10 @@ export class ComponenteService {
         gabinete:       c.gabinete       ?? undefined,
       }) as ComponenteDetalle)
     );
+  }
+
+  getGabineteVisor(uuid: string): Observable<GabineteVisor> {
+    return this.http.get<GabineteVisor>(`${this.API}/componentes/${uuid}/gabinete/visor`);
   }
 
   getHistorial(

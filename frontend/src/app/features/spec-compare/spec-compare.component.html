@@ -67,23 +67,6 @@
       </div>
     </div>
 
-    @if (comparando().length > 0) {
-      <div class="sidebar-section comparando-actual">
-        <p class="sidebar-label">Comparando</p>
-        @for (c of comparando(); track c.detalle.uuid) {
-          <div class="comparando-item">
-            <div class="comparando-dot" [style.background]="c.color"></div>
-            <span class="comparando-nombre">{{ c.detalle.nombre }}</span>
-            <button class="comparando-quitar" (click)="quitarComponente(c.detalle.uuid)" title="Quitar">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M18 6 6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        }
-      </div>
-    }
-
   </aside>
 
   <!-- ══════════════════════════ MAIN ══════════════════════════ -->

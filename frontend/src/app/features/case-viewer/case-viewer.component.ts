@@ -5,10 +5,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as THREE from 'three';
-import { ComponenteService, Componente, ComponenteDetalle } from '../../core/services/componente.service';
+import { ComponenteService, Componente, GabineteVisor } from '../../core/services/componente.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
-import { of, forkJoin } from 'rxjs';
+import { of } from 'rxjs';
 
 interface Gabinete {
   uuid: string;
@@ -48,6 +48,11 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Gabinetes en comparación ──────────────────────────────────
   comparando    = signal<Gabinete[]>([]);
 
+  // UUIDs que aún están esperando su detalle del servidor.
+  // Mientras haya alguno pendiente no se reconstruye la escena,
+  // evitando el parpadeo de dimensiones incorrectas.
+  private pendientes = new Set<string>();
+
   vistaActual        = signal<Vista>('3d');
   mostrarDiferencias = signal(false);
   readonly escala    = 10;
@@ -73,9 +78,6 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: '3d',       label: '3D'       },
   ];
 
-  // Ordenados por profundidad descendente: en la vista lateral (cámara en X)
-  // el ancho visual de cada gabinete es su profundidad_mm, así el más largo
-  // queda siempre delante y no queda tapado por uno más corto pero más alto.
   gabinetesMostrados = computed(() =>
     [...this.comparando()].sort((a, b) => b.profundidad_mm - a.profundidad_mm)
   );
@@ -168,59 +170,59 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   private anadirGabinete(comp: Componente): void {
     const colorAsignado = COLORES[this.comparando().length] as string;
 
-    // Placeholder inmediato mientras llega el detalle
+    this.pendientes.add(comp.uuid);
+
     const placeholder: Gabinete = {
       uuid: comp.uuid, nombre: comp.nombre,
       tipo: '—', estructura: '—',
-      ancho_mm: 200, alto_mm: 400, profundidad_mm: 400,
+      ancho_mm: 0, alto_mm: 0, profundidad_mm: 0,
       longitud_gpu_max_mm: 0, altura_cooler_max_mm: 0,
       soporte_radiadores: [], color: colorAsignado,
     };
     this.comparando.update(arr => [...arr, placeholder]);
-    if (this.sceneReady) this.construirEscena();
 
-    // Cargar detalle completo
-    this.svc.getDetalle(comp.uuid)
+    // Endpoint ligero: ~200 bytes frente a los ~50 KB de getDetalle()
+    this.svc.getGabineteVisor(comp.uuid)
       .pipe(catchError(() => of(null)))
-      .subscribe(detalle => {
-        if (!detalle) return;
-        const gab = this.mapDetalleToGabinete(detalle, colorAsignado);
+      .subscribe(visor => {
+        this.pendientes.delete(comp.uuid);
 
-        // ── FIX: NgZone.run() garantiza que el signal se actualiza dentro de la
-        // zona de Angular, evitando la race condition con el loop de Three.js
-        // que corre fuera de zona (runOutsideAngular). Sin esto, construirEscena()
-        // puede ejecutarse antes de que el signal tenga los datos reales.
+        if (!visor) return;
+        const gab = this.mapVisorToGabinete(visor, colorAsignado);
+
         this.ngZone.run(() => {
           this.comparando.update(arr =>
             arr.map(g => g.uuid === comp.uuid ? gab : g)
           );
-          if (this.sceneReady) this.construirEscena();
+          if (this.sceneReady && this.pendientes.size === 0) {
+            this.construirEscena();
+          }
         });
       });
   }
 
-  private mapDetalleToGabinete(d: ComponenteDetalle, color: string): Gabinete {
-    const g = (d as any).gabinete ?? {};
-
-    const toInt = (v: any, fallback: number): number =>
-      (v !== null && v !== undefined && !isNaN(Number(v))) ? Number(v) : fallback;
+  private mapVisorToGabinete(v: GabineteVisor, color: string): Gabinete {
+    const toInt = (val: number | null, fallback: number): number =>
+      val !== null && val !== undefined && !isNaN(Number(val)) ? Number(val) : fallback;
 
     return {
-      uuid:                 d.uuid,
-      nombre:               d.nombre,
-      tipo:                 g.tipo_gabinete?.nombre ?? '—',
-      estructura:           g.estructura_gabinete?.nombre ?? '—',
-      ancho_mm:             toInt(g.ancho_mm,              200),
-      alto_mm:              toInt(g.alto_mm,               400),
-      profundidad_mm:       toInt(g.profundidad_mm,        400),
-      longitud_gpu_max_mm:  toInt(g.longitud_gpu_max_mm,     0),
-      altura_cooler_max_mm: toInt(g.altura_cooler_max_mm,    0),
-      soporte_radiadores:   Array.isArray(g.soporte_radiadores) ? g.soporte_radiadores : [],
+      uuid:                 v.uuid,
+      nombre:               v.nombre,
+      tipo:                 '—',
+      estructura:           '—',
+      ancho_mm:             toInt(v.ancho_mm,              200),
+      alto_mm:              toInt(v.alto_mm,               400),
+      profundidad_mm:       toInt(v.profundidad_mm,        400),
+      longitud_gpu_max_mm:  toInt(v.longitud_gpu_max_mm,     0),
+      altura_cooler_max_mm: toInt(v.altura_cooler_max_mm,    0),
+      soporte_radiadores:   Array.isArray(v.soporte_radiadores) ? v.soporte_radiadores : [],
       color,
     };
   }
 
   quitarGabinete(uuid: string): void {
+    this.pendientes.delete(uuid);
+
     this.comparando.update(arr =>
       arr.filter(g => g.uuid !== uuid)
          .map((g, i) => ({ ...g, color: COLORES[i] }))
@@ -297,7 +299,6 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Modo esquina: todos arrancan desde X=0, cara trasera en Z=0 (misma "pared")
     const totalAncho = mostrados.reduce((s, g) => s + (g.ancho_mm || 200) / this.escala, 0);
     let offsetX = 0;
 
@@ -329,7 +330,6 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
       this.meshes.set(gab.uuid, group);
     });
 
-    // Actualizar cámara automáticamente al reconstruir la escena
     if (this.sceneReady) {
       this.aplicarCamaraPara(this.vistaActual());
     }

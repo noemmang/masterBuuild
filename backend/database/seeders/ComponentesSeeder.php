@@ -193,6 +193,7 @@ class ComponentesSeeder extends Seeder
                 $precioActual = max($precioBase * 0.60, min($precioBase * 1.60, $precioActual));
 
                 $batch[] = [
+                    'uuid'             => (string) \Illuminate\Support\Str::uuid(),
                     'componente_id'    => $componenteId,
                     'tienda_id'        => $tiendaId,
                     'cupon_id'         => null,

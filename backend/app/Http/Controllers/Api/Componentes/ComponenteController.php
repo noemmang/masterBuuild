@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Componentes;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ComponenteListadoResource;
 use App\Models\Componentes\Componente;
 use Illuminate\Http\Request;
 
@@ -189,26 +190,44 @@ class ComponenteController extends Controller
             );
         }
 
+        // ── Agregados para el listado ──────────────────────────────────────
+        //
+        // Antes se cargaban las relaciones completas (preciosActuales.tienda,
+        // cuponesActivos, regalosActivos) solo para que el frontend calculara
+        // el mínimo/máximo/nº de tiendas y comprobara si había algún cupón o
+        // regalo. Eso traía objetos enteros (tienda, cupón, regalo...) que no
+        // se usan en la card del listado. Con withMin/withMax/withCount/
+        // withExists Postgres calcula esos valores en la misma query y solo
+        // viajan los escalares que realmente hacen falta.
+
+        $query
+            ->withMin('preciosActuales as precio_min', 'precio')
+            ->withMax('preciosActuales as precio_max', 'precio')
+            ->withCount('preciosActuales as num_tiendas')
+            ->withExists('cuponesActivos as tiene_cupon')
+            ->withExists('regalosActivos as tiene_regalo');
+
         // ── Ordenación ───────────────────────────────────────────────────────
 
         $ordenar = $request->get('ordenar', 'nombre');
         match($ordenar) {
-            'precio_asc'  => $query->withMin('preciosActuales', 'precio')->orderBy('precios_actuales_min_precio', 'asc'),
-            'precio_desc' => $query->withMin('preciosActuales', 'precio')->orderBy('precios_actuales_min_precio', 'desc'),
+            'precio_asc'  => $query->orderBy('precio_min', 'asc'),
+            'precio_desc' => $query->orderBy('precio_min', 'desc'),
             default       => $query->orderBy('nombre', 'asc'),
         };
 
         // ── Paginación ───────────────────────────────────────────────────────
 
-        $componentes = $query->with([
-            'marca',
-            'fabricante',
-            'preciosActuales.tienda',
-            'cuponesActivos',
-            'regalosActivos',
-        ])->paginate($request->get('por_pagina', 20));
+        $componentes = $query->with(['marca'])
+            ->paginate($request->get('por_pagina', 20));
 
-        return response()->json($componentes);
+        return response()->json([
+            'data'         => ComponenteListadoResource::collection($componentes->items()),
+            'current_page' => $componentes->currentPage(),
+            'last_page'    => $componentes->lastPage(),
+            'per_page'     => $componentes->perPage(),
+            'total'        => $componentes->total(),
+        ]);
     }
 
     public function show(string $uuid)

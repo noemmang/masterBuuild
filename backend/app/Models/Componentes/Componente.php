@@ -106,9 +106,20 @@ class Componente extends BaseModel
         return $this->hasOne(Ventilador::class, 'componente_id');
     }
 
+    // Solo la entrada de precio más reciente por tienda (no el histórico completo).
+    // Antes esta relación devolvía TODAS las entradas de entradas_precio del
+    // componente (todo el histórico acumulado por el scraping), lo que inflaba
+    // muchísimo el JSON de listados, guardados y alertas. Usamos el mismo
+    // criterio que EntradaPrecio::scopeActual(): el id más alto por
+    // (componente_id, tienda_id) equivale al scrape más reciente de esa tienda.
     public function preciosActuales()
     {
         return $this->hasMany(\App\Models\Negocio\EntradaPrecio::class, 'componente_id')
+                    ->whereIn('id', function ($query) {
+                        $query->selectRaw('MAX(id)')
+                              ->from('entradas_precio')
+                              ->groupBy('componente_id', 'tienda_id');
+                    })
                     ->orderBy('precio', 'asc');
     }
 

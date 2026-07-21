@@ -26,10 +26,18 @@ class ComponenteGuardado extends BaseModel
         return $this->belongsTo(Componente::class, 'componente_id');
     }
 
-    // Todos los guardados de un usuario con sus precios actuales
+    // Todos los guardados de un usuario con sus precios actuales.
+    // Se precargan también cuponesActivos y regalosActivos porque
+    // GuardadoController::index() los consulta para cada guardado
+    // (antes no estaban aquí y generaban 2 queries extra por fila, N+1).
     public function scopeDelUsuario($query, $userId)
     {
         return $query->where('user_id', $userId)
-                     ->with(['componente.marca', 'componente.preciosActuales.tienda']);
+                     ->with([
+                         'componente.marca',
+                         'componente.preciosActuales.tienda',
+                         'componente.cuponesActivos',
+                         'componente.regalosActivos',
+                     ]);
     }
 }

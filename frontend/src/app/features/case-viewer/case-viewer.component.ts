@@ -111,7 +111,10 @@ export class CaseViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private svc: ComponenteService, private ngZone: NgZone) {}
 
   ngOnInit(): void {
-    this.ejecutarBusqueda('');
+    // No cargamos nada por defecto: el usuario tiene que buscar el
+    // gabinete que quiere comparar. Antes aquí se llamaba a
+    // ejecutarBusqueda('') y se traía una página entera de gabinetes
+    // sin que el usuario hubiera pedido nada.
     this.busq$.pipe(debounceTime(350), distinctUntilChanged())
       .subscribe(q => this.ejecutarBusqueda(q));
   }

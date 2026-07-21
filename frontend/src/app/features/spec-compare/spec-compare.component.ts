@@ -298,7 +298,10 @@ export class SpecCompareComponent implements OnInit {
       }
     });
 
-    this.ejecutarBusqueda('');
+    // No cargamos nada por defecto: el usuario tiene que buscar el
+    // componente que quiere comparar. Antes aquí se llamaba a
+    // ejecutarBusqueda('') y se traía una página entera de componentes
+    // sin que el usuario hubiera pedido nada.
   }
 
   // ── Categoría ────────────────────────────────────────────────────────────────

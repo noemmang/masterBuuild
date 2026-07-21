@@ -236,16 +236,30 @@ export class ComponenteService {
   }
 
   private mapearComponente(c: any): Componente {
-    const precios: number[] = (c.precios_actuales ?? []).map((p: any) => Number(p.precio));
-    const tiendas = (c.precios_actuales ?? []).map((p: any) => p.tienda?.nombre).filter(Boolean);
-    const tiendas_unicas = new Set(tiendas).size;
+    // El listado (GET /componentes) ya viene con los agregados calculados
+    // en el backend (precio_min, precio_max, num_tiendas, tiene_cupon,
+    // tiene_regalo) vía withMin/withMax/withCount/withExists. El detalle
+    // (GET /componentes/{uuid}) todavía manda las relaciones completas
+    // (precios_actuales, cupones_activos, regalos_activos), así que si no
+    // vienen los agregados los calculamos aquí igual que antes.
+    const tieneAgregados = c.precio_min !== undefined;
 
-    console.log('mapeando', c.nombre, {
-      regalos_activos: c.regalos_activos,
-      cupones_activos: c.cupones_activos,
-      tiene_regalo: (c.regalos_activos ?? []).length > 0,
-      tiene_cupon: (c.cupones_activos ?? []).length > 0,
-    });
+    let precio_min    = c.precio_min ?? null;
+    let precio_max    = c.precio_max ?? null;
+    let num_tiendas   = c.num_tiendas ?? 0;
+    let tiene_cupon   = !!c.tiene_cupon;
+    let tiene_regalo  = !!c.tiene_regalo;
+
+    if (!tieneAgregados) {
+      const precios: number[] = (c.precios_actuales ?? []).map((p: any) => Number(p.precio));
+      const tiendas = (c.precios_actuales ?? []).map((p: any) => p.tienda?.nombre).filter(Boolean);
+
+      precio_min   = precios.length > 0 ? Math.min(...precios) : null;
+      precio_max   = precios.length > 0 ? Math.max(...precios) : null;
+      num_tiendas  = new Set(tiendas).size || precios.length;
+      tiene_cupon  = (c.cupones_activos ?? []).length > 0;
+      tiene_regalo = (c.regalos_activos ?? []).length > 0;
+    }
 
     return {
       uuid:          c.uuid,
@@ -253,11 +267,11 @@ export class ComponenteService {
       categoria:     c.categoria,
       imagen_url:    c.imagen_url,
       marca:         c.marca ?? null,
-      precio_min:    precios.length > 0 ? Math.min(...precios) : null,
-      precio_max:    precios.length > 0 ? Math.max(...precios) : null,
-      num_tiendas:   tiendas_unicas || precios.length,
-      tiene_cupon:  (c.cupones_activos ?? []).length > 0 || (c.precios_actuales ?? []).some((p: any) => p.cupon_id !== null),
-      tiene_regalo: (c.regalos_activos ?? []).length > 0 || (c.precios_actuales ?? []).some((p: any) => p.tiene_regalo === true),
+      precio_min,
+      precio_max,
+      num_tiendas,
+      tiene_cupon,
+      tiene_regalo,
       bajada_precio: false,
       descripcion:   c.descripcion ?? null,
     };

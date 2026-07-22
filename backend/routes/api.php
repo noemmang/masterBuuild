@@ -11,13 +11,18 @@ use App\Http\Controllers\Api\Negocio\CuponController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
-use App\Http\Controllers\Api\Configurador\RecomendadorController;
 use App\Http\Controllers\Api\Negocio\RegalosController;
 
 Route::prefix('v1')->group(function () {
 
     // ── Auth — públicas ───────────────────────────────────────
-    Route::prefix('auth')->group(function () {
+    //
+    // throttle:auth limita a 10 intentos/min por IP (ver RateLimiter::for('auth')
+    // en AppServiceProvider). Antes estos endpoints no tenían ningún límite:
+    // el grupo 'api' de Laravel 11+/13 trae 'throttle:api' comentado por
+    // defecto, así que login/register estaban completamente expuestos a
+    // fuerza bruta de contraseñas y a registro masivo automatizado.
+    Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login',    [AuthController::class, 'login']);
     });
@@ -38,8 +43,7 @@ Route::prefix('v1')->group(function () {
 
     // ── Configurador — público ────────────────────────────────
     Route::prefix('configurador')->group(function () {
-        Route::post('validar',    [ConfiguradorController::class, 'validar']);
-        Route::post('recomendar', [RecomendadorController::class, 'recomendar']);
+        Route::post('validar', [ConfiguradorController::class, 'validar']);
     });
 
     // ── Rutas protegidas ──────────────────────────────────────
@@ -71,6 +75,7 @@ Route::prefix('v1')->group(function () {
         // Configuraciones guardadas
         Route::prefix('configuraciones')->group(function () {
             Route::get    ('/',      [ConfiguracionController::class, 'index']);
+            Route::get    ('{uuid}', [ConfiguracionController::class, 'show']);
             Route::post   ('/',      [ConfiguracionController::class, 'store']);
             Route::patch  ('{uuid}', [ConfiguracionController::class, 'update']);
             Route::delete ('{uuid}', [ConfiguracionController::class, 'destroy']);

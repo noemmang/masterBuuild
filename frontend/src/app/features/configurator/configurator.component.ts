@@ -217,16 +217,8 @@ export class ConfiguratorComponent implements OnInit {
   private restaurarConfiguracion(cfgUuid: string): void {
     this.restaurando.set(true);
 
-    this.guardadoService.listarConfiguraciones().subscribe({
-      next: (configs) => {
-        const cfg = configs.find(c => c.uuid === cfgUuid);
-        if (!cfg) {
-          this.restaurando.set(false);
-          this.cargarSlot(this.slots[0]);
-          return;
-        }
-        this.cargarSlotsDesdeConfig(cfg);
-      },
+    this.guardadoService.obtenerConfiguracion(cfgUuid).subscribe({
+      next: (cfg) => this.cargarSlotsDesdeConfig(cfg),
       error: () => {
         this.restaurando.set(false);
         this.cargarSlot(this.slots[0]);

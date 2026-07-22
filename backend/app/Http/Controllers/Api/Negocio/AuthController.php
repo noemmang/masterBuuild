@@ -15,8 +15,16 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users',
+            // 'email:rfc,dns' añade una comprobación de que el dominio del
+            // correo tenga registros DNS/MX reales (además del formato RFC).
+            // Antes solo se validaba el formato ('email' a secas), así que
+            // direcciones con dominios inventados (asd@asd123456.com) se
+            // aceptaban igual que una real.
+            'email'    => 'required|email:rfc,dns|unique:users',
             'password' => 'required|min:8|confirmed',
+        ], [
+            'email.email'  => 'El correo electrónico no es válido o el dominio no existe.',
+            'email.unique' => 'Ya existe una cuenta con este correo electrónico.',
         ]);
 
         $user = User::create([
@@ -91,7 +99,9 @@ class AuthController extends Controller
 
         $data = $request->validate([
             'name'   => 'sometimes|required|string|max:100',
-            'email'  => 'sometimes|required|email|unique:users,email,' . $user->id,
+            // Mismo criterio que en register(): el dominio del correo debe
+            // existir de verdad (DNS/MX), no solo tener formato válido.
+            'email'  => 'sometimes|required|email:rfc,dns|unique:users,email,' . $user->id,
             // Avatar como data URI base64 (ej: "data:image/jpeg;base64,...")
             // nullable permite enviarlo como null para eliminarlo
             'avatar' => [
@@ -109,6 +119,9 @@ class AuthController extends Controller
                     }
                 },
             ],
+        ], [
+            'email.email'  => 'El correo electrónico no es válido o el dominio no existe.',
+            'email.unique' => 'Ya existe una cuenta con este correo electrónico.',
         ]);
 
         $user->update($data);

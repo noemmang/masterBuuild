@@ -34,25 +34,27 @@
       </button>
 
       @if (auth.usuario()) {
-        <button class="avatar-btn" (click)="toggleMenuUsuario()">
-          @if (auth.usuario()!.avatar) {
-            <img [src]="auth.usuario()!.avatar" alt="avatar" class="avatar-img" />
-          } @else {
-            {{ auth.usuario()!.nombre.charAt(0).toUpperCase() }}
-          }
-        </button>
-        @if (menuUsuarioAbierto) {
-          <div class="dropdown">
-            <div class="dropdown-user">
-              <span class="dropdown-nombre">{{ auth.usuario()!.nombre }}</span>
-              <span class="dropdown-email">{{ auth.usuario()!.email }}</span>
+        <div class="user-menu-wrap" #userMenuWrap>
+          <button class="avatar-btn" (click)="toggleMenuUsuario()">
+            @if (auth.usuario()!.avatar) {
+              <img [src]="auth.usuario()!.avatar" alt="avatar" class="avatar-img" />
+            } @else {
+              {{ auth.usuario()!.nombre.charAt(0).toUpperCase() }}
+            }
+          </button>
+          @if (menuUsuarioAbierto) {
+            <div class="dropdown">
+              <div class="dropdown-user">
+                <span class="dropdown-nombre">{{ auth.usuario()!.nombre }}</span>
+                <span class="dropdown-email">{{ auth.usuario()!.email }}</span>
+              </div>
+              <a routerLink="/perfil"    class="dropdown-item" (click)="menuUsuarioAbierto = false">Perfil</a>
+              <a routerLink="/guardados" class="dropdown-item" (click)="menuUsuarioAbierto = false">Guardados</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item danger" (click)="logout()">Cerrar sesión</button>
             </div>
-            <a routerLink="/perfil"    class="dropdown-item" (click)="menuUsuarioAbierto = false">Perfil</a>
-            <a routerLink="/guardados" class="dropdown-item" (click)="menuUsuarioAbierto = false">Guardados</a>
-            <div class="dropdown-divider"></div>
-            <button class="dropdown-item danger" (click)="logout()">Cerrar sesión</button>
-          </div>
-        }
+          }
+        </div>
       } @else {
         <a routerLink="/auth/login" class="btn-login">Iniciar sesión</a>
       }

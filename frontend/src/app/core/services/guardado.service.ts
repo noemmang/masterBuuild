@@ -122,6 +122,10 @@ export class GuardadoService {
     return this.http.get<ConfiguracionGuardada[]>(`${this.base}/configuraciones`);
   }
 
+  obtenerConfiguracion(uuid: string): Observable<ConfiguracionGuardada> {
+    return this.http.get<ConfiguracionGuardada>(`${this.base}/configuraciones/${uuid}`);
+  }
+
   guardarConfiguracion(payload: GuardarConfiguracionPayload): Observable<{ uuid: string }> {
     return this.http.post<{ uuid: string }>(`${this.base}/configuraciones`, payload);
   }

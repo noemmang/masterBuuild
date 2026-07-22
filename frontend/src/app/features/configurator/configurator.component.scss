@@ -334,7 +334,7 @@ $topbar-h:  52px;
   gap: 0.5rem;
 }
 
-.btn-auto, .btn-guardar {
+.btn-guardar {
   flex: 1;
   padding: 0.5rem;
   border-radius: 8px;
@@ -343,10 +343,10 @@ $topbar-h:  52px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.15s;
+  background: var(--accent);
+  color: #fff;
+  &:hover { opacity: 0.85; }
 }
-
-.btn-auto    { background: var(--surface2); color: var(--text); &:hover { background: var(--border); } }
-.btn-guardar { background: var(--accent);   color: #fff;        &:hover { opacity: 0.85; } }
 
 // Dots
 .dot {

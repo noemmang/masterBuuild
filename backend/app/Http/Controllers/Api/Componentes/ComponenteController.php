@@ -230,40 +230,45 @@ class ComponenteController extends Controller
         ]);
     }
 
+    // Relaciones específicas por categoría — un componente solo pertenece a
+    // UNA categoría, así que solo hace falta precargar las relaciones de esa
+    // categoría. Antes se cargaban las ~25-30 relaciones de TODAS las
+    // categorías en cada petición (una query por relación aunque no
+    // aplicara), lo que hacía lento cualquier sitio que pidiera el detalle
+    // de un componente (configurador al seleccionar, comparador de specs al
+    // añadir una tarjeta, buscador al abrir una ficha).
+    private const RELACIONES_POR_CATEGORIA = [
+        'cpu'                   => ['cpu.socket', 'cpu.arquitectura', 'cpu.tipoMemoria'],
+        'gpu'                   => ['gpu.arquitectura', 'gpu.tipoVRAM', 'gpu.versionPCIe'],
+        'ram'                   => ['ram.tipoMemoria'],
+        'placa_base'            => ['placaBase.socket', 'placaBase.chipset', 'placaBase.factorForma', 'placaBase.tipoMemoria'],
+        'almacenamiento'        => ['almacenamiento.interfaz', 'almacenamiento.factorForma'],
+        'psu'                   => ['psu.certificacion', 'psu.tipoPSU'],
+        'gabinete'              => ['gabinete.tipoGabinete', 'gabinete.estructuraGabinete', 'gabinete.factoresForma'],
+        'refrigeracion_aire'    => ['refrigeracionAire.socketsCompatibles'],
+        'refrigeracion_liquida' => ['refrigeracionLiquida.socketsCompatibles'],
+        'ventilador'            => ['ventilador.tipoVentilador'],
+    ];
+
     public function show(string $uuid)
     {
         $componente = Componente::where('uuid', $uuid)
             ->activo()
-            ->with([
+            ->firstOrFail();
+
+        $relaciones = array_merge(
+            [
                 'marca',
                 'fabricante',
                 'preciosActuales.tienda',
                 'preciosActuales.cupon',
                 'cuponesActivos.tienda',
                 'regalosActivos',
-                'cpu.socket',
-                'cpu.arquitectura',
-                'cpu.tipoMemoria',
-                'gpu.arquitectura',
-                'gpu.tipoVRAM',
-                'gpu.versionPCIe',
-                'ram.tipoMemoria',
-                'placaBase.socket',
-                'placaBase.chipset',
-                'placaBase.factorForma',
-                'placaBase.tipoMemoria',
-                'almacenamiento.interfaz',
-                'almacenamiento.factorForma',
-                'psu.certificacion',
-                'psu.tipoPSU',
-                'gabinete.tipoGabinete',
-                'gabinete.estructuraGabinete',
-                'gabinete.factoresForma',
-                'refrigeracionAire.socketsCompatibles',
-                'refrigeracionLiquida.socketsCompatibles',
-                'ventilador.tipoVentilador',
-            ])
-            ->firstOrFail();
+            ],
+            self::RELACIONES_POR_CATEGORIA[$componente->categoria] ?? []
+        );
+
+        $componente->load($relaciones);
 
         return response()->json($componente);
     }

@@ -73,6 +73,11 @@
   &:hover { opacity: 0.85; }
 }
 
+.user-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
 .avatar-btn {
   width: 34px;
   height: 34px;

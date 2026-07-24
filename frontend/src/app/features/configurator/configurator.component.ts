@@ -107,6 +107,11 @@ export class ConfiguratorComponent implements OnInit {
   private _entriesVersion = signal(0);
   componentes    = signal<Componente[]>([]);
   cargando       = signal(false);
+  cargandoMas    = signal(false);
+  paginaActual   = signal(1);
+  ultimaPagina   = signal(1);
+  hayMas         = signal(false);
+  totalResultados = signal(0);
   busqueda       = '';
   ordenActivo    = '';
   precioMin: number | null = null;
@@ -307,14 +312,33 @@ export class ConfiguratorComponent implements OnInit {
 
   // ── Carga de listado ──────────────────────────────────────────
 
-  cargarSlot(slot: Slot) {
+  /**
+   * Cambia de slot activo. Si el slot es distinto al actual, se limpia la
+   * búsqueda para que no se arrastre el texto buscado en la sección anterior.
+   */
+  seleccionarSlot(slot: Slot): void {
+    if (this.slotActivo().id !== slot.id) {
+      this.busqueda = '';
+    }
+    this.cargarSlot(slot);
+  }
+
+  cargarSlot(slot: Slot, acumular = false) {
     this.slotActivo.set(slot);
-    this.cargando.set(true);
+
+    if (acumular) {
+      this.cargandoMas.set(true);
+    } else {
+      this.cargando.set(true);
+      this.paginaActual.set(1);
+    }
+
+    const pagina = this.paginaActual();
 
     const baseParams = (): Record<string, any> => {
       const p: Record<string, any> = {
         q:     this.busqueda,
-        page:  1,
+        page:  pagina,
         orden: this.ordenActivo,
       };
       if (this.precioMin) p['precio_min'] = this.precioMin;
@@ -338,11 +362,15 @@ export class ConfiguratorComponent implements OnInit {
       ]).subscribe({
         next: ([resAire, resLiquida]) => {
           const merged = this.intercalarResultados(resAire.data, resLiquida.data);
-          this.componentes.set(merged);
+          this.componentes.update(prev => acumular ? [...prev, ...merged] : merged);
+          this.ultimaPagina.set(Math.max(resAire.last_page, resLiquida.last_page));
+          this.totalResultados.set((resAire.total ?? 0) + (resLiquida.total ?? 0));
+          this.hayMas.set(resAire.current_page < resAire.last_page || resLiquida.current_page < resLiquida.last_page);
           this.cargando.set(false);
+          this.cargandoMas.set(false);
           this.cdr.markForCheck();
         },
-        error: () => { this.cargando.set(false); this.cdr.markForCheck(); },
+        error: () => { this.cargando.set(false); this.cargandoMas.set(false); this.cdr.markForCheck(); },
       });
       return;
     }
@@ -353,9 +381,24 @@ export class ConfiguratorComponent implements OnInit {
     }
 
     this.componenteService.buscarConFiltros(params).subscribe({
-      next: (res) => { this.componentes.set(res.data); this.cargando.set(false); this.cdr.markForCheck(); },
-      error: ()    => { this.cargando.set(false); this.cdr.markForCheck(); },
+      next: (res) => {
+        this.componentes.update(prev => acumular ? [...prev, ...res.data] : res.data);
+        this.ultimaPagina.set(res.last_page);
+        this.totalResultados.set(res.total);
+        this.hayMas.set(res.current_page < res.last_page);
+        this.cargando.set(false);
+        this.cargandoMas.set(false);
+        this.cdr.markForCheck();
+      },
+      error: () => { this.cargando.set(false); this.cargandoMas.set(false); this.cdr.markForCheck(); },
     });
+  }
+
+  /** Carga la siguiente página de resultados y la añade al listado actual */
+  cargarMasComponentes(): void {
+    if (!this.hayMas() || this.cargando() || this.cargandoMas()) return;
+    this.paginaActual.update(p => p + 1);
+    this.cargarSlot(this.slotActivo(), true);
   }
 
   /** Intercala dos arrays: [a0, b0, a1, b1, …] */

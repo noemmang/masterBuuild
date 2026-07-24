@@ -13,7 +13,7 @@
           class="slot-item"
           [class.active]="slotActivo().id === slot.id"
           [class.filled]="slot.entradas.length > 0"
-          (click)="cargarSlot(slot)">
+          (click)="seleccionarSlot(slot)">
 
           <div class="slot-info">
             <span class="slot-label">
@@ -176,7 +176,7 @@
       }
 
       @if (!cargando()) {
-        <span class="cfg-resultados">{{ componentes().length }} resultados</span>
+        <span class="cfg-resultados">{{ totalResultados() }} resultados</span>
       }
 
       <!-- Botón panel compatibilidad -->
@@ -282,6 +282,14 @@
             </div><!-- /card-tooltip-wrap -->
           }
         </div>
+        @if (hayMas()) {
+          <div class="cargar-mas-wrap">
+            <button class="btn-cargar-mas" (click)="cargarMasComponentes()" [disabled]="cargandoMas()">
+              @if (cargandoMas()) { <span class="mini-spinner"></span> }
+              @else { Cargar más }
+            </button>
+          </div>
+        }
       }
     </div>
   </div>

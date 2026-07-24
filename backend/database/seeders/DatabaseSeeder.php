@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             MarcasSeeder::class,
             TiendasSeeder::class,
             ComponentesSeeder::class,
+            UrlProductoTiendaSeeder::class,
             CuponesSeeder::class,
             RegalosSeeder::class,
         ]);

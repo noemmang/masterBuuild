@@ -556,6 +556,32 @@ $topbar-h:  52px;
 // ── GRID ─────────────────────────────────────────────────────────
 .cfg-grid-area { padding: 1.25rem; flex: 1; }
 
+.cargar-mas-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.btn-cargar-mas {
+  padding: 0.65rem 2.5rem;
+  background: var(--surface);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 140px;
+  justify-content: center;
+
+  &:hover:not(:disabled) { background: var(--surface2); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
 .cfg-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

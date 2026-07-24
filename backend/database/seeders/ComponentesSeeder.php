@@ -312,15 +312,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearCPU(
-            comp: ['nombre' => 'AMD Ryzen 9 7950X', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 9 7950X', 'descripcion' => 'Procesador AMD Ryzen 9 7950X, 16 núcleos / 32 hilos, arquitectura Zen 4. El modelo flagship de AM5 para workstations y renderizado.', 'imagen_url' => 'https://www.neobyte.es/79808-large_default/amd-ryzen-9-7950x-procesador-am5.jpg'],
-            cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 16, 'hilos' => 32, 'frecuencia_base_ghz' => 4.50, 'frecuencia_boost_ghz' => 5.70, 'tdp_watts' => 170, 'tdp_max_watts' => 230, 'frecuencia_memoria_max_mhz' => 5200, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon Graphics (2 CUs)', 'proceso_nm' => 5, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 799.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 809.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 749.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearCPU(
             comp: ['nombre' => 'AMD Ryzen 7 7800X3D', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 7 7800X3D', 'descripcion' => 'Procesador AMD Ryzen 7 7800X3D, 8 núcleos / 16 hilos con 3D V-Cache (96 MB L3). El mejor procesador gaming del mercado en su lanzamiento.', 'imagen_url' => 'https://cdn.videocardz.com/1/2026/05/RYZEN-7800X3D-HERO-1200x627.jpg'],
             cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 8, 'hilos' => 16, 'frecuencia_base_ghz' => 4.20, 'frecuencia_boost_ghz' => 5.00, 'tdp_watts' => 120, 'tdp_max_watts' => 162, 'frecuencia_memoria_max_mhz' => 5200, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon Graphics (2 CUs)', 'proceso_nm' => 5, 'incluye_cooler' => false, 'overclock' => false],
             historial: [
@@ -339,30 +330,12 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearCPU(
-            comp: ['nombre' => 'AMD Ryzen 9 7950X3D', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 9 7950X3D', 'descripcion' => 'Procesador AMD Ryzen 9 7950X3D, 16 núcleos / 32 hilos con 3D V-Cache dual. El procesador más potente de AMD para consumidores.', 'imagen_url' => 'https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24456325/236550_AMD_Ryzen_9_7950X3D_TWarren_0002.jpg?quality=90&strip=all&crop=0,0,100,100'],
-            cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 16, 'hilos' => 32, 'frecuencia_base_ghz' => 4.20, 'frecuencia_boost_ghz' => 5.70, 'tdp_watts' => 120, 'tdp_max_watts' => 162, 'frecuencia_memoria_max_mhz' => 5200, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon Graphics (2 CUs)', 'proceso_nm' => 5, 'incluye_cooler' => false, 'overclock' => false],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 3, 1), 'precio_base' => 849.00, 'variacion_pct' => 8],
-                ['tienda' => 'APP Informática', 'desde' => Carbon::create(2023, 3, 1), 'precio_base' => 859.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate', 'desde' => Carbon::create(2023, 5, 1), 'precio_base' => 829.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearCPU(
             comp: ['nombre' => 'AMD Ryzen 5 8600G', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 5 8600G', 'descripcion' => 'Procesador AMD Ryzen 5 8600G, 6 núcleos / 12 hilos con gráfica integrada RDNA 3 (Radeon 760M). La mejor opción sin GPU dedicada en AM5.', 'imagen_url' => 'https://sm.pcmag.com/t/pcmag_me/review/a/amd-ryzen-/amd-ryzen-5-8600g_yqwn.1920.jpg'],
             cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 6, 'hilos' => 12, 'frecuencia_base_ghz' => 4.30, 'frecuencia_boost_ghz' => 5.00, 'tdp_watts' => 65, 'tdp_max_watts' => 88, 'frecuencia_memoria_max_mhz' => 5333, 'memoria_max_gb' => 96, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon 760M (8 CUs RDNA 3)', 'proceso_nm' => 4, 'incluye_cooler' => true, 'overclock' => true],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2024, 2, 1), 'precio_base' => 259.00, 'variacion_pct' => 5],
                 ['tienda' => 'CaseKing', 'desde' => Carbon::create(2024, 2, 1), 'precio_base' => 263.00, 'variacion_pct' => 5],
                 ['tienda' => 'Coolmod', 'desde' => Carbon::create(2024, 4, 1), 'precio_base' => 249.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'AMD Ryzen 7 8700G', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 7 8700G', 'descripcion' => 'Procesador AMD Ryzen 7 8700G, 8 núcleos / 16 hilos con Radeon 780M (12 CUs RDNA 3). La gráfica integrada más potente del mercado consumer.', 'imagen_url' => 'https://acf.geeknetic.es/imgri/imagenes/auto/24/01/04/j12-el-amd-ryzen-7-8700g-incluye-una-gpu-integrada-radeon-780m-con-12-cus-a-29-ghz.png?f=webp'],
-            cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 8, 'hilos' => 16, 'frecuencia_base_ghz' => 4.20, 'frecuencia_boost_ghz' => 5.10, 'tdp_watts' => 65, 'tdp_max_watts' => 88, 'frecuencia_memoria_max_mhz' => 5333, 'memoria_max_gb' => 96, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon 780M (12 CUs RDNA 3)', 'proceso_nm' => 4, 'incluye_cooler' => true, 'overclock' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2024, 2, 1), 'precio_base' => 329.00, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2024, 2, 1), 'precio_base' => 335.00, 'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt', 'desde' => Carbon::create(2024, 4, 1), 'precio_base' => 339.00, 'variacion_pct' => 4],
             ]
         );
         $this->crearCPU(
@@ -470,33 +443,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i5-13600K', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i5-13600K', 'descripcion' => 'Procesador Intel Core i5-13600K, 14 núcleos (6P+8E) / 20 hilos, arquitectura Raptor Lake. El mid-range más equilibrado de Intel en su generación.', 'imagen_url' => 'https://m.media-amazon.com/images/I/61DvPvlMACL._AC_SL1500_.jpg'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 14, 'hilos' => 20, 'frecuencia_base_ghz' => 3.50, 'frecuencia_boost_ghz' => 5.10, 'tdp_watts' => 125, 'tdp_max_watts' => 181, 'frecuencia_memoria_max_mhz' => 5600, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel UHD Graphics 770', 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'Aussar', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 349.00, 'variacion_pct' => 6],
-                ['tienda' => 'FNAC', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 354.00, 'variacion_pct' => 6],
-                ['tienda' => 'CaseKing', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 329.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i7-13700K', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i7-13700K', 'descripcion' => 'Procesador Intel Core i7-13700K, 16 núcleos (8P+8E) / 24 hilos, arquitectura Raptor Lake. Máximo rendimiento multihilo para usuarios exigentes.', 'imagen_url' => 'https://www.wepc.com/wp-content/uploads/2024/12/13700K-on-table.jpg'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 16, 'hilos' => 24, 'frecuencia_base_ghz' => 3.40, 'frecuencia_boost_ghz' => 5.40, 'tdp_watts' => 125, 'tdp_max_watts' => 253, 'frecuencia_memoria_max_mhz' => 5600, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel UHD Graphics 770', 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'Red Computer', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 449.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 455.00, 'variacion_pct' => 6],
-                ['tienda' => 'Coolmod', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 429.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i9-13900K', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i9-13900K', 'descripcion' => 'Procesador Intel Core i9-13900K, 24 núcleos (8P+16E) / 32 hilos, arquitectura Raptor Lake. El flagship de Intel en su 13ª generación.', 'imagen_url' => 'https://www.air-computers.com/wp-content/uploads/2023/03/portada-intel-1080x675.jpg'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 24, 'hilos' => 32, 'frecuencia_base_ghz' => 3.00, 'frecuencia_boost_ghz' => 5.80, 'tdp_watts' => 125, 'tdp_max_watts' => 253, 'frecuencia_memoria_max_mhz' => 5600, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel UHD Graphics 770', 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 649.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 659.00, 'variacion_pct' => 7],
-                ['tienda' => 'PcBox', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 669.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearCPU(
             comp: ['nombre' => 'Intel Core i5-13400F', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i5-13400F', 'descripcion' => 'Procesador Intel Core i5-13400F, 10 núcleos (6P+4E) / 16 hilos sin gráfica integrada. La opción gaming más popular de la 13ª generación Intel.', 'imagen_url' => 'https://coolboxpe.vtexassets.com/arquivos/ids/347294-800-800?v=638774832885400000&width=800&height=800&aspect=true'],
             cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 10, 'hilos' => 16, 'frecuencia_base_ghz' => 2.50, 'frecuencia_boost_ghz' => 4.60, 'tdp_watts' => 65, 'tdp_max_watts' => 148, 'frecuencia_memoria_max_mhz' => 4800, 'memoria_max_gb' => 128, 'grafica_integrada' => false, 'nombre_grafica_integrada' => null, 'proceso_nm' => 10, 'incluye_cooler' => true, 'overclock' => false],
             historial: [
@@ -601,31 +547,6 @@ class ComponentesSeeder extends Seeder
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 359.00, 'variacion_pct' => 6],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 364.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i9-12900KS', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i9-12900KS', 'descripcion' => 'Procesador Intel Core i9-12900KS, 16 núcleos / 24 hilos, Alder Lake con 5.2 GHz de boost. Versión especial del flagship de 12ª gen.', 'imagen_url' => 'https://sologamer.cl/wp-content/uploads/2022/03/intel-core-i9-12900ks-up-to-15-faster-than-core-i9-12900khellip.jpg'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Alder Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 16, 'hilos' => 24, 'frecuencia_base_ghz' => 3.40, 'frecuencia_boost_ghz' => 5.20, 'tdp_watts' => 150, 'tdp_max_watts' => 241, 'frecuencia_memoria_max_mhz' => 4800, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel UHD Graphics 770', 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'Info Computer', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 749.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 759.00, 'variacion_pct' => 7],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i5-13600KF', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i5-13600KF', 'descripcion' => 'Procesador Intel Core i5-13600KF, 14 núcleos / 20 hilos sin iGPU, Raptor Lake. Igual al 13600K pero sin gráfica integrada y precio algo inferior.', 'imagen_url' => 'https://m.media-amazon.com/images/I/71hQ1a68XWL._AC_UF350,350_QL80_.jpg'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 14, 'hilos' => 20, 'frecuencia_base_ghz' => 3.50, 'frecuencia_boost_ghz' => 5.10, 'tdp_watts' => 125, 'tdp_max_watts' => 181, 'frecuencia_memoria_max_mhz' => 5600, 'memoria_max_gb' => 128, 'grafica_integrada' => false, 'nombre_grafica_integrada' => null, 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'Aussar', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 329.00, 'variacion_pct' => 6],
-                ['tienda' => 'Red Computer', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 334.00, 'variacion_pct' => 5],
-                ['tienda' => 'Life Informática', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 309.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearCPU(
-            comp: ['nombre' => 'Intel Core i9-13900KF', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core i9-13900KF', 'descripcion' => 'Procesador Intel Core i9-13900KF, 24 núcleos / 32 hilos sin iGPU, Raptor Lake. Mismas especificaciones que el 13900K a un precio algo menor.', 'imagen_url' => 'https://costtocost.ae/wp-content/uploads/2023/07/newsroom-intel-13th-gen-i9-13900ks-jpg-510x287.webp'],
-            cpu: ['socket' => 'LGA1700', 'arquitectura' => 'Raptor Lake', 'tipo_memoria' => 'DDR4', 'nucleos' => 24, 'hilos' => 32, 'frecuencia_base_ghz' => 3.00, 'frecuencia_boost_ghz' => 5.80, 'tdp_watts' => 125, 'tdp_max_watts' => 253, 'frecuencia_memoria_max_mhz' => 5600, 'memoria_max_gb' => 128, 'grafica_integrada' => false, 'nombre_grafica_integrada' => null, 'proceso_nm' => 10, 'incluye_cooler' => false, 'overclock' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 619.00, 'variacion_pct' => 8],
-                ['tienda' => 'Worten', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 629.00, 'variacion_pct' => 7],
             ]
         );
         $this->crearCPU(
@@ -3128,7 +3049,7 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'DeepCool AK620', 'marca' => 'DeepCool', 'modelo' => 'R-AK620-BKNNMT-G', 'descripcion' => 'Disipador dual torre 260W TDP con 6 heatpipes Ø6 mm niquelados. Dos ventiladores FK120 de 120 mm. Altura 160 mm. Excelente relación calidad-precio en su categoría.', 'imagen_url' => 'https://hyperpc.kz/images/catalog/hardware/cooling/deepcool/ak620/deepcool-ak620-zero-dark.jpg'],
+            comp: ['nombre' => 'DeepCool AK620 G2', 'marca' => 'DeepCool', 'modelo' => 'R-AK620-BKNNMT-G', 'descripcion' => 'Disipador dual torre 260W TDP con 6 heatpipes Ø6 mm niquelados. Dos ventiladores FK120 de 120 mm. Altura 160 mm. Excelente relación calidad-precio en su categoría.', 'imagen_url' => 'https://hyperpc.kz/images/catalog/hardware/cooling/deepcool/ak620/deepcool-ak620-zero-dark.jpg'],
             aire: ['tdp_max_watts' => 260, 'altura_mm' => 160, 'ancho_mm' => 129, 'profundidad_mm' => 101, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 500, 'rpm_max' => 1850, 'ruido_db_min' => 17.6, 'ruido_db_max' => 32.0, 'num_heatpipes' => 6, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => true],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
             historial: [
@@ -3149,26 +3070,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 10, 1), 'precio_base' => 42.99,  'variacion_pct' => 5],
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 2, 1),  'precio_base' => 38.50,  'variacion_pct' => 4],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 8, 1),  'precio_base' => 37.99,  'variacion_pct' => 3],
-            ]
-        );
-        $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'Thermalright Assassin X 120 R PLUS', 'marca' => 'Thermalright', 'modelo' => 'AXP120-X67-PLUS', 'descripcion' => 'Disipador torre simple asimétrico 220W TDP. 6 heatpipes Ø6 mm. Ventilador TL-C12015L de 120×15 mm (slim). Altura 154 mm. Diseño offset para no obstruir ranuras RAM.', 'imagen_url' => 'https://assetsio.gnwcdn.com/thermalright_16x9.png?width=690&quality=85&format=jpg&dpr=3&auto=webp'],
-            aire: ['tdp_max_watts' => 220, 'altura_mm' => 154, 'ancho_mm' => 125, 'profundidad_mm' => 76, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 300, 'rpm_max' => 1550, 'ruido_db_min' => 15.0, 'ruido_db_max' => 26.0, 'num_heatpipes' => 6, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => false],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 29.90,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 31.99,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 28.50,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'ID-Cooling IS-67-XT', 'marca' => 'ID-Cooling', 'modelo' => 'IS-67-XT', 'descripcion' => 'Disipador torre simple 250W TDP con 6 heatpipes Ø6 mm de cobre puro. Ventilador de 120 mm con rodamiento FDB. Altura 157 mm. Revestimiento antioxidante. Buena opción de gama media-alta sin RGB.', 'imagen_url' => 'https://http2.mlstatic.com/D_Q_NP_756808-CBT108415060105_032026-O.webp'],
-            aire: ['tdp_max_watts' => 250, 'altura_mm' => 157, 'ancho_mm' => 126, 'profundidad_mm' => 83, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 700, 'rpm_max' => 1800, 'ruido_db_min' => 18.0, 'ruido_db_max' => 30.5, 'num_heatpipes' => 6, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => false],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 34.90,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 36.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 10, 1), 'precio_base' => 33.99,  'variacion_pct' => 4],
             ]
         );
         $this->crearRefrigeracionAire(
@@ -3226,17 +3127,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'DeepCool LS720 Zero Dark', 'marca' => 'DeepCool', 'modelo' => 'R-LS720-BKNNMT-G', 'descripcion' => 'Disipador low profile de 58 mm con 4 heatpipes de contacto directo. Ventilador de 120 mm preinstalado. TDP 120W. Acabado negro mate total. Compatible AM4, AM5, LGA1700. Solución discreta para HTPC o SFF gaming.', 'imagen_url' => 'https://media.pangoly.com/img/3/e/f/4/3ef4e8ac-dc88-40bf-82b3-cf2688d0c115.jpg'],
-            aire: ['tdp_max_watts' => 120, 'altura_mm' => 58, 'ancho_mm' => 130, 'profundidad_mm' => 124, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 500, 'rpm_max' => 1800, 'ruido_db_min' => 18.0, 'ruido_db_max' => 29.5, 'num_heatpipes' => 4, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => false],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 44.90,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 47.99,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 10, 1), 'precio_base' => 43.50,  'variacion_pct' => 4],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 42.99,  'variacion_pct' => 3],
-            ]
-        );
-        $this->crearRefrigeracionAire(
             comp: ['nombre' => 'Arctic Freezer 36', 'marca' => 'Arctic', 'modelo' => 'ACFRE00123A', 'descripcion' => 'Torre simple 210W TDP con 4 heatpipes de contacto directo. Ventilador P12 Max de 120 mm (3300 rpm). Altura 157 mm. Soporte PWM Sharing Technology. Opción económica con rendimiento sólido.', 'imagen_url' => 'https://www.electroprecio.com/media/catalog/product/cache/1/thumbnail/600x400/9df78eab33525d08d6e5fb8d27136e95/6/a/6a4130e8e72b32bbe3c2382a546ef620a8ee446a.jpg.jpg'],
             aire: ['tdp_max_watts' => 210, 'altura_mm' => 157, 'ancho_mm' => 123, 'profundidad_mm' => 76, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 200, 'rpm_max' => 3300, 'ruido_db_min' => 0.5, 'ruido_db_max' => 36.0, 'num_heatpipes' => 4, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => false],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
@@ -3244,16 +3134,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 29.90,  'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 31.99,  'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 28.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'Arctic Freezer i35 CO', 'marca' => 'Arctic', 'modelo' => 'ACFRE00095A', 'descripcion' => 'Torre simple 210W TDP solo Intel (LGA1700/1200). 4 heatpipes. Ventilador P12 Max. Altura 157 mm. Variante Continuous Operation para ambientes 24/7 con rodamientos reforzados.', 'imagen_url' => 'https://gplay.bg/UserFiles/Product/gallery_1/53944ca5-5a5e-0dbe-384e-de67487504d3.jpg?block&cache&w=1000&h=1000'],
-            aire: ['tdp_max_watts' => 210, 'altura_mm' => 157, 'ancho_mm' => 123, 'profundidad_mm' => 76, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 200, 'rpm_max' => 3300, 'ruido_db_min' => 0.5, 'ruido_db_max' => 36.0, 'num_heatpipes' => 4, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => false],
-            sockets: ['LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 34.90,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 37.99,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 33.50,  'variacion_pct' => 4],
             ]
         );
         $this->crearRefrigeracionAire(
@@ -3265,29 +3145,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 94.99,  'variacion_pct' => 4],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 10, 1), 'precio_base' => 87.99,  'variacion_pct' => 3],
                 ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 2, 1),  'precio_base' => 85.99,  'variacion_pct' => 3],
-            ]
-        );
-        $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'Scythe Fuma 3', 'marca' => 'Scythe', 'modelo' => 'SCFM-3000', 'descripcion' => 'Disipador dual torre asimétrico 240W TDP de Scythe. 6 heatpipes Ø6 mm. Ventiladores Kaze Flex II 120 mm x2. Altura 154 mm. Diseño offset para compatibilidad total con RAM alta.', 'imagen_url' => 'https://www.alternate.es/p/1200x630/4/7/Scythe_Fuma_3_SCMF_3000__Disipador_de_CPU@@100010874.jpg'],
-            aire: ['tdp_max_watts' => 240, 'altura_mm' => 154, 'ancho_mm' => 130, 'profundidad_mm' => 110, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 300, 'rpm_max' => 1200, 'ruido_db_min' => 14.0, 'ruido_db_max' => 26.5, 'num_heatpipes' => 6, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => true],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 4, 1),  'precio_base' => 69.90,  'variacion_pct' => 4],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 4, 1),  'precio_base' => 72.99,  'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 67.99,  'variacion_pct' => 3],
-            ]
-        );
-        $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'Cooler Master Hyper 212 Halo', 'marca' => 'Cooler Master', 'modelo' => 'RR-S4NA-17PA-R1', 'descripcion' => 'Torre simple 180W TDP con 4 heatpipes. Ventilador SickleFlow 120 con anillo ARGB. Altura 158 mm. Soporte de contacto con base niquelada. Una de las opciones más vendidas en su rango de precio.', 'imagen_url' => 'https://www.neobyte.es/88790-medium_default/cooler-master-hyper-212-halo-black-disipador-cpu.jpg'],
-            aire: ['tdp_max_watts' => 180, 'altura_mm' => 158, 'ancho_mm' => 120, 'profundidad_mm' => 77, 'num_ventiladores' => 1, 'tam_ventilador_mm' => 120, 'rpm_min' => 650, 'rpm_max' => 1800, 'ruido_db_min' => 6.0, 'ruido_db_max' => 27.0, 'num_heatpipes' => 4, 'incluye_pasta_termica' => true, 'tiene_rgb' => true, 'disipador_dual_torre' => false],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 39.90,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 42.99,  'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 44.99,  'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 37.99,  'variacion_pct' => 4],
-                ['tienda' => 'FNAC',          'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 43.99,  'variacion_pct' => 5],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 36.99,  'variacion_pct' => 3],
             ]
         );
         $this->crearRefrigeracionAire(
@@ -3319,7 +3176,7 @@ class ComponentesSeeder extends Seeder
     protected function seedRefrigeracionesLiquidas(): void
     {
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Arctic Liquid Freezer III 240', 'marca' => 'Arctic', 'modelo' => 'ACFRE00134A', 'descripcion' => 'AIO 240 mm con bomba integrada en el radiador (velocidad variable vía PWM). Dos ventiladores P12 Max de 120 mm. Bomba 0.8 MPa. MX-6 incluida. Sin RGB. Compatible AM5 y LGA1851 de serie.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/1093/10933298/6816-refrigeracion-liquida-arctic-liquid-freezer-iii-pro-240-2x120mm-fdb-131-m3-h-negro-721b90d9-cd25-416e-bf03-af405fb93c52.jpg'],
+            comp: ['nombre' => 'Arctic Liquid Freezer III Pro 240 ', 'marca' => 'Arctic', 'modelo' => 'ACFRE00134A', 'descripcion' => 'AIO 240 mm con bomba integrada en el radiador (velocidad variable vía PWM). Dos ventiladores P12 Max de 120 mm. Bomba 0.8 MPa. MX-6 incluida. Sin RGB. Compatible AM5 y LGA1851 de serie.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/1093/10933298/6816-refrigeracion-liquida-arctic-liquid-freezer-iii-pro-240-2x120mm-fdb-131-m3-h-negro-721b90d9-cd25-416e-bf03-af405fb93c52.jpg'],
             liq: ['tdp_max_watts' => 250, 'tam_radiador_mm' => 240, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 240, 'grosor_radiador_mm' => 38, 'altura_bomba_mm' => 53, 'ancho_bomba_mm' => 53, 'profundidad_bomba_mm' => 43, 'pantalla_cabezal' => false, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 200, 'rpm_max' => 3000, 'ruido_db_min' => 0.5, 'ruido_db_max' => 37.5, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => false],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
             historial: [
@@ -3354,18 +3211,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Cooler Master MasterLiquid ML240L V2 ARGB', 'marca' => 'Cooler Master', 'modelo' => 'MLW-D24M-A18PC-R2', 'descripcion' => 'AIO 240 mm de gama de entrada con cabezal Dual Chamber para mejor presión. Ventiladores SickleFlow 120 ARGB. Buena opción económica para CPUs hasta 180W TDP.', 'imagen_url' => 'https://img.pccomponentes.com/articles/40/402144/1760-cooler-master-masterliquid-ml240l-v2-argb-kit-de-refrigeracion-liquida.jpg'],
-            liq: ['tdp_max_watts' => 180, 'tam_radiador_mm' => 240, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 240, 'grosor_radiador_mm' => 27, 'altura_bomba_mm' => 67, 'ancho_bomba_mm' => 67, 'profundidad_bomba_mm' => 48, 'pantalla_cabezal' => false, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 650, 'rpm_max' => 1800, 'ruido_db_min' => 6.0, 'ruido_db_max' => 27.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 69.90,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 72.99,  'variacion_pct' => 6],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 74.99,  'variacion_pct' => 5],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 66.99,  'variacion_pct' => 4],
-                ['tienda' => 'Life Informática','desde'=> Carbon::create(2023, 9, 1), 'precio_base' => 67.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearRefrigeracionLiquida(
             comp: ['nombre' => 'DeepCool LT240', 'marca' => 'DeepCool', 'modelo' => 'R-LT240-WHAMNT-G', 'descripcion' => 'AIO 240 mm con cabezal ARGB rotativo 360°. Dos ventiladores FK120 de 120 mm. Radiador aluminio 27 mm grosor. Sistema anti-leaks. Buena relación calidad-precio.', 'imagen_url' => 'https://s3.e2e4.ru/imgproxy/3711552'],
             liq: ['tdp_max_watts' => 220, 'tam_radiador_mm' => 240, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 240, 'grosor_radiador_mm' => 27, 'altura_bomba_mm' => 68, 'ancho_bomba_mm' => 68, 'profundidad_bomba_mm' => 52, 'pantalla_cabezal' => false, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 500, 'rpm_max' => 1850, 'ruido_db_min' => 17.6, 'ruido_db_max' => 32.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
@@ -3377,7 +3222,7 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Arctic Liquid Freezer III 280', 'marca' => 'Arctic', 'modelo' => 'ACFRE00136A', 'descripcion' => 'AIO 280 mm con bomba integrada en radiador controlada por PWM. Dos ventiladores P14 Max de 140 mm (hasta 3000 rpm). Rendimiento excepcional para su precio. Sin RGB.', 'imagen_url' => 'https://assetsio.gnwcdn.com/arctic-liquid-freezer-iii-240-df-deal.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp'],
+            comp: ['nombre' => 'Arctic Liquid Freezer III Pro 280', 'marca' => 'Arctic', 'modelo' => 'ACFRE00136A', 'descripcion' => 'AIO 280 mm con bomba integrada en radiador controlada por PWM. Dos ventiladores P14 Max de 140 mm (hasta 3000 rpm). Rendimiento excepcional para su precio. Sin RGB.', 'imagen_url' => 'https://assetsio.gnwcdn.com/arctic-liquid-freezer-iii-240-df-deal.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp'],
             liq: ['tdp_max_watts' => 300, 'tam_radiador_mm' => 280, 'ancho_radiador_mm' => 140, 'alto_radiador_mm' => 280, 'grosor_radiador_mm' => 38, 'altura_bomba_mm' => 53, 'ancho_bomba_mm' => 53, 'profundidad_bomba_mm' => 43, 'pantalla_cabezal' => false, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 140, 'rpm_min' => 200, 'rpm_max' => 3000, 'ruido_db_min' => 0.5, 'ruido_db_max' => 38.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => false],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
             historial: [
@@ -3411,18 +3256,7 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'DeepCool Assassin IV LT 280', 'marca' => 'DeepCool', 'modelo' => 'R-ASLT4-BKNNMT-G', 'descripcion' => 'AIO 280 mm con cabezal ARGB rotativo y display de temperatura. Dos ventiladores FK140 de 140 mm con cojinetes hidráulicos. Radiador de 38 mm de grosor para máxima disipación. Gama alta DeepCool.', 'imagen_url' => 'https://elchapuzasinformatico.com/wp-content/uploads/2023/01/DeepCool-LS520-SE-Digital.jpg'],
-            liq: ['tdp_max_watts' => 290, 'tam_radiador_mm' => 280, 'ancho_radiador_mm' => 140, 'alto_radiador_mm' => 280, 'grosor_radiador_mm' => 38, 'altura_bomba_mm' => 68, 'ancho_bomba_mm' => 68, 'profundidad_bomba_mm' => 52, 'pantalla_cabezal' => false, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 140, 'rpm_min' => 300, 'rpm_max' => 1350, 'ruido_db_min' => 17.0, 'ruido_db_max' => 28.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 114.90, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 117.99, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 112.50, 'variacion_pct' => 4],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2024, 4, 1),  'precio_base' => 109.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Arctic Liquid Freezer III 360', 'marca' => 'Arctic', 'modelo' => 'ACFRE00138A', 'descripcion' => 'AIO 360 mm con bomba integrada en radiador PWM. Tres ventiladores P12 Max de 120 mm. Radiador 38 mm de grosor. La mejor opción sin RGB para CPUs de alto TDP (Ryzen 9 9950X, Core i9-14900K).', 'imagen_url' => 'https://elitehubs.com/cdn/shop/files/Liquid_Freezer_III_360_ARGB_Black_G02_2_result.jpg?v=1721029670&width=533'],
+            comp: ['nombre' => 'Arctic Liquid Freezer III Pro 360', 'marca' => 'Arctic', 'modelo' => 'ACFRE00138A', 'descripcion' => 'AIO 360 mm con bomba integrada en radiador PWM. Tres ventiladores P12 Max de 120 mm. Radiador 38 mm de grosor. La mejor opción sin RGB para CPUs de alto TDP (Ryzen 9 9950X, Core i9-14900K).', 'imagen_url' => 'https://elitehubs.com/cdn/shop/files/Liquid_Freezer_III_360_ARGB_Black_G02_2_result.jpg?v=1721029670&width=533'],
             liq: ['tdp_max_watts' => 350, 'tam_radiador_mm' => 360, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 360, 'grosor_radiador_mm' => 38, 'altura_bomba_mm' => 53, 'ancho_bomba_mm' => 53, 'profundidad_bomba_mm' => 43, 'pantalla_cabezal' => false, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 120, 'rpm_min' => 200, 'rpm_max' => 3000, 'ruido_db_min' => 0.5, 'ruido_db_max' => 37.5, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => false],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
             historial: [
@@ -3457,17 +3291,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Cooler Master MasterLiquid 360L Core ARGB', 'marca' => 'Cooler Master', 'modelo' => 'MLW-D36M-A18PC-R2', 'descripcion' => 'AIO 360 mm con cabezal Dual Chamber. Tres ventiladores SickleFlow 120 ARGB. Buena opción de gama media para CPUs de alto rendimiento como Ryzen 9 o Core i9. Control por software Cooler Master.', 'imagen_url' => 'https://m.media-amazon.com/images/I/71hXLrXwBJL.jpg'],
-            liq: ['tdp_max_watts' => 300, 'tam_radiador_mm' => 360, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 360, 'grosor_radiador_mm' => 27, 'altura_bomba_mm' => 67, 'ancho_bomba_mm' => 67, 'profundidad_bomba_mm' => 48, 'pantalla_cabezal' => false, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 120, 'rpm_min' => 650, 'rpm_max' => 1800, 'ruido_db_min' => 6.0, 'ruido_db_max' => 27.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 94.90,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 97.99,  'variacion_pct' => 6],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2022, 10, 1), 'precio_base' => 92.50,  'variacion_pct' => 4],
-                ['tienda' => 'Life Informática','desde'=> Carbon::create(2023, 4, 1), 'precio_base' => 89.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearRefrigeracionLiquida(
             comp: ['nombre' => 'be quiet! Pure Loop 2 FX 360', 'marca' => 'be quiet!', 'modelo' => 'BW008', 'descripcion' => 'AIO 360 mm con tres ventiladores Pure Wings 3 120 mm PWM ARGB. Cabezal ARGB ultrasilencioso. Bomba de 4ª generación 4500 rpm máx. Radiador de aluminio 27 mm. La opción más silenciosa en 360 mm.', 'imagen_url' => 'https://m.media-amazon.com/images/I/714HYKhUWDL.jpg'],
             liq: ['tdp_max_watts' => 320, 'tam_radiador_mm' => 360, 'ancho_radiador_mm' => 120, 'alto_radiador_mm' => 360, 'grosor_radiador_mm' => 27, 'altura_bomba_mm' => 65, 'ancho_bomba_mm' => 65, 'profundidad_bomba_mm' => 50, 'pantalla_cabezal' => false, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 120, 'rpm_min' => 300, 'rpm_max' => 1600, 'ruido_db_min' => 9.6, 'ruido_db_max' => 29.3, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
@@ -3479,24 +3302,13 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Arctic Liquid Freezer III 420', 'marca' => 'Arctic', 'modelo' => 'ACFRE00140A', 'descripcion' => 'AIO 420 mm con bomba integrada en radiador. Tres ventiladores P14 Max de 140 mm (hasta 3000 rpm). Radiador 38 mm de grosor. La AIO de mayor superficie de disipación del mercado por menos de 150€.', 'imagen_url' => 'https://assetsio.gnwcdn.com/arctic-liquid-freezer-420-df-deal.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp'],
+            comp: ['nombre' => 'Arctic Liquid Freezer III Pro 420', 'marca' => 'Arctic', 'modelo' => 'ACFRE00140A', 'descripcion' => 'AIO 420 mm con bomba integrada en radiador. Tres ventiladores P14 Max de 140 mm (hasta 3000 rpm). Radiador 38 mm de grosor. La AIO de mayor superficie de disipación del mercado por menos de 150€.', 'imagen_url' => 'https://assetsio.gnwcdn.com/arctic-liquid-freezer-420-df-deal.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp'],
             liq: ['tdp_max_watts' => 400, 'tam_radiador_mm' => 420, 'ancho_radiador_mm' => 140, 'alto_radiador_mm' => 420, 'grosor_radiador_mm' => 38, 'altura_bomba_mm' => 53, 'ancho_bomba_mm' => 53, 'profundidad_bomba_mm' => 43, 'pantalla_cabezal' => false, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 140, 'rpm_min' => 200, 'rpm_max' => 3000, 'ruido_db_min' => 0.5, 'ruido_db_max' => 38.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => false],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 119.90, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 124.99, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 117.99, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'Corsair iCUE H170i Elite LCD XT', 'marca' => 'Corsair', 'modelo' => 'CW-9060076-WW', 'descripcion' => 'AIO 420 mm con pantalla LCD IPS 2.1" en cabezal. Tres ventiladores QL140 ARGB de 140 mm. Bomba ultra-silenciosa. El AIO más grande de Corsair para builds con gabinetes Full Tower. Ideal para Core i9-14900K o Ryzen 9 9950X a máxima carga.', 'imagen_url' => 'https://m.media-amazon.com/images/I/71Rm0YDNMIL.jpg'],
-            liq: ['tdp_max_watts' => 400, 'tam_radiador_mm' => 420, 'ancho_radiador_mm' => 140, 'alto_radiador_mm' => 420, 'grosor_radiador_mm' => 27, 'altura_bomba_mm' => 75, 'ancho_bomba_mm' => 75, 'profundidad_bomba_mm' => 53, 'pantalla_cabezal' => true, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 140, 'rpm_min' => 400, 'rpm_max' => 2000, 'ruido_db_min' => 10.0, 'ruido_db_max' => 37.0, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
-            sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851'],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 279.90, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 284.99, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 269.99, 'variacion_pct' => 4],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 259.99, 'variacion_pct' => 3],
             ]
         );
         $this->crearRefrigeracionLiquida(
@@ -3568,8 +3380,8 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearVentilador(
-            comp: ['nombre' => 'Lian Li UNI FAN SL140 RGB (x3)', 'marca' => 'Lian Li', 'modelo' => 'UF-SL140-3B', 'descripcion' => 'Pack de 3 ventiladores 140 mm daisy-chain ARGB. Mayor caudal que el SL120 a menor ruido. Ideal para radiadores 420 mm o como fans de case en lateral o techo.', 'imagen_url' => 'https://microless.com/cdn/product_description/7887529_1620193090.jpg'],
-            vent: ['tipo' => 'Normal', 'rpm_min' => 700, 'rpm_max' => 1600, 'ruido_db_min' => 19.5, 'ruido_db_max' => 30.5, 'flujo_aire_cfm' => 78.40, 'static_pressure_mmh2o' => 1.86, 'num_ventiladores' => 3, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 140],
+            comp: ['nombre' => 'Lian Li UNI FAN SL140 RGB (x2)', 'marca' => 'Lian Li', 'modelo' => 'UF-SL140-2B', 'descripcion' => 'Pack de 2 ventiladores 140 mm daisy-chain ARGB. Mayor caudal que el SL120 a menor ruido. Ideal para radiadores 420 mm o como fans de case en lateral o techo.', 'imagen_url' => 'https://m.media-amazon.com/images/I/513N9GYxJnL.jpg'],
+            vent: ['tipo' => 'Normal', 'rpm_min' => 700, 'rpm_max' => 1600, 'ruido_db_min' => 19.5, 'ruido_db_max' => 30.5, 'flujo_aire_cfm' => 78.40, 'static_pressure_mmh2o' => 1.86, 'num_ventiladores' => 2, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 140],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 79.90, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 82.99, 'variacion_pct' => 5],
@@ -3612,18 +3424,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearVentilador(
-            comp: ['nombre' => 'Cooler Master MF120 Halo ARGB (x3)', 'marca' => 'Cooler Master', 'modelo' => 'MFL-B2DN-183PA-R1', 'descripcion' => 'Pack de 3 ventiladores 120 mm con iluminación ARGB en doble anillo (18 LEDs por ventilador). Controlador ARGB incluido con botón de modos. Buena opción para builds coloridos sin necesidad de motherboard ARGB.', 'imagen_url' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaHfMQif46FI0bDmPdu1gldig1QzExJeuzwQ&s'],
-            vent: ['tipo' => 'Normal', 'rpm_min' => 650, 'rpm_max' => 1800, 'ruido_db_min' => 8.0, 'ruido_db_max' => 27.0, 'flujo_aire_cfm' => 62.00, 'static_pressure_mmh2o' => 2.00, 'num_ventiladores' => 3, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 120],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 44.90, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 46.99, 'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 10, 1), 'precio_base' => 47.99, 'variacion_pct' => 4],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 43.99, 'variacion_pct' => 4],
-                ['tienda' => 'Worten',        'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 45.99, 'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 2, 1),  'precio_base' => 41.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearVentilador(
             comp: ['nombre' => 'Noctua NF-A12x15 PWM', 'marca' => 'Noctua', 'modelo' => 'NF-A12x15 PWM', 'descripcion' => 'Ventilador 120 mm slim de 15 mm de grosor para refrigeraciones de bajo perfil y espacios reducidos. 7 palas Stealth Blade, rodamiento SSO2. Incluye ULNA. Compatible con disipadores ITX como el NH-L9a.', 'imagen_url' => 'https://www.worten.es/i/df77fe1cab892c143897e39b1bc98b4eefeeb0af'],
             vent: ['tipo' => 'Low Profile', 'rpm_min' => 300, 'rpm_max' => 1850, 'ruido_db_min' => 11.3, 'ruido_db_max' => 23.9, 'flujo_aire_cfm' => 35.84, 'static_pressure_mmh2o' => 1.42, 'num_ventiladores' => 1, 'tiene_rgb' => false, 'pwm' => true, 'tam_mm' => 120],
             historial: [
@@ -3652,7 +3452,7 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearVentilador(
-            comp: ['nombre' => 'DeepCool FC120 ARGB (x3)', 'marca' => 'DeepCool', 'modelo' => 'R-FC120-BAMN3-G', 'descripcion' => 'Pack de 3 ventiladores 120 mm con anillo ARGB exterior de alta densidad. Sistema daisy-chain para reducir cableado. Compatible con control ARGB de placa base. Buen equilibrio entre presión estática y caudal.', 'imagen_url' => 'https://www.custompc.com/wp-content/sites/custompc/2023/05/Deepcool-FC120.jpg'],
+            comp: ['nombre' => 'DeepCool FL12R ARGB (x3)', 'marca' => 'DeepCool', 'modelo' => 'FL12R', 'descripcion' => 'Pack de 3 ventiladores 120 mm con anillo ARGB exterior de alta densidad. Sistema daisy-chain para reducir cableado. Compatible con control ARGB de placa base. Buen equilibrio entre presión estática y caudal.', 'https://assets.kogan.com/images/crazydealsaus/CDA-CFD-FL12R-3P-WH/1-e704f853b0-cfd-fl12r-3p-wh.jpg?auto=webp&bg-color=fff&canvas=1200%2C800&dpr=1&enable=upscale&fit=bounds&height=800&quality=90&width=1200'],
             vent: ['tipo' => 'Normal', 'rpm_min' => 500, 'rpm_max' => 1850, 'ruido_db_min' => 17.6, 'ruido_db_max' => 29.8, 'flujo_aire_cfm' => 68.99, 'static_pressure_mmh2o' => 2.19, 'num_ventiladores' => 3, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 120],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 2, 1),  'precio_base' => 34.90, 'variacion_pct' => 5],

@@ -367,6 +367,9 @@ export class SearchComponent implements OnInit {
   cargarMas() { this.paginaActual.update(p => p + 1); this.cargar(true); }
 
   seleccionarCategoria(slug: string) {
+    if (this.categoriaActiva() !== slug) {
+      this.busqueda = '';
+    }
     this.filtrosActivos.set(new Map());
     this.filtrosExpandidos.set(new Set());
     this.categoriaActiva.set(slug);

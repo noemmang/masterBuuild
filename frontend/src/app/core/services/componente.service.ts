@@ -14,6 +14,7 @@ export interface Componente {
   tiene_cupon: boolean;
   tiene_regalo: boolean;
   bajada_precio: boolean;
+  en_stock: boolean;
   descripcion?: string | null;
 }
 
@@ -70,7 +71,7 @@ export interface EntradaPrecio {
   uuid: string;
   precio: number;
   url: string | null;
-  disponible: boolean;
+  en_stock: boolean;
   tienda: { nombre: string; website: string | null };
   cupon: { codigo: string; descuento: number; tipo: string } | null;
   regalo: Regalo | null;
@@ -249,16 +250,22 @@ export class ComponenteService {
     let num_tiendas   = c.num_tiendas ?? 0;
     let tiene_cupon   = !!c.tiene_cupon;
     let tiene_regalo  = !!c.tiene_regalo;
+    // En el listado ya viene calculado por el backend (withExists).
+    let en_stock      = !!c.en_stock;
 
     if (!tieneAgregados) {
-      const precios: number[] = (c.precios_actuales ?? []).map((p: any) => Number(p.precio));
-      const tiendas = (c.precios_actuales ?? []).map((p: any) => p.tienda?.nombre).filter(Boolean);
+      const preciosActuales = c.precios_actuales ?? [];
+      const precios: number[] = preciosActuales.map((p: any) => Number(p.precio));
+      const tiendas = preciosActuales.map((p: any) => p.tienda?.nombre).filter(Boolean);
 
       precio_min   = precios.length > 0 ? Math.min(...precios) : null;
       precio_max   = precios.length > 0 ? Math.max(...precios) : null;
       num_tiendas  = new Set(tiendas).size || precios.length;
       tiene_cupon  = (c.cupones_activos ?? []).length > 0;
       tiene_regalo = (c.regalos_activos ?? []).length > 0;
+      // Detalle: no vienen los agregados, así que miramos si alguna
+      // entrada de precios_actuales dice en_stock=true.
+      en_stock     = preciosActuales.some((p: any) => !!p.en_stock);
     }
 
     return {
@@ -272,6 +279,7 @@ export class ComponenteService {
       num_tiendas,
       tiene_cupon,
       tiene_regalo,
+      en_stock,
       bajada_precio: false,
       descripcion:   c.descripcion ?? null,
     };

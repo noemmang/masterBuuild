@@ -262,6 +262,7 @@ export class ConfiguratorComponent implements OnInit {
                 num_tiendas: detalle.num_tiendas,
                 tiene_cupon: detalle.tiene_cupon,
                 tiene_regalo:  detalle.tiene_regalo,
+                en_stock: detalle.en_stock,
                 bajada_precio: detalle.bajada_precio,
               };
               slot.entradas.push({ componente: comp, cantidad: compGuardado.cantidad });

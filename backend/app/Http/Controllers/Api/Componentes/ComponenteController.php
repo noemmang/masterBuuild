@@ -11,7 +11,7 @@ class ComponenteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Componente::query()->activo();
+        $query = Componente::query()->activo()->disponible();
 
         // ── Filtros generales ────────────────────────────────────────────────
 
@@ -205,7 +205,9 @@ class ComponenteController extends Controller
             ->withMax('preciosActuales as precio_max', 'precio')
             ->withCount('preciosActuales as num_tiendas')
             ->withExists('cuponesActivos as tiene_cupon')
-            ->withExists('regalosActivos as tiene_regalo');
+            ->withExists('regalosActivos as tiene_regalo')
+            ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
+            ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio');
 
         // ── Ordenación ───────────────────────────────────────────────────────
 
@@ -254,6 +256,7 @@ class ComponenteController extends Controller
     {
         $componente = Componente::where('uuid', $uuid)
             ->activo()
+            ->disponible()
             ->firstOrFail();
 
         $relaciones = array_merge(
@@ -280,6 +283,7 @@ class ComponenteController extends Controller
         }
 
         $componentes = Componente::activo()
+            ->disponible()
             ->categoria($categoria)
             ->with(['marca', 'preciosActuales.tienda'])
             ->paginate(20);

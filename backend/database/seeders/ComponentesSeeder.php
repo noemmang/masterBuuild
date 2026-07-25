@@ -664,16 +664,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPlacaBase(
-            comp: ['nombre' => 'MSI MEG X570 Unify', 'marca' => 'MSI', 'fabricante' => 'MSI', 'modelo' => 'MEG X570 Unify', 'descripcion' => 'Placa base ATX AM4 X570 sin RGB, orientada al rendimiento puro. VRM de 16 fases, Wi-Fi 6 y triple M.2. Estética minimalista negra.', 'imagen_url' => 'https://acf.geeknetic.es/imgri/Imagenes/Tutoriales/2019/1686-msi-meg-x570-unify/1686-msi-meg-x570-unify-cabecera.jpg?f=webp'],
-            pb: ['socket' => 'AM4', 'chipset' => 'X570', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 128, 'frecuencia_memoria_max_mhz' => 5000, 'slots_pcie_x16' => 3, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x4', 'USB 3.2 Gen2 Type-C x1', 'USB 3.2 Gen1 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 379.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 385.00, 'variacion_pct' => 6],
-                ['tienda' => 'CaseKing', 'desde' => Carbon::create(2022, 9, 1), 'precio_base' => 369.00, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 349.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
             comp: ['nombre' => 'Gigabyte X570 Aorus Master', 'marca' => 'Gigabyte', 'fabricante' => 'Gigabyte', 'modelo' => 'X570 Aorus Master', 'descripcion' => 'Placa base ATX AM4 X570 flagship de Gigabyte. VRM de 14+2 fases con thermal armor, Wi-Fi 6 y ALC1220-VB. Referencia para Ryzen 9 5950X.', 'imagen_url' => 'https://cdn.mos.cms.futurecdn.net/wgYZfV3o2YvJnKPqose95E-1200-80.png'],
             pb: ['socket' => 'AM4', 'chipset' => 'X570', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 128, 'frecuencia_memoria_max_mhz' => 5400, 'slots_pcie_x16' => 3, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x4', 'USB 3.2 Gen2x2 Type-C x1', 'USB 3.2 Gen1 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220-VB', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5],
             historial: [
@@ -729,15 +719,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 199.00, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 204.00, 'variacion_pct' => 5],
                 ['tienda' => 'CaseKing', 'desde' => Carbon::create(2022, 9, 1), 'precio_base' => 195.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock X570 Phantom Gaming-ITX/TB3', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'X570 Phantom Gaming-ITX/TB3', 'descripcion' => 'Placa base Mini-ITX AM4 X570 con Thunderbolt 3, Wi-Fi 6 y 2.5G LAN. La única ITX AM4 con Thunderbolt, orientada a creadores con Ryzen 9.', 'imagen_url' => 'https://i1.wp.com/thegamingstuff.com/wp-content/uploads/2019/10/ASRock-X570-Phantom-Gaming-ITXTB3-Review.jpg?fit=1024%2C388'],
-            pb: ['socket' => 'AM4', 'chipset' => 'X570', 'factor_forma' => 'Mini-ITX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 2, 'memoria_max_gb' => 64, 'frecuencia_memoria_max_mhz' => 4666, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 0, 'slots_m2' => 2, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen2 Type-C x1', 'Thunderbolt 3 Type-C x1', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => true, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 289.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 295.00, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate', 'desde' => Carbon::create(2022, 9, 1), 'precio_base' => 279.00, 'variacion_pct' => 5],
             ]
         );
         $this->crearPlacaBase(
@@ -835,15 +816,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock B650M Pro RS WiFi', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'B650M Pro RS WiFi', 'descripcion' => 'Placa base Micro-ATX AM5 B650 con Wi-Fi 6E y 2.5G LAN. Opción compacta económica para Ryzen 7000/9000 con DDR5 y cuatro fases VRM.', 'imagen_url' => 'https://img.pccomponentes.com/articles/1089/10890603/1112-placa-base-asrock-b650-amd-b650-am5-micro-atx-b650m-pro-rs-ddr5-pcie-50-rgb.jpg'],
-            pb: ['socket' => 'AM5', 'chipset' => 'B650', 'factor_forma' => 'Micro-ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 2, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen1 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Realtek RTL8125BG', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 169.00, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 173.00, 'variacion_pct' => 5],
-                ['tienda' => 'Aussar', 'desde' => Carbon::create(2023, 3, 1), 'precio_base' => 159.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
             comp: ['nombre' => 'MSI PRO B650M-A WiFi', 'marca' => 'MSI', 'fabricante' => 'MSI', 'modelo' => 'PRO B650M-A WiFi', 'descripcion' => 'Placa base Micro-ATX AM5 B650 orientada a profesionales. Wi-Fi 6E, 2.5G LAN y diseño sin RGB. Fiabilidad por encima del rendimiento extremo.', 'imagen_url' => 'https://storage-asset.msi.com/global/picture/image/feature/mb/B650M/PRO-B650M-A-WIFI/pcb.jpg'],
             pb: ['socket' => 'AM5', 'chipset' => 'B650', 'factor_forma' => 'Micro-ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 2, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen1 Type-A x4', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Realtek RTL8125BG', 'lan_velocidad_gbps' => 2.5],
             historial: [
@@ -880,16 +852,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 279.00, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 285.00, 'variacion_pct' => 5],
                 ['tienda' => 'Coolmod', 'desde' => Carbon::create(2023, 5, 1), 'precio_base' => 265.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock B650E PG-ITX WiFi', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'B650E PG-ITX WiFi', 'descripcion' => 'Placa base Mini-ITX AM5 B650E con PCIe 5.0 en slot GPU, Wi-Fi 6E y doble M.2. La alternativa asequible ITX con PCIe 5.0 para builds compactos AM5.', 'imagen_url' => 'https://images-eu.ssl-images-amazon.com/images/I/81BPi2SezeL._AC_UL495_SR435,495_.jpg'],
-            pb: ['socket' => 'AM5', 'chipset' => 'B650E', 'factor_forma' => 'Mini-ITX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 2, 'memoria_max_gb' => 96, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 0, 'slots_m2' => 2, 'puertos_sata' => 2, 'puertos_usb_traseros' => ['USB4 Type-C 40Gbps x1', 'USB 3.2 Gen2 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Intel I226-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 299.00, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 305.00, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate', 'desde' => Carbon::create(2023, 5, 1), 'precio_base' => 289.00, 'variacion_pct' => 4],
-                ['tienda' => 'APP Informática', 'desde' => Carbon::create(2023, 9, 1), 'precio_base' => 279.00, 'variacion_pct' => 4],
             ]
         );
         $this->crearPlacaBase(
@@ -932,16 +894,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 699.00, 'variacion_pct' => 7],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 709.00, 'variacion_pct' => 6],
                 ['tienda' => 'Alternate', 'desde' => Carbon::create(2022, 9, 1), 'precio_base' => 669.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearPlacaBase(
-            comp: ['nombre' => 'MSI MEG Z690 Unify-X', 'marca' => 'MSI', 'fabricante' => 'MSI', 'modelo' => 'MEG Z690 Unify-X', 'descripcion' => 'Placa base ATX LGA1700 Z690 pura DDR5 sin RGB con VRM de 20+2 fases. Wi-Fi 6E, USB4 y diseño minimalista negro para overclockers de Intel 12ª gen.', 'imagen_url' => 'https://storage-asset.msi.com/global/picture/image/feature/mb/Z690/meg_z690_unify_x/protection-hero.jpg'],
-            pb: ['socket' => 'LGA1700', 'chipset' => 'Z690', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 6400, 'slots_pcie_x16' => 3, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 5, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB4 Type-C 40Gbps x1', 'USB 3.2 Gen2x2 Type-C x1', 'USB 3.2 Gen2 Type-A x4', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC4082', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 599.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1), 'precio_base' => 609.00, 'variacion_pct' => 6],
-                ['tienda' => 'CaseKing', 'desde' => Carbon::create(2022, 9, 1), 'precio_base' => 579.00, 'variacion_pct' => 5],
-                ['tienda' => 'Info Computer', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 549.00, 'variacion_pct' => 5],
             ]
         );
         $this->crearPlacaBase(
@@ -997,8 +949,8 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock B760M Pro RS WiFi', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'B760M Pro RS WiFi', 'descripcion' => 'Placa base Micro-ATX LGA1700 B760 con Wi-Fi 6E, DDR5 y 2.5G LAN. Compatible con i5-14400F e i7-14700F con buena conectividad en formato compacto.', 'imagen_url' => 'https://www.asrock.com/mb/features/POLYRGBLED-B760M%20Pro%20RSD4%20WiFi_mobile.png'],
-            pb: ['socket' => 'LGA1700', 'chipset' => 'B760', 'factor_forma' => 'Micro-ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen1 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Realtek RTL8125BG', 'lan_velocidad_gbps' => 2.5],
+            comp: ['nombre' => 'ASRock B760M Pro RS', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'B760M Pro RS WiFi', 'descripcion' => 'Placa base Micro-ATX LGA1700 B760, DDR5 y 2.5G LAN. Compatible con i5-14400F e i7-14700F con buena conectividad en formato compacto.', 'imagen_url' => 'https://www.asrock.com/mb/features/POLYRGBLED-B760M%20Pro%20RSD4%20WiFi_mobile.png'],
+            pb: ['socket' => 'LGA1700', 'chipset' => 'B760', 'factor_forma' => 'Micro-ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen1 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => false, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Realtek RTL8125BG', 'lan_velocidad_gbps' => 2.5],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 149.00, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 153.00, 'variacion_pct' => 5],
@@ -1034,15 +986,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 355.00, 'variacion_pct' => 5],
                 ['tienda' => 'Coolmod', 'desde' => Carbon::create(2023, 3, 1), 'precio_base' => 329.00, 'variacion_pct' => 4],
                 ['tienda' => 'APP Informática', 'desde' => Carbon::create(2023, 7, 1), 'precio_base' => 319.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock Z790 PG-ITX/TB4', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'Z790 PG-ITX/TB4', 'descripcion' => 'Placa base Mini-ITX LGA1700 Z790 con Thunderbolt 4, Wi-Fi 6E y DDR5. La ITX con OC completo para Intel 13ª/14ª gen en builds SFF premium.', 'imagen_url' => 'https://pcmod.pl/wp-content/uploads/2023/05/asrock-z790-pg-itx-tb4-baner.webp'],
-            pb: ['socket' => 'LGA1700', 'chipset' => 'Z790', 'factor_forma' => 'Mini-ITX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 2, 'memoria_max_gb' => 96, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 0, 'slots_m2' => 2, 'puertos_sata' => 2, 'puertos_usb_traseros' => ['Thunderbolt 4 x2', 'USB 3.2 Gen2 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => true, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Intel I226-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 399.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 405.00, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate', 'desde' => Carbon::create(2023, 3, 1), 'precio_base' => 379.00, 'variacion_pct' => 5],
             ]
         );
         $this->crearPlacaBase(
@@ -1171,16 +1114,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPlacaBase(
-            comp: ['nombre' => 'ASRock Z890M-ITX/ac', 'marca' => 'ASRock', 'fabricante' => 'ASRock', 'modelo' => 'Z890M-ITX/ac', 'descripcion' => 'Placa base Mini-ITX LGA1851 Z890 con Wi-Fi 6E y 2.5G LAN. La opción más asequible ITX para la plataforma Arrow Lake con OC completo habilitado.', 'imagen_url' => 'https://img.pccomponentes.com/articles/1089/10890945/1275-placa-base-asrock-z890-lga1851-mini-itx-z890i-nova-wifi-ddr5-pcie-50-thunderbolt-4-5gbe-wi-fi-7-bt-54.jpg'],
-            pb: ['socket' => 'LGA1851', 'chipset' => 'Z890', 'factor_forma' => 'Mini-ITX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 2, 'memoria_max_gb' => 96, 'frecuencia_memoria_max_mhz' => 8000, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 0, 'slots_m2' => 2, 'puertos_sata' => 2, 'puertos_usb_traseros' => ['USB4 40Gbps Type-C x1', 'USB 3.2 Gen2 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Intel I226-V', 'lan_velocidad_gbps' => 2.5],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 359.00, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 365.00, 'variacion_pct' => 5],
-                ['tienda' => 'Aussar', 'desde' => Carbon::create(2025, 1, 1), 'precio_base' => 349.00, 'variacion_pct' => 4],
-                ['tienda' => 'Red Computer', 'desde' => Carbon::create(2025, 2, 1), 'precio_base' => 345.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPlacaBase(
             comp: ['nombre' => 'Gigabyte Z890I Aorus Ultra WiFi7', 'marca' => 'Gigabyte', 'fabricante' => 'Gigabyte', 'modelo' => 'Z890I Aorus Ultra WiFi7', 'descripcion' => 'Placa base Mini-ITX LGA1851 Z890 con Wi-Fi 7, USB4 y diseño Aorus. VRM de 14+1+2 fases para la plataforma Arrow Lake en el factor de forma más compacto de Gigabyte.', 'imagen_url' => 'https://img.pccomponentes.com/articles/1088/10888364/1199-placa-base-gigabyte-z890i-aorus-ultra-lga-1851-mini-itx-thunderbolt-4-wi-fi-7-25gbe-ddr5.jpg'],
             pb: ['socket' => 'LGA1851', 'chipset' => 'Z890', 'factor_forma' => 'Mini-ITX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 2, 'memoria_max_gb' => 96, 'frecuencia_memoria_max_mhz' => 8800, 'slots_pcie_x16' => 1, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 0, 'slots_m2' => 2, 'puertos_sata' => 2, 'puertos_usb_traseros' => ['USB4 40Gbps Type-C x1', 'USB 3.2 Gen2 Type-A x2', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I226-V', 'lan_velocidad_gbps' => 2.5],
             historial: [
@@ -1228,7 +1161,7 @@ class ComponentesSeeder extends Seeder
         );
         $this->crearRAM(
             comp: ['nombre' => 'Corsair Vengeance LPX 128GB DDR4-3200 CL16', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMK32GX4M2E3200C16', 'descripcion' => 'Kit 4×32 GB DDR4-3200 CL16 de perfil bajo. El estándar para builds de creadores y gaming de alta gama en AM4 y LGA1700.', 'imagen_url' => 'https://m.media-amazon.com/images/I/51CAWQYmm8S.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 32, 'modulos' => 2, 'capacidad_total_gb' => 128, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-36', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 31, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
+            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 32, 'modulos' => 4, 'capacidad_total_gb' => 128, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-36', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 31, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
             historial: [
                 ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 79.00,  'variacion_pct' => 8],
                 ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 81.00,  'variacion_pct' => 8],
@@ -1278,25 +1211,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'Crucial Ballistix 16GB DDR4-3600 CL16', 'marca' => 'Crucial', 'fabricante' => 'Crucial', 'modelo' => 'BL2K8G36C16U4B', 'descripcion' => 'Kit 2×8 GB DDR4-3600 CL16 sin RGB. Módulos con chips Micron E-die, reconocidos por su potencial de overclocking. Perfil bajo 40 mm.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/30/307848/1388-crucial-ballistix-ddr4-3600mhz-pc4-28800-16gb-2x8gb-cl16.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 8, 'modulos' => 2, 'capacidad_total_gb' => 16, 'velocidad_mhz' => 3600, 'latencia_cas' => 'CL16-18-18-38', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 40, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 59.00,  'variacion_pct' => 8],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 61.00,  'variacion_pct' => 7],
-                ['tienda' => 'Aussar',         'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 56.00,  'variacion_pct' => 6],
-                ['tienda' => 'Info Computer',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 52.00,  'variacion_pct' => 5],
-            ]
-        );
-        $this->crearRAM(
-            comp: ['nombre' => 'Crucial Ballistix MAX 32GB DDR4-4000 CL18', 'marca' => 'Crucial', 'fabricante' => 'Crucial', 'modelo' => 'BL2K16G40C18U4BL', 'descripcion' => 'Kit 2×16 GB DDR4-4000 CL18. Diseñado para overclocking extremo en LGA1700. Chips Micron B-die. Alto potencial de ajuste manual de subtimings.', 'imagen_url' => 'https://cdna.pcpartpicker.com/static/forever/images/product/9fb7005a4c9fee1e1a26c45ebf567b62.256p.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 4000, 'latencia_cas' => 'CL18-19-19-39', 'voltaje' => 1.40, 'factor_forma' => 'DIMM', 'altura_mm' => 40, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 149.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 153.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 139.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearRAM(
             comp: ['nombre' => 'TeamGroup T-Force Vulcan Z 16GB DDR4-3200 CL16', 'marca' => 'TeamGroup', 'fabricante' => 'TeamGroup', 'modelo' => 'TLZGD416G3200HC16FDC01', 'descripcion' => 'Kit 2×8 GB DDR4-3200 CL16 sin RGB con disipador plano gris antracita. La opción de precio mínimo que aún cumple con XMP 2.0.', 'imagen_url' => 'https://images.teamgroupinc.com/products/memory/u-dimm/ddr4/vulcan-z/intro/01.jpg'],
             ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 8, 'modulos' => 2, 'capacidad_total_gb' => 16, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-38', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 33, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
             historial: [
@@ -1317,35 +1231,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'Corsair Dominator Platinum RGB 32GB DDR4-3600 CL16', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMT32GX4M2C3600C18', 'descripcion' => 'Kit 2×16 GB DDR4-3600 CL16 con diseño Dominator y 12 LEDs RGB por módulo. Módulos premium con chips Samsung B-die. La RAM DDR4 de lujo.', 'imagen_url' => 'https://img.pccomponentes.com/articles/60/601324/3410-corsair-dominator-platinum-rgb-ddr4-3200mhz-pc4-25600-32gb-2x16gb-cl16-blanca-mejor-precio.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 3600, 'latencia_cas' => 'CL16-18-18-36', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 56, 'tiene_rgb' => true, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 169.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 174.00, 'variacion_pct' => 7],
-                ['tienda' => 'PcBox','desde' => Carbon::create(2022, 9, 1),  'precio_base' => 179.00, 'variacion_pct' => 5],
-                ['tienda' => 'FNAC',           'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 159.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearRAM(
-            comp: ['nombre' => 'XPG Spectrix D60G 128GB DDR4-3200 CL16', 'marca' => 'XPG', 'fabricante' => 'XPG', 'modelo' => 'AX4U32008G16A-DT60', 'descripcion' => 'Kit 4×32 GB DDR4-3200 CL16 con RGB en múltiples zonas y cristal difusor. Diseño agresivo de ADATA/XPG con XMP 2.0 y compatibilidad con plataformas AMD e Intel.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/35/353027/2816-adata-xpg-spectrix-d60g-rgb-ddr4-3200mhz-16gb-cl16-comprar.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 32, 'modulos' => 4, 'capacidad_total_gb' => 128, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-36', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 45, 'tiene_rgb' => true, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 52.00,  'variacion_pct' => 8],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 54.00,  'variacion_pct' => 7],
-                ['tienda' => 'APP Informática','desde' => Carbon::create(2022, 9, 1),  'precio_base' => 49.00,  'variacion_pct' => 6],
-                ['tienda' => 'Red Computer',   'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 45.00,  'variacion_pct' => 5],
-            ]
-        );
-        $this->crearRAM(
-            comp: ['nombre' => 'Patriot Viper Steel 32GB DDR4-4400 CL19', 'marca' => 'Patriot', 'fabricante' => 'Patriot', 'modelo' => 'PVS432G440C9K', 'descripcion' => 'Kit 2×16 GB DDR4-4400 CL19 sin RGB. Una de las frecuencias más altas en DDR4 disponibles para overclockers en LGA1700. Disipador de aluminio negro de alto perfil.', 'imagen_url' => 'https://cdn.prod.website-files.com/63b6412d4ef17b35c8b5f9d5/6434b07c111f06066b94edc7_kv_banner_steel.jpg'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 4400, 'latencia_cas' => 'CL19-23-23-43', 'voltaje' => 1.45, 'factor_forma' => 'DIMM', 'altura_mm' => 46, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 179.00, 'variacion_pct' => 8],
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 175.00, 'variacion_pct' => 7],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 165.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearRAM(
             comp: ['nombre' => 'Silicon Power XPOWER Turbine 16GB DDR4-3200 CL16', 'marca' => 'Silicon Power', 'fabricante' => 'Silicon Power', 'modelo' => 'SP016GXLZU320BDA', 'descripcion' => 'Kit 2×8 GB DDR4-3200 CL16 con RGB difuso y disipador de perfil estándar. Opción de relación precio-prestaciones sorprendente, especialmente en el mercado español.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-300-300/articles/27/278335/silicon-power-xpower-turbine-3200-ddr4-16gb-2x8gb-cl16.jpg'],
             ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 8, 'modulos' => 2, 'capacidad_total_gb' => 16, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-38', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 40, 'tiene_rgb' => true, 'ecc' => false, 'xmp' => true, 'expo' => false],
             historial: [
@@ -1354,23 +1239,13 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Aussar',         'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 33.00,  'variacion_pct' => 6],
             ]
         );
-        $this->crearRAM(
-            comp: ['nombre' => 'G.Skill Trident Z 32GB DDR4-4000 CL15', 'marca' => 'G.Skill', 'fabricante' => 'G.Skill', 'modelo' => 'F4-4000C15D-32GTZN', 'descripcion' => 'Kit 2×16 GB DDR4-4000 CL15 sin RGB. Chips Samsung B-die seleccionados. El kit de referencia para overclockers que buscan la máxima frecuencia con latencias ajustadas en LGA1700 e Intel extreme.', 'imagen_url' => 'https://bizweb.dktcdn.net/thumb/1024x1024/100/329/122/products/trident-z-royal-silver-ddr4-02-ff760a88-95bc-427b-a789-72c90c07eb59-72348a2c-de2f-44e6-a86b-e1c055d6fb1d-9eab0509-5d57-4afc-8efe-822315e26ba9.jpg?v=1683170135867'],
-            ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 4000, 'latencia_cas' => 'CL15-16-16-36', 'voltaje' => 1.40, 'factor_forma' => 'DIMM', 'altura_mm' => 44, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 219.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 224.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 209.00, 'variacion_pct' => 6],
-                ['tienda' => 'CaseKing',       'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 199.00, 'variacion_pct' => 5],
-            ]
-        );
     }
 
     protected function seedRAMsDDR5(): void
     {
         $this->crearRAM(
-            comp: ['nombre' => 'Corsair Vengeance DDR5 128GB 5600 CL36', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMK32GX5M2B5600C36', 'descripcion' => 'Kit 4×32 GB DDR5-5600 CL36 sin RGB. La opción de entrada de Corsair en DDR5. Compatible con XMP 3.0 y EXPO para AM5 y LGA1700/1851. Perfil bajo 34 mm.', 'imagen_url' => 'https://media.ldlc.com/r1600/ld/products/00/05/99/54/LD0005995435_0006059202.jpg'],
-            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 32, 'modulos' => 4, 'capacidad_total_gb' => 128, 'velocidad_mhz' => 5600, 'latencia_cas' => 'CL36-36-36-76', 'voltaje' => 1.25, 'factor_forma' => 'DIMM', 'altura_mm' => 34, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => true, 'expo' => true],
+            comp: ['nombre' => 'Corsair Vengeance DDR5 32GB 5600 CL36', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMK32GX5M2B5600C36', 'descripcion' => 'Kit 4×32 GB DDR5-5600 CL36 sin RGB. La opción de entrada de Corsair en DDR5. Compatible con XMP 3.0 y EXPO para AM5 y LGA1700/1851. Perfil bajo 34 mm.', 'imagen_url' => 'https://media.ldlc.com/r1600/ld/products/00/05/99/54/LD0005995435_0006059202.jpg'],
+            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 5600, 'latencia_cas' => 'CL36-36-36-76', 'voltaje' => 1.25, 'factor_forma' => 'DIMM', 'altura_mm' => 34, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => true, 'expo' => true],
             historial: [
                 ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 730.00, 'variacion_pct' => 8],
                 ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 690.00, 'variacion_pct' => 8],
@@ -1381,8 +1256,8 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'Corsair Vengeance DDR5 64GB 5600 CL36', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMK64GX5M2B5600C36', 'descripcion' => 'Kit 2×32 GB DDR5-5600 CL36 sin RGB. Estándar en workstations AM5 y LGA1851 con alta demanda de memoria. Precios al alza por escasez derivada de la IA.', 'imagen_url' => 'https://media.mts.ee/eyJidWNrZXQiOiJtdHMtcHJvZHVjdC1pbWFnZXMiLCJrZXkiOiJmXC9mY1wvZmM5MmZhMjdiZDg3MGQwOGQxZTE3N2Y4M2FhMTJjOTMuanBnIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjoxMjAwLCJoZWlnaHQiOjYzMCwiZml0IjoiY29udGFpbiIsImJhY2tncm91bmQiOnsiciI6MjU1LCJnIjoyNTUsImIiOjI1NSwiYWxwaGEiOjF9fX19'],
-            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 32, 'modulos' => 2, 'capacidad_total_gb' => 64, 'velocidad_mhz' => 5600, 'latencia_cas' => 'CL36-36-36-76', 'voltaje' => 1.25, 'factor_forma' => 'DIMM', 'altura_mm' => 34, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => true, 'expo' => true],
+            comp: ['nombre' => 'Corsair Vengeance DDR5 64GB 5600 CL36', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CMK64GX5M2B5600C36', 'descripcion' => 'Kit 4×16 GB DDR5-5600 CL36 sin RGB. Estándar en workstations AM5 y LGA1851 con alta demanda de memoria. Precios al alza por escasez derivada de la IA.', 'imagen_url' => 'https://media.mts.ee/eyJidWNrZXQiOiJtdHMtcHJvZHVjdC1pbWFnZXMiLCJrZXkiOiJmXC9mY1wvZmM5MmZhMjdiZDg3MGQwOGQxZTE3N2Y4M2FhMTJjOTMuanBnIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjoxMjAwLCJoZWlnaHQiOjYzMCwiZml0IjoiY29udGFpbiIsImJhY2tncm91bmQiOnsiciI6MjU1LCJnIjoyNTUsImIiOjI1NSwiYWxwaGEiOjF9fX19'],
+            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 16, 'modulos' => 4, 'capacidad_total_gb' => 64, 'velocidad_mhz' => 5600, 'latencia_cas' => 'CL36-36-36-76', 'voltaje' => 1.25, 'factor_forma' => 'DIMM', 'altura_mm' => 34, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => true, 'expo' => true],
             historial: [
                 ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 239.00, 'variacion_pct' => 8],
                 ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 245.00, 'variacion_pct' => 8],
@@ -1466,8 +1341,8 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'TeamGroup T-Force Delta RGB DDR5 32GB 6000 CL38', 'marca' => 'TeamGroup', 'fabricante' => 'TeamGroup', 'modelo' => 'FF3D532G6000HC38ADC01', 'descripcion' => 'Kit 2×16 GB DDR5-6000 CL38 con RGB de tira completa y difusor translúcido. Compatible con EXPO y XMP 3.0. Buen precio en el segmento 6000 MHz sin sacrificar estética.', 'imagen_url' => 'https://images.teamgroupinc.com/products/memory/u-dimm/ddr5/delta-rgb/intro/01.jpg'],
-            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 6000, 'latencia_cas' => 'CL38-38-38-78', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 43, 'tiene_rgb' => true, 'ecc' => true, 'xmp' => true, 'expo' => true],
+            comp: ['nombre' => 'TeamGroup T-Force Delta RGB DDR5 32GB 6000 CL30', 'marca' => 'TeamGroup', 'fabricante' => 'TeamGroup', 'modelo' => 'FF3D532G6000HC30ADC01', 'descripcion' => 'Kit 2×16 GB DDR5-6000 CL30 con RGB de tira completa y difusor translúcido. Compatible con EXPO y XMP 3.0. Buen precio en el segmento 6000 MHz sin sacrificar estética.', 'imagen_url' => 'https://images.teamgroupinc.com/products/memory/u-dimm/ddr5/delta-rgb/intro/01.jpg'],
+            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 6000, 'latencia_cas' => 'CL30-40-40-96', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 43, 'tiene_rgb' => true, 'ecc' => true, 'xmp' => true, 'expo' => true],
             historial: [
                 ['tienda' => 'Amazon España',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 139.00, 'variacion_pct' => 8],
                 ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 135.00, 'variacion_pct' => 7],
@@ -1525,20 +1400,8 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'G.Skill Ripjaws S5 32GB DDR5-6000 CL30', 'marca' => 'G.Skill', 'fabricante' => 'G.Skill', 'modelo' => 'F5-6000J3040G16GX2-RS5K', 'descripcion' => 'Kit 2×16 GB DDR5-6000 CL30 sin RGB con perfil reducido de 36 mm. Ideal para sistemas con coolers de gran torre o AIOs donde el espacio sobre los DIMMs es limitado. XMP 3.0 y EXPO.', 'imagen_url' => 'https://m.media-amazon.com/images/I/61kw4ShyBdL._AC_UF1000,1000_QL80_.jpg'],
-            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 6000, 'latencia_cas' => 'CL30-38-38-96', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 36, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => true, 'expo' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 149.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 153.00, 'variacion_pct' => 7],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 139.00, 'variacion_pct' => 6],
-                ['tienda' => 'Red Computer',   'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 145.00, 'variacion_pct' => 6],
-                ['tienda' => 'PcBox',          'desde' => Carbon::create(2024, 9, 1),  'precio_base' => 159.00, 'variacion_pct' => 7],
-                ['tienda' => 'Aussar',         'desde' => Carbon::create(2025, 2, 1),  'precio_base' => 169.00, 'variacion_pct' => 6],
-            ]
-        );
-        $this->crearRAM(
-            comp: ['nombre' => 'G.Skill Trident Z5 Neo 64GB DDR5-6000 CL28', 'marca' => 'G.Skill', 'fabricante' => 'G.Skill', 'modelo' => 'F5-6000J2836G32GX2-TZ5N', 'descripcion' => 'Kit 2×32 GB DDR5-6000 CL28 sin RGB, optimizado para EXPO en AM5. CL28 es de los ajustados disponibles a 6000 MHz en 32 GB. Referencia para productores de contenido y workstations con Ryzen 9 9950X(3D). Precio muy elevado por escasez de módulos de 32 GB en el submercado DDR5.', 'imagen_url' => 'https://www.proshop.pl/Images/915x900/3343458_800292c27277.jpg'],
-            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 32, 'modulos' => 2, 'capacidad_total_gb' => 64, 'velocidad_mhz' => 6000, 'latencia_cas' => 'CL28-34-34-96', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 44, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => false, 'expo' => true],
+            comp: ['nombre' => 'G.Skill Trident Z5 Neo 64GB DDR5-6000 CL26', 'marca' => 'G.Skill', 'fabricante' => 'G.Skill', 'modelo' => 'F5-6000J2636H32GX2-TZ5N', 'descripcion' => 'Kit 2×32 GB DDR5-6000 CL26 sin RGB, optimizado para EXPO en AM5. CL26 es de los ajustados disponibles a 6000 MHz en 32 GB. Referencia para productores de contenido y workstations con Ryzen 9 9950X(3D). Precio muy elevado por escasez de módulos de 32 GB en el submercado DDR5.', 'imagen_url' => 'https://www.proshop.pl/Images/915x900/3343458_800292c27277.jpg'],
+            ram: ['tipo_memoria' => 'DDR5', 'capacidad_gb' => 32, 'modulos' => 2, 'capacidad_total_gb' => 64, 'velocidad_mhz' => 6000, 'latencia_cas' => 'CL26-34-34-96', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 44, 'tiene_rgb' => false, 'ecc' => true, 'xmp' => false, 'expo' => true],
             historial: [
                 ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 399.00, 'variacion_pct' => 7],
                 ['tienda' => 'Amazon España',  'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 409.00, 'variacion_pct' => 7],
@@ -1588,27 +1451,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Alternate',      'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 549.00, 'variacion_pct' => 5],
                 ['tienda' => 'APP Informática','desde' => Carbon::create(2023, 3, 1),  'precio_base' => 479.00, 'variacion_pct' => 5],
                 ['tienda' => 'PcBox',          'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 429.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearGPU(
-            comp: ['nombre' => 'ASUS TUF Gaming GeForce RTX 3080 10GB OC', 'marca' => 'ASUS', 'fabricante' => 'NVIDIA', 'modelo' => 'TUF-RTX3080-O10G-GAMING', 'descripcion' => 'RTX 3080 10 GB GDDR6X, cooler TUF con tres ventiladores. La tarjeta estrella de Ampere para gaming 4K con disipación de alta gama.', 'imagen_url' => 'https://dlcdnimgs.asus.com/websites/global/products/qd2z2fai4rv29irz/img/kv-cover.png'],
-            gpu: ['arquitectura' => 'Ampere', 'tipo_vram' => 'GDDR6X', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 10, 'bus_bits' => 320, 'frecuencia_base_mhz' => 1440, 'frecuencia_boost_mhz' => 1860, 'tdp_watts' => 350, 'slots_pcie' => 2.9, 'longitud_mm' => 318, 'conectores_alimentacion' => ['2x 8-pin', '1x 6-pin'], 'psu_minima_watts' => 750, 'salidas_video' => ['3x DisplayPort 1.4a', '2x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 849.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 869.00, 'variacion_pct' => 7],
-                ['tienda' => 'PcBox','desde' => Carbon::create(2022, 9, 1),  'precio_base' => 879.00, 'variacion_pct' => 7],
-                ['tienda' => 'MediaMarkt',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 699.00, 'variacion_pct' => 6],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 649.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearGPU(
-            comp: ['nombre' => 'Gainward GeForce RTX 3090 Phantom 24GB', 'marca' => 'Gainward', 'fabricante' => 'NVIDIA', 'modelo' => 'NED3090S19SB-1021P', 'descripcion' => 'RTX 3090 24 GB GDDR6X, el flagship de Ampere. Cooler Phantom de triple ventilador. Orientado a creadores de contenido y gamers 8K/4K máximo detalle.', 'imagen_url' => 'https://www.adrenaline.com.br/wp-content/uploads/2020/09/gainward-rtx-3090-chamada-2.jpg'],
-            gpu: ['arquitectura' => 'Ampere', 'tipo_vram' => 'GDDR6X', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 24, 'bus_bits' => 384, 'frecuencia_base_mhz' => 1395, 'frecuencia_boost_mhz' => 1755, 'tdp_watts' => 350, 'slots_pcie' => 3.0, 'longitud_mm' => 336, 'conectores_alimentacion' => ['3x 8-pin'], 'psu_minima_watts' => 850, 'salidas_video' => ['3x DisplayPort 1.4a', '1x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 1599.00, 'variacion_pct' => 8],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 1629.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 1499.00, 'variacion_pct' => 6],
-                ['tienda' => 'CaseKing',       'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 1199.00, 'variacion_pct' => 6],
             ]
         );
         $this->crearGPU(
@@ -1663,18 +1505,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Coolmod',        'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 499.00, 'variacion_pct' => 5],
                 ['tienda' => 'CaseKing',       'desde' => Carbon::create(2024, 9, 1),  'precio_base' => 489.00, 'variacion_pct' => 5],
                 ['tienda' => 'Worten',         'desde' => Carbon::create(2025, 1, 1),  'precio_base' => 509.00, 'variacion_pct' => 5],
-            ]
-        );
-        $this->crearGPU(
-            comp: ['nombre' => 'MSI GeForce RTX 4070 GAMING X TRIO 12GB', 'marca' => 'MSI', 'fabricante' => 'NVIDIA', 'modelo' => 'RTX 4070 GAMING X TRIO 12G', 'descripcion' => 'RTX 4070 12 GB GDDR6X con cooler GAMING X TRIO de tres ventiladores. La GPU de referencia para 1440p en Ada Lovelace con excelente eficiencia energética.', 'imagen_url' => 'https://www.achorao.com/cdn/shop/files/msi-tarjeta-de-video-default-title-tarjeta-de-video-msi-nvidia-geforce-rtx-4070-gaming-x-trio-12gb-46365343842544.jpg?v=1738880778&width=1080'],
-            gpu: ['arquitectura' => 'Ada Lovelace', 'tipo_vram' => 'GDDR6X', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 12, 'bus_bits' => 192, 'frecuencia_base_mhz' => 1920, 'frecuencia_boost_mhz' => 2610, 'tdp_watts' => 200, 'slots_pcie' => 3.0, 'longitud_mm' => 336, 'conectores_alimentacion' => ['1x 16-pin (12VHPWR)'], 'psu_minima_watts' => 650, 'salidas_video' => ['3x DisplayPort 1.4a', '1x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 649.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 659.00, 'variacion_pct' => 6],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 619.00, 'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt',     'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 599.00, 'variacion_pct' => 5],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 569.00, 'variacion_pct' => 5],
-                ['tienda' => 'FNAC',           'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 579.00, 'variacion_pct' => 4],
             ]
         );
         $this->crearGPU(
@@ -1792,17 +1622,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearGPU(
-            comp: ['nombre' => 'PowerColor Fighter Radeon RX 6700 XT 12GB', 'marca' => 'PowerColor', 'fabricante' => 'AMD', 'modelo' => 'AXRX 6700XT 12GBD6-3DH', 'descripcion' => 'RX 6700 XT 12 GB GDDR6, bus 192-bit. Triple ventilador compacto de PowerColor. Gran rendimiento 1440p en RDNA 2 con 12 GB de VRAM.', 'imagen_url' => 'https://www.coolmod.com/images/product/description/PROD-021387/2206091000430-1661515254.jpg'],
-            gpu: ['arquitectura' => 'RDNA 2', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 12, 'bus_bits' => 192, 'frecuencia_base_mhz' => 1755, 'frecuencia_boost_mhz' => 2581, 'tdp_watts' => 230, 'slots_pcie' => 2.5, 'longitud_mm' => 280, 'conectores_alimentacion' => ['2x 8-pin'], 'psu_minima_watts' => 650, 'salidas_video' => ['3x DisplayPort 1.4a', '1x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 449.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 459.00, 'variacion_pct' => 7],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 399.00, 'variacion_pct' => 5],
-                ['tienda' => 'CaseKing',       'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 329.00, 'variacion_pct' => 5],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 289.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGPU(
             comp: ['nombre' => 'XFX Speedster MERC319 Radeon RX 6800 XT 16GB', 'marca' => 'XFX', 'fabricante' => 'AMD', 'modelo' => 'RX-68XTATBD9', 'descripcion' => 'RX 6800 XT 16 GB GDDR6, bus 256-bit. Cooler triple ventilador MERC319. Compite directamente con la RTX 3080 en rasterización con 16 GB de VRAM.', 'imagen_url' => 'https://cdn.3dnews.ru/assets/external/illustrations/2021/02/15/1032630/intro.jpg'],
             gpu: ['arquitectura' => 'RDNA 2', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 1825, 'frecuencia_boost_mhz' => 2615, 'tdp_watts' => 300, 'slots_pcie' => 2.5, 'longitud_mm' => 340, 'conectores_alimentacion' => ['2x 8-pin'], 'psu_minima_watts' => 750, 'salidas_video' => ['3x DisplayPort 1.4a', '1x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true],
             historial: [
@@ -1842,28 +1661,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Coolmod',        'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 499.00, 'variacion_pct' => 5],
                 ['tienda' => 'CaseKing',       'desde' => Carbon::create(2024, 7, 1),  'precio_base' => 479.00, 'variacion_pct' => 5],
                 ['tienda' => 'APP Informática','desde' => Carbon::create(2025, 1, 1),  'precio_base' => 469.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGPU(
-            comp: ['nombre' => 'Sapphire Nitro+ Radeon RX 7900 GRE 16GB', 'marca' => 'Sapphire', 'fabricante' => 'AMD', 'modelo' => '11325-02-20G', 'descripcion' => 'RX 7900 GRE 16 GB GDDR6, bus 256-bit. Cooler NITRO+ de doble ventilador grande. Excelente relación precio/rendimiento en el segmento gama alta de RDNA 3, popular en Asia y Europa.', 'imagen_url' => 'https://cdn.thefpsreview.com/wp-content/uploads/2024/02/sapphire_7900gre_banner.png.webp'],
-            gpu: ['arquitectura' => 'RDNA 3', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 1280, 'frecuencia_boost_mhz' => 2245, 'tdp_watts' => 260, 'slots_pcie' => 2.5, 'longitud_mm' => 322, 'conectores_alimentacion' => ['2x 8-pin'], 'psu_minima_watts' => 700, 'salidas_video' => ['2x DisplayPort 2.1', '1x HDMI 2.1', '1x USB-C DisplayPort'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 649.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 659.00, 'variacion_pct' => 6],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 619.00, 'variacion_pct' => 5],
-                ['tienda' => 'Aussar',         'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 599.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGPU(
-            comp: ['nombre' => 'Sapphire Nitro+ Radeon RX 7900 XTX 24GB', 'marca' => 'Sapphire', 'fabricante' => 'AMD', 'modelo' => '11322-01-20G', 'descripcion' => 'RX 7900 XTX 24 GB GDDR6, bus 384-bit. El flagship de RDNA 3 con cooler NITRO+ de triple ventilador y backplate metálico. Rival directo de la RTX 4080 en rasterización.', 'imagen_url' => 'https://m.media-amazon.com/images/I/51MK47MqNuL._AC_UF350,350_QL80_.jpg'],
-            gpu: ['arquitectura' => 'RDNA 3', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 4.0', 'vram_gb' => 24, 'bus_bits' => 384, 'frecuencia_base_mhz' => 1855, 'frecuencia_boost_mhz' => 2615, 'tdp_watts' => 355, 'slots_pcie' => 2.5, 'longitud_mm' => 336, 'conectores_alimentacion' => ['2x 8-pin'], 'psu_minima_watts' => 850, 'salidas_video' => ['2x DisplayPort 2.1', '1x HDMI 2.1', '1x USB-C DisplayPort'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 1149.00, 'variacion_pct' => 7],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 1169.00, 'variacion_pct' => 6],
-                ['tienda' => 'PcBox','desde' => Carbon::create(2023, 5, 1),  'precio_base' => 1189.00, 'variacion_pct' => 6],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 1049.00, 'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt',     'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 999.00,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 969.00,  'variacion_pct' => 4],
             ]
         );
         $this->crearGPU(
@@ -1990,29 +1787,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearAlmacenamiento(
-            comp: ['nombre' => 'Western Digital Blue SN570 1TB NVMe', 'marca' => 'Western Digital', 'fabricante' => 'Western Digital', 'modelo' => 'WDS100T3B0C', 'descripcion' => 'SSD NVMe PCIe 3.0 x4 de 1 TB sin caché DRAM externa. TLC NAND con algoritmo de caché dinámica. La opción de presupuesto ajustado más recomendada del mercado en Gen3 con lecturas de 3500 MB/s.', 'imagen_url' => 'https://www.vortez.net/news_file/22175_wd-blue-sn570-nvme-ssd.jpg'],
-            alm: ['interfaz' => 'NVMe PCIe 3.0', 'factor_forma' => 'M.2 2280', 'tipo_nand' => 'TLC', 'tipo' => 'nvme', 'capacidad_gb' => 1000, 'velocidad_lectura_mbs' => 3500, 'velocidad_escritura_mbs' => 3000, 'rpm' => null, 'cache_mb' => null, 'tbw' => 600, 'cifrado' => false, 'dram' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 89.00,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 92.00,  'variacion_pct' => 6],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 79.00,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 62.00,  'variacion_pct' => 4],
-                ['tienda' => 'Red Computer',   'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 57.00,  'variacion_pct' => 4],
-                ['tienda' => 'PcBox',          'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 54.00,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearAlmacenamiento(
-            comp: ['nombre' => 'Kingston NV2 2TB NVMe PCIe 3.0', 'marca' => 'Kingston', 'fabricante' => 'Kingston', 'modelo' => 'SNV2S/2000G', 'descripcion' => 'SSD NVMe PCIe 3.0 x4 de 2 TB QLC sin DRAM. Diseñado para usuarios que priorizan capacidad sobre velocidad máxima. El mejor precio por GB en el segmento NVMe Gen3 a gran capacidad.', 'imagen_url' => 'https://media.ldlc.com/bo/images/fiches/Disque_dur_SSD/Kingston/KingstonNV3_800_1.jpg'],
-            alm: ['interfaz' => 'NVMe PCIe 3.0', 'factor_forma' => 'M.2 2280', 'tipo_nand' => 'QLC', 'tipo' => 'nvme', 'capacidad_gb' => 2000, 'velocidad_lectura_mbs' => 3500, 'velocidad_escritura_mbs' => 2800, 'rpm' => null, 'cache_mb' => null, 'tbw' => 640, 'cifrado' => false, 'dram' => false],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 129.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 133.00, 'variacion_pct' => 6],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 109.00, 'variacion_pct' => 5],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 94.00,  'variacion_pct' => 5],
-                ['tienda' => 'Red Computer',   'desde' => Carbon::create(2024, 7, 1),  'precio_base' => 89.00,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearAlmacenamiento(
             comp: ['nombre' => 'Samsung 980 Pro 1TB NVMe PCIe 4.0', 'marca' => 'Samsung', 'fabricante' => 'Samsung', 'modelo' => 'MZ-V8P1T0BW', 'descripcion' => 'SSD NVMe PCIe 4.0 x4 de 1 TB con V-NAND TLC Samsung y caché DRAM integrada. Velocidades de 7000/5000 MB/s. Certificado para PS5. La referencia Gen4 de consumo más consolidada del mercado.', 'imagen_url' => 'https://acf.geeknetic.es/Imagenes/Tutoriales/2021/1979-samsung-980-pro/1979-samsung-980-pro-cabecera.jpg'],
             alm: ['interfaz' => 'NVMe PCIe 4.0', 'factor_forma' => 'M.2 2280', 'tipo_nand' => 'TLC', 'tipo' => 'nvme', 'capacidad_gb' => 1000, 'velocidad_lectura_mbs' => 7000, 'velocidad_escritura_mbs' => 5000, 'rpm' => null, 'cache_mb' => 1024, 'tbw' => 600, 'cifrado' => true, 'dram' => true],
             historial: [
@@ -2059,28 +1833,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'CaseKing',       'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 139.00, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 119.00, 'variacion_pct' => 4],
                 ['tienda' => 'APP Informática','desde' => Carbon::create(2024, 7, 1),  'precio_base' => 109.00, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearAlmacenamiento(
-            comp: ['nombre' => 'SK Hynix Platinum P41 1TB NVMe PCIe 4.0', 'marca' => 'SK Hynix', 'fabricante' => 'SK Hynix', 'modelo' => 'SHPP41-1000GM-2', 'descripcion' => 'SSD NVMe PCIe 4.0 x4 de 1 TB con NAND TLC 128L propia de SK Hynix y DRAM. Velocidades de 7000/6500 MB/s. Consistentemente clasificado como el mejor SSD Gen4 por eficiencia energética y rendimiento sostenido.', 'imagen_url' => 'https://assetsio.gnwcdn.com/sk-hynix-platinum-p41-2tb-ssd-df-deal.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp'],
-            alm: ['interfaz' => 'NVMe PCIe 4.0', 'factor_forma' => 'M.2 2280', 'tipo_nand' => 'TLC', 'tipo' => 'nvme', 'capacidad_gb' => 1000, 'velocidad_lectura_mbs' => 7000, 'velocidad_escritura_mbs' => 6500, 'rpm' => null, 'cache_mb' => 1024, 'tbw' => 750, 'cifrado' => false, 'dram' => true],
-            historial: [
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 129.00, 'variacion_pct' => 6],
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 133.00, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 99.00,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 84.00,  'variacion_pct' => 4],
-                ['tienda' => 'PcBox',          'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 79.00,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearAlmacenamiento(
-            comp: ['nombre' => 'Sabrent Rocket 4 Plus 2TB NVMe PCIe 4.0', 'marca' => 'Sabrent', 'fabricante' => 'Sabrent', 'modelo' => 'SB-RKT4P-2TB', 'descripcion' => 'SSD NVMe PCIe 4.0 x4 de 2 TB con controlador Phison E18 y NAND TLC Micron. 7100/6600 MB/s con DRAM Nanya. Una de las mejores opciones de gran capacidad Gen4 con disipador opcional.', 'imagen_url' => 'https://acf.geeknetic.es/imgri/imagenes/auto/20/09/01/4pu-sabrent-rocket4-plus-.jpg?f=webp'],
-            alm: ['interfaz' => 'NVMe PCIe 4.0', 'factor_forma' => 'M.2 2280', 'tipo_nand' => 'TLC', 'tipo' => 'nvme', 'capacidad_gb' => 2000, 'velocidad_lectura_mbs' => 7100, 'velocidad_escritura_mbs' => 6600, 'rpm' => null, 'cache_mb' => 2048, 'tbw' => 1800, 'cifrado' => false, 'dram' => true],
-            historial: [
-                ['tienda' => 'Amazon España',  'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 259.00, 'variacion_pct' => 7],
-                ['tienda' => 'PCComponentes',  'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 189.00, 'variacion_pct' => 6],
-                ['tienda' => 'Alternate',      'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 149.00, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',        'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 129.00, 'variacion_pct' => 4],
-                ['tienda' => 'Neobyte',        'desde' => Carbon::create(2024, 7, 1),  'precio_base' => 119.00, 'variacion_pct' => 4],
             ]
         );
         $this->crearAlmacenamiento(
@@ -2289,18 +2041,7 @@ class ComponentesSeeder extends Seeder
         $pSFX  = TipoPSU::where('nombre', 'SFX')->first()->id;
         $pSFXL = TipoPSU::where('nombre', 'SFX-L')->first()->id;
     
-        /// ATX  
-        $this->crearGabinete(
-            comp: ['nombre' => 'Cooler Master NR200P', 'marca' => 'Cooler Master', 'modelo' => 'MCB-NR200P-KGNN-S00', 'descripcion' => 'Mini-ITX SFF de 20 L con panel lateral TG o malla intercambiable, ventiladores SickleFlow de 120 mm incluidos y opción de montaje vertical de GPU. Uno de los gabinetes ITX más populares del mercado.', 'imagen_url' => 'https://manuals.plus/wp-content/uploads/2022/08/COOLER-MASTER-NR200P-Mini-ITX-PC-Case-features.jpg'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 330, 'cooler_max' => 155, 'psu_max' => 130, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 0, 'vent_sup' => 2, 'vent_tras' => 1, 'vent_incl' => 2, 'tam_front' => 0, 'tam_sup' => 120, 'tam_tras' => 92, 'sop_rad' => [120, 240, 280], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => true, 'panel' => 'Tempered Glass', 'ancho' => 185, 'alto' => 292, 'prof' => 376],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 6, 1), 'precio_base' => 109.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 6, 1), 'precio_base' => 114.99, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 1, 1), 'precio_base' => 104.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 6, 1), 'precio_base' => 107.99, 'variacion_pct' => 4],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1), 'precio_base' => 102.99, 'variacion_pct' => 3],
-            ]
-        );
+        /// ATX
         $this->crearGabinete(
             comp: ['nombre' => 'Fractal Design North', 'marca' => 'Fractal Design', 'modelo' => 'FD-C-NOR1C-02', 'descripcion' => 'Mid Tower ATX de diseño nórdico con frente de madera y panel lateral TG. Excelente refrigeración y acabado premium destacado en el segmento 100-130 €.', 'imagen_url' => 'https://static.wixstatic.com/media/7d7d74_8f6165ce2f404434b521ddd808a85093~mv2.jpg/v1/fill/w_568,h_710,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/7d7d74_8f6165ce2f404434b521ddd808a85093~mv2.jpg'],
             gab: ['tipo_id' => $mid->id, 'estructura_id' => $conv->id, 'ff' => [$atx, $matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 355, 'cooler_max' => 185, 'psu_max' => 250, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 2, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 140, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 140, 240, 280, 360], 'usb_front' => ['2xUSB3', '1xUSB-C 3.2 Gen2'], 'vert_pcie' => true, 'panel' => 'Tempered Glass + Frente madera', 'ancho' => 230, 'alto' => 469, 'prof' => 427],
@@ -2328,7 +2069,7 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Corsair 4000D TG', 'marca' => 'Corsair', 'modelo' => 'CC-9011241-WW', 'descripcion' => 'Mid Tower ATX de Corsair con panel TG y frontal de malla. Gestión de cables mejorada, soporte para radiadores 360 mm y amplio espacio interno. Ideal para builds equilibradas.', 'imagen_url' => 'https://computerspace.in/cdn/shop/products/NewProject_25_b7e264ba-a9eb-4726-bcf6-50029655d86a.jpg?v=1629054333'],
+            comp: ['nombre' => 'Corsair 4000D', 'marca' => 'Corsair', 'modelo' => 'CC-9011241-WW', 'descripcion' => 'Mid Tower ATX de Corsair con panel TG y frontal de malla. Gestión de cables mejorada, soporte para radiadores 360 mm y amplio espacio interno. Ideal para builds equilibradas.', 'imagen_url' => 'https://computerspace.in/cdn/shop/products/NewProject_25_b7e264ba-a9eb-4726-bcf6-50029655d86a.jpg?v=1629054333'],
             gab: ['tipo_id' => $mid->id, 'estructura_id' => $conv->id, 'ff' => [$atx, $matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 360, 'cooler_max' => 170, 'psu_max' => 180, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 2, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360], 'usb_front' => ['1xUSB3', '1xUSB-C', '2xUSB2'], 'vert_pcie' => false, 'panel' => 'Tempered Glass', 'ancho' => 230, 'alto' => 466, 'prof' => 453],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 89.99,  'variacion_pct' => 5],
@@ -2358,17 +2099,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 124.99, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 114.99, 'variacion_pct' => 4],
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 6, 1),  'precio_base' => 109.99, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'Phanteks Eclipse G500A DRGB', 'marca' => 'Phanteks', 'modelo' => 'PH-EC500ATG_DBK01', 'descripcion' => 'Mid Tower ATX con paneles de malla D-frame, tres ventiladores DRGB incluidos, soporte para radiadores de 420 mm y montaje vertical PCIe. Flujo de aire excepcional.', 'imagen_url' => 'https://manuals.plus/wp-content/uploads/2022/12/PHANTEKS-ECLIPSE-G500A-Computer-FEATURED-1024x446.png'],
-            gab: ['tipo_id' => $mid->id, 'estructura_id' => $conv->id, 'ff' => [$atx, $eatx, $matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 435, 'cooler_max' => 190, 'psu_max' => 220, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 3, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 3, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360, 420], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => true, 'panel' => 'Tempered Glass + Malla D-frame', 'ancho' => 230, 'alto' => 530, 'prof' => 490],
-            historial: [
-                ['tienda' => 'PCComponentes',   'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 109.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España',   'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 114.99, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',         'desde' => Carbon::create(2023, 2, 1),  'precio_base' => 104.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',       'desde' => Carbon::create(2023, 8, 1),  'precio_base' => 107.99, 'variacion_pct' => 4],
-                ['tienda' => 'PcBox', 'desde' => Carbon::create(2024, 2, 1),  'precio_base' => 119.99, 'variacion_pct' => 3],
             ]
         );
         $this->crearGabinete(
@@ -2460,19 +2190,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Cooler Master MasterBox Q300L', 'marca' => 'Cooler Master', 'modelo' => 'MCB-Q300L-KANN-S00', 'descripcion' => 'Mini Tower mATX modular con paneles perforados intercambiables y soporte para radiadores de 240 mm. Altamente versatil: la placa se puede montar en distintas orientaciones.', 'imagen_url' => 'https://pbs.twimg.com/media/F63jo7lXkAAwzts.jpg'],
-            gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 360, 'cooler_max' => 159, 'psu_max' => 160, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3', '2xUSB2'], 'vert_pcie' => false, 'panel' => 'Panel acrílico + malla modular', 'ancho' => 230, 'alto' => 378, 'prof' => 378],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 49.99,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 54.99,  'variacion_pct' => 6],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 59.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 47.99,  'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 44.99,  'variacion_pct' => 4],
-                ['tienda' => 'Worten',        'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 49.99,  'variacion_pct' => 4],
-                ['tienda' => 'FNAC',          'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 47.99,  'variacion_pct' => 3],
-            ]
-        );
-        $this->crearGabinete(
             comp: ['nombre' => 'NZXT H5 Flow', 'marca' => 'NZXT', 'modelo' => 'CC-H51FB-01', 'descripcion' => 'Mini Tower mATX con frontal de malla y panel lateral TG. Diseño compacto con excelente gestión de cables. Compatible con radiadores de 280 mm en el frontal.', 'imagen_url' => 'https://www.asusbymacman.es/43899-large_default/nzxt-h5-flow-2024-black-caja.jpg'],
             gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 365, 'cooler_max' => 165, 'psu_max' => 200, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280], 'usb_front' => ['1xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass', 'ancho' => 210, 'alto' => 387, 'prof' => 398],
             historial: [
@@ -2484,16 +2201,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Silverstone FARA R1 Pro', 'marca' => 'Silverstone', 'modelo' => 'SST-FAR1B-PRO', 'descripcion' => 'Mini Tower mATX de doble cámara con separación entre zona de componentes y PSU+almacenamiento. Panel lateral TG y frontal de malla perforada. Enfriamiento superior al de la mayoría de mATX convencionales.', 'imagen_url' => 'https://files.pccasegear.com/UserFiles/SST-FAR1B-PRO-silverstone-fara-r1-pro-argb-tempered-glass-case-ftr1.jpg'],
-            gab: ['tipo_id' => $mini->id, 'estructura_id' => $sand->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 320, 'cooler_max' => 160, 'psu_max' => 160, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3'], 'vert_pcie' => false, 'panel' => 'Tempered Glass + Malla', 'ancho' => 215, 'alto' => 400, 'prof' => 395, 'cam_p' => 240, 'cam_s' => 140],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 59.99,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 9, 1),  'precio_base' => 64.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 57.99,  'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 54.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
             comp: ['nombre' => 'Lian Li PC-O11 Air Mini', 'marca' => 'Lian Li', 'modelo' => 'G99.O11AMX.00', 'descripcion' => 'Mini Tower mATX de doble cámara con paneles TG en lateral y frontal. Diseño sandwich compacto que permite hasta 420 mm de GPU y radiadores de 360 mm en la cámara secundaria.', 'imagen_url' => 'https://i.ytimg.com/vi/PvaRGVPWlh0/maxresdefault.jpg'],
             gab: ['tipo_id' => $mini->id, 'estructura_id' => $sand->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 420, 'cooler_max' => 157, 'psu_max' => 180, 'bahias35' => 0, 'bahias25' => 2, 'vent_front' => 3, 'vent_sup' => 0, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 0, 'tam_tras' => 0, 'sop_rad' => [120, 240, 360], 'usb_front' => ['2xUSB3', '1xUSB-C 3.2 Gen2'], 'vert_pcie' => false, 'panel' => 'Tempered Glass x2', 'ancho' => 216, 'alto' => 404, 'prof' => 380, 'cam_p' => 250, 'cam_s' => 115],
             historial: [
@@ -2502,18 +2209,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 109.99, 'variacion_pct' => 4],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 112.99, 'variacion_pct' => 4],
                 ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 107.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'Thermaltake V200 TG', 'marca' => 'Thermaltake', 'modelo' => 'CA-1K8-00M1WN-00', 'descripcion' => 'Mini Tower mATX asequible con panel lateral y superior de vidrio templado, iluminación ARGB en el frontal y tres ventiladores incluidos. La opción pecera más económica del segmento mATX.', 'imagen_url' => 'https://cdn.awsli.com.br/800x800/86/86779/produto/124571174/ee2508d36b.jpg'],
-            gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 310, 'cooler_max' => 155, 'psu_max' => 160, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 2, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3', '2xUSB2'], 'vert_pcie' => false, 'panel' => 'Tempered Glass 2 caras (lateral + techo)', 'ancho' => 200, 'alto' => 393, 'prof' => 383],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 49.99,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 54.99,  'variacion_pct' => 6],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 59.99,  'variacion_pct' => 5],
-                ['tienda' => 'Worten',        'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 44.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 11, 1), 'precio_base' => 42.99,  'variacion_pct' => 4],
-                ['tienda' => 'FNAC',          'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 44.99,  'variacion_pct' => 4],
             ]
         );
          // ITX / SFF 
@@ -2536,15 +2231,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 104.99, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 9, 1),  'precio_base' => 96.99,  'variacion_pct' => 4],
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2025, 1, 1),  'precio_base' => 94.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'NCASE M2', 'marca' => 'NCASE', 'modelo' => 'M2 v1.0 Black', 'descripcion' => 'SFF ITX premium de aluminio mecanizado con estructura sandwich. Diseño extremadamente compacto (10,7 L) compatible con GPU de hasta 325 mm y cooler de aire de hasta 72 mm. El sucesor espiritual del legendario M1 con soporte SFX/SFX-L.', 'imagen_url' => 'https://manuals.plus/wp-content/uploads/2024/08/NCASE-M2-Grater-Version-Featured-Image-1024x557.jpg'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $sand->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 325, 'cooler_max' => 72, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 2, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 92, 'tam_tras' => 0, 'sop_rad' => [120, 240], 'usb_front' => ['1xUSB-C', '1xUSB3'], 'vert_pcie' => false, 'panel' => 'Aluminio anodizado + Malla', 'ancho' => 112, 'alto' => 208, 'prof' => 328, 'cam_p' => 205, 'cam_s' => 58],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 169.99, 'variacion_pct' => 4],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 9, 1),  'precio_base' => 179.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 164.99, 'variacion_pct' => 3],
             ]
         );
         $this->crearGabinete(
@@ -2581,57 +2267,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Silverstone SG15', 'marca' => 'Silverstone', 'modelo' => 'SST-SG15B', 'descripcion' => 'SFF ITX de doble cámara con separación entre GPU/CPU y PSU. Frontal de malla perforada y panel lateral de aluminio. Compatible con GPU de doble slot de hasta 285 mm y coolers de 83 mm de altura.', 'imagen_url' => 'https://i.ytimg.com/vi/2Zxdia2_Fek/sddefault.jpg'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $sand->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 285, 'cooler_max' => 83, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 2, 'vent_front' => 1, 'vent_sup' => 0, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 0, 'tam_tras' => 80, 'sop_rad' => [120], 'usb_front' => ['2xUSB3'], 'vert_pcie' => false, 'panel' => 'Aluminio + Malla perforada', 'ancho' => 113, 'alto' => 280, 'prof' => 282, 'cam_p' => 175, 'cam_s' => 57],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 69.99,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 74.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 67.99,  'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 64.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'InWin A1 Plus', 'marca' => 'InWin', 'modelo' => 'A1 Plus Gold', 'descripcion' => 'Mini Tower ITX "todo cristal" con paneles TG en tres caras (frontal, lateral y trasero), PSU SFX de 650W incluida con iluminación RGB y altavoz Qi inalámbrico integrado en la tapa. El ITX pecera más completo del mercado.', 'imagen_url' => 'https://www.in-win.com/media/gaming-chassis/a1-plus/20190226025152_28265.jpg'],
-            gab: ['tipo_id' => $mitx->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX], 'gpu_max' => 290, 'cooler_max' => 150, 'psu_max' => 100, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 0, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 0, 'tam_tras' => 0, 'sop_rad' => [120, 140, 240], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass 3 caras', 'ancho' => 225, 'alto' => 320, 'prof' => 270],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 109.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 114.99, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 104.99, 'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 99.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'Phanteks Evolv Shift 2 Air', 'marca' => 'Phanteks', 'modelo' => 'PH-ES217A_DBK01', 'descripcion' => 'SFF ITX de torre vertical con frente y lateral de malla de alto flujo de aire. Diseño slim-tower de 15,2 L con soporte para GPU de hasta 340 mm. El SFF con mejor relación airflow/volumen de Phanteks.', 'imagen_url' => 'https://cdn.mos.cms.futurecdn.net/pFQDgayaSCZ2Qjteyih4Q7.jpg'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 340, 'cooler_max' => 65, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 0, 'vent_tras' => 2, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 0, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['1xUSB-C', '2xUSB3'], 'vert_pcie' => false, 'panel' => 'Malla perforada', 'ancho' => 111, 'alto' => 380, 'prof' => 337],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 119.99, 'variacion_pct' => 4],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 124.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 114.99, 'variacion_pct' => 3],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 109.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'Cooler Master Elite 110', 'marca' => 'Cooler Master', 'modelo' => 'RC-110-KKN2', 'descripcion' => 'Mini Tower ITX de bajo coste con diseño cúbico, bahía de 5.25" y soporte para GPU de hasta 210 mm. El ITX más asequible del mercado. Ideal para HTPCs y builds de bajo presupuesto.', 'imagen_url' => 'https://technoholicnepal.com/wp-content/uploads/2024/05/6ccf9199-db04-4a79-8ac1-9bb52550c28c.jpg'],
-            gab: ['tipo_id' => $mitx->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pATX], 'gpu_max' => 210, 'cooler_max' => 95, 'psu_max' => 140, 'bahias35' => 2, 'bahias25' => 1, 'vent_front' => 1, 'vent_sup' => 0, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 0, 'tam_tras' => 80, 'sop_rad' => [120], 'usb_front' => ['2xUSB3', '1xAudio'], 'vert_pcie' => false, 'panel' => 'Plástico', 'ancho' => 208, 'alto' => 274, 'prof' => 336],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 39.99,  'variacion_pct' => 6],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 44.99,  'variacion_pct' => 6],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 47.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 36.99,  'variacion_pct' => 5],
-                ['tienda' => 'Worten',        'desde' => Carbon::create(2024, 5, 1),  'precio_base' => 34.99,  'variacion_pct' => 4],
-                ['tienda' => 'FNAC',          'desde' => Carbon::create(2024, 11, 1), 'precio_base' => 35.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'FormD T1 v2', 'marca' => 'FormD', 'modelo' => 'T1 v2 Black', 'descripcion' => 'SFF ITX de aluminio mecanizado de ultra alta gama con estructura sandwich ajustable. Volumen mínimo de 9,5 L. Compatible con radiadores de 240 mm y GPU dual-slot de hasta 325 mm. Solo disponible en preventas limitadas.', 'imagen_url' => 'https://i.redd.it/formd-t1-v2-5-silver-build-v0-tye9xrzvt2he1.png?width=3572&format=png&auto=webp&s=9a24b2888ed855a9d88cd8f63c2b6d1ad00f0c7f'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $svar->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 325, 'cooler_max' => 50, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 0, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 0, 'tam_tras' => 0, 'sop_rad' => [240], 'usb_front' => ['1xUSB-C', '1xUSB3'], 'vert_pcie' => false, 'panel' => 'Aluminio CNC', 'ancho' => 175, 'alto' => 148, 'prof' => 370, 'cam_p' => 230, 'cam_s' => 48, 'p_min' => 48, 'p_max' => 95],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 219.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 214.99, 'variacion_pct' => 3],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 209.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearGabinete(
             comp: ['nombre' => 'Lian Li A4-H2O', 'marca' => 'Lian Li', 'modelo' => 'PC-A4H2OX4', 'descripcion' => 'SFF ITX de doble cámara optimizado para refrigeración líquida de 240 mm en tan solo 11 L. Estructura de aluminio anodizado en negro o plata. GPU horizontal en cámara principal de hasta 305 mm.', 'imagen_url' => 'https://i.ytimg.com/vi/gnwHhJiSv1g/maxresdefault.jpg'],
             gab: ['tipo_id' => $sff->id, 'estructura_id' => $sand->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 305, 'cooler_max' => 52, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 0, 'vent_front' => 0, 'vent_sup' => 0, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 0, 'tam_tras' => 0, 'sop_rad' => [240], 'usb_front' => ['1xUSB-C', '1xUSB3'], 'vert_pcie' => false, 'panel' => 'Aluminio anodizado + Malla perforada', 'ancho' => 66, 'alto' => 320, 'prof' => 155, 'cam_p' => 175, 'cam_s' => 65],
             historial: [
@@ -2639,17 +2274,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 94.99,  'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 86.99,  'variacion_pct' => 4],
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 84.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearGabinete(
-            comp: ['nombre' => 'Jonsbo T8', 'marca' => 'Jonsbo', 'modelo' => 'T8 Black', 'descripcion' => 'SFF ITX estilo "pecera" con panel superior y lateral de vidrio templado curvado. Interior visible a 360° gracias al techo de TG. Compatible con GPU de hasta 285 mm y cooler de aire de 75 mm. Un showpiece compacto único.', 'imagen_url' => 'https://www.cowcotland.com/images/news/2019/04/jonsbo.jpg'],
-            gab: ['tipo_id' => $sff->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 285, 'cooler_max' => 75, 'psu_max' => 130, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 2, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 120, 'tam_tras' => 0, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass curvo 2 caras', 'ancho' => 225, 'alto' => 298, 'prof' => 312],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 94.99,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 99.99,  'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 91.99,  'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2024, 7, 1),  'precio_base' => 89.99,  'variacion_pct' => 4],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2025, 1, 1),  'precio_base' => 87.99,  'variacion_pct' => 3],
             ]
         );
     }
@@ -2704,17 +2328,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 67.99,  'variacion_pct' => 4],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 69.99,  'variacion_pct' => 4],
                 ['tienda' => 'Neobyte',       'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 64.99,  'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPSU(
-            comp: ['nombre' => 'be quiet! System Power 10 650W', 'marca' => 'be quiet!', 'modelo' => 'BN328', 'descripcion' => 'PSU ATX 650W 80 Plus Bronze semi modular. La gama de entrada de be quiet! con ventilador de 120 mm silencioso. Recomendada para builds hasta RTX 4060 Ti.', 'imagen_url' => 'https://elchapuzasinformatico.com/wp-content/uploads/2022/10/be-quiet-SYSTEM-POWER-10.jpg'],
-            psu:  ['cert' => '80 Plus Bronze', 'tipo' => 'ATX', 'vatios' => 650, 'modular' => 'semi_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 2, 'sata' => 8, 'molex' => 4, 'largo_mm' => 140, 'vent_mm' => 120, 'zero_rpm' => false],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 74.99,  'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 77.99,  'variacion_pct' => 5],
-                ['tienda' => 'MediaMarkt',    'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 82.99,  'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 72.99,  'variacion_pct' => 4],
-                ['tienda' => 'El Corte Inglés','desde'=> Carbon::create(2024, 1, 1),  'precio_base' => 79.99,  'variacion_pct' => 3],
             ]
         );
        $this->crearPSU(
@@ -2775,23 +2388,13 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPSU(
-            comp: ['nombre' => 'Fractal Design Ion+ 2 860W Platinum', 'marca' => 'Fractal Design', 'modelo' => 'FD-P-IA2P-860-EU', 'descripcion' => 'PSU ATX 860W 80 Plus Platinum full modular. Ventilador de 140 mm con modo pasivo hasta 300W. Diseño premium con cables planos. Ideal para workstations silenciosas con RTX 4080.', 'imagen_url' => 'https://media.ldlc.com/r1600/ld/products/00/05/87/19/LD0005871936_1.jpg'],
-            psu:  ['cert' => '80 Plus Platinum', 'tipo' => 'ATX', 'vatios' => 860, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 4, 'sata' => 12, 'molex' => 4, 'largo_mm' => 150, 'vent_mm' => 140, 'zero_rpm' => true],
+            comp: ['nombre' => 'Fractal Design Ion+ 3 850W Platinum', 'marca' => 'Fractal Design', 'modelo' => 'FD-P-IA2P-860-EU', 'descripcion' => 'PSU ATX 860W 80 Plus Platinum full modular. Ventilador de 140 mm con modo pasivo hasta 300W. Diseño premium con cables planos. Ideal para workstations silenciosas con RTX 4080.', 'imagen_url' => 'https://media.ldlc.com/r1600/ld/products/00/05/87/19/LD0005871936_1.jpg'],
+            psu:  ['cert' => '80 Plus Platinum', 'tipo' => 'ATX', 'vatios' => 850, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 4, 'sata' => 12, 'molex' => 4, 'largo_mm' => 150, 'vent_mm' => 140, 'zero_rpm' => true],
             historial: [
                 ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 154.99, 'variacion_pct' => 5],
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 159.99, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 149.99, 'variacion_pct' => 4],
                 ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 144.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearPSU(
-            comp: ['nombre' => 'XPG Core Reactor II 850W', 'marca' => 'XPG', 'fabricante' => 'ADATA', 'modelo' => 'COREREACTORII850G-BKCEU', 'descripcion' => 'PSU ATX 3.0 850W 80 Plus Gold full modular con 12VHPWR nativo. Ventilador de 135 mm semi-pasivo. Transient response mejorada para picos de GPU de nueva generación.', 'imagen_url' => 'https://webapi3.adata.com/storage/product/core_reactor_ii_k_productpage_1920x1080.jpg'],
-            psu:  ['cert' => '80 Plus Gold', 'tipo' => 'ATX 3.0', 'vatios' => 850, 'modular' => 'full_modular', 'version_atx' => '3.0', 'pcie16' => 1, 'pcie8' => 2, 'sata' => 10, 'molex' => 3, 'largo_mm' => 150, 'vent_mm' => 135, 'zero_rpm' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 4, 1),  'precio_base' => 109.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 4, 1),  'precio_base' => 114.99, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 10, 1), 'precio_base' => 104.99, 'variacion_pct' => 4],
-                ['tienda' => 'APP Informática','desde'=> Carbon::create(2024, 4, 1),  'precio_base' => 102.99, 'variacion_pct' => 3],
             ]
         );
         $this->crearPSU(
@@ -2850,16 +2453,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPSU(
-            comp: ['nombre' => 'Super Flower Leadex VII XG 1300W', 'marca' => 'Super Flower', 'modelo' => 'SF-1300F14XG', 'descripcion' => 'PSU ATX 3.0 1300W 80 Plus Gold full modular con doble 12VHPWR. Ideal para sistemas RTX 5090 con CPU de alto consumo. Ventilador FDB de 140 mm con protección contra picos del 200%.', 'imagen_url' => 'https://pcmaster.co.il/image/cache/catalog/i/np/cf/ee7bace7c07dc0600bc8b5d98b2181d0-1000x1000.jpg'],
-            psu:  ['cert' => '80 Plus Gold', 'tipo' => 'ATX 3.0', 'vatios' => 1300, 'modular' => 'full_modular', 'version_atx' => '3.0', 'pcie16' => 2, 'pcie8' => 4, 'sata' => 14, 'molex' => 4, 'largo_mm' => 190, 'vent_mm' => 140, 'zero_rpm' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 229.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2023, 6, 1),  'precio_base' => 234.99, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 224.99, 'variacion_pct' => 4],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 7, 1),  'precio_base' => 219.99, 'variacion_pct' => 4],
-            ]
-        );
-        $this->crearPSU(
             comp: ['nombre' => 'Seasonic Prime TX-1300', 'marca' => 'Seasonic', 'modelo' => 'SSR-1300TR', 'descripcion' => 'PSU ATX 1300W 80 Plus Titanium full modular. Ventilador de 135 mm totalmente pasivo hasta 600W. 12 años de garantía. Para RTX 5090 + 7950X3D o setups de workstation extrema.', 'imagen_url' => 'https://seasonic.com/wp-content/uploads/2025/10/4.webp'],
             psu:  ['cert' => '80 Plus Titanium', 'tipo' => 'ATX', 'vatios' => 1300, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 8, 'sata' => 14, 'molex' => 4, 'largo_mm' => 190, 'vent_mm' => 135, 'zero_rpm' => true],
             historial: [
@@ -2891,28 +2484,6 @@ class ComponentesSeeder extends Seeder
             ]
         );
         $this->crearPSU(
-            comp: ['nombre' => 'Corsair SF600 Platinum', 'marca' => 'Corsair', 'modelo' => 'CP-9020182-EU', 'descripcion' => 'PSU SFX 600W 80 Plus Platinum full modular. Referencia del mercado SFF. Ventilador de 92 mm zero-rpm. Incluye adaptador ATX. Idónea para builds ITX con RTX 4070 o RX 7800 XT en gabinetes como el Lian Li A4-H2O.', 'imagen_url' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAsnMXjVaX4XUWgdkLOFZdtY4Lq_QMixyFMQ&s'],
-            psu:  ['cert' => '80 Plus Platinum', 'tipo' => 'SFX', 'vatios' => 600, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 2, 'sata' => 6, 'molex' => 2, 'largo_mm' => 100, 'vent_mm' => 92, 'zero_rpm' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 129.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 5, 1),  'precio_base' => 134.99, 'variacion_pct' => 5],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2022, 11, 1), 'precio_base' => 124.99, 'variacion_pct' => 4],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 5, 1),  'precio_base' => 127.99, 'variacion_pct' => 4],
-                ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 119.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearPSU(
-            comp: ['nombre' => 'Seasonic Focus SGX-650', 'marca' => 'Seasonic', 'modelo' => 'SSR-650SGX', 'descripcion' => 'PSU SFX 650W 80 Plus Gold full modular. Ventilador de 80 mm con modo híbrido. Cables trenzados premium. Bracket ATX incluido. Favorita para builds NR200P / Dan A4 con GPU de gama media-alta.', 'imagen_url' => 'https://comparema.ru/image/cache/catalog/products/0300055-500x400.jpg'],
-            psu:  ['cert' => '80 Plus Gold', 'tipo' => 'SFX', 'vatios' => 650, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 2, 'sata' => 8, 'molex' => 2, 'largo_mm' => 100, 'vent_mm' => 80, 'zero_rpm' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 6, 1),  'precio_base' => 119.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 6, 1),  'precio_base' => 124.99, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 1, 1),  'precio_base' => 114.99, 'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 7, 1),  'precio_base' => 112.99, 'variacion_pct' => 4],
-                ['tienda' => 'Neobyte',       'desde' => Carbon::create(2024, 3, 1),  'precio_base' => 109.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearPSU(
             comp: ['nombre' => 'Silverstone SX700-PT', 'marca' => 'Silverstone', 'modelo' => 'SST-SX700-PT', 'descripcion' => 'PSU SFX 700W 80 Plus Platinum full modular. El mayor vataje en formato SFX estándar (100 mm). Ventilador de 92 mm silencioso. Para builds ITX de alta gama con RTX 4080 en gabinetes tipo SG15.', 'imagen_url' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUwBrSZ-jfi2ktyk_imqxAn-BdwS4jla8Jzg&s'],
             psu:  ['cert' => '80 Plus Platinum', 'tipo' => 'SFX', 'vatios' => 700, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 4, 'sata' => 8, 'molex' => 2, 'largo_mm' => 100, 'vent_mm' => 92, 'zero_rpm' => true],
             historial: [
@@ -2920,18 +2491,6 @@ class ComponentesSeeder extends Seeder
                 ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 7, 1),  'precio_base' => 159.99, 'variacion_pct' => 5],
                 ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 3, 1),  'precio_base' => 149.99, 'variacion_pct' => 4],
                 ['tienda' => 'CaseKing',      'desde' => Carbon::create(2024, 1, 1),  'precio_base' => 144.99, 'variacion_pct' => 3],
-            ]
-        );
-        $this->crearPSU(
-            comp: ['nombre' => 'Cooler Master V750 SFX Gold', 'marca' => 'Cooler Master', 'modelo' => 'MPY-7501-SFHAGV-EU', 'descripcion' => 'PSU SFX-L 750W 80 Plus Gold full modular con ventilador de 120 mm (más silencioso que SFX de 92 mm). Ideal para gabinetes ITX grandes como NZXT H1 o Fractal Terra con RTX 4070 Ti.', 'imagen_url' => 'https://dist.contentdriver.com.au/coolermaster/V-SFX-GOLD-750-WHT-MPY-7501-SFHAGV-3WA/images/header-image-mobile.jpg'],
-            psu:  ['cert' => '80 Plus Gold', 'tipo' => 'SFX-L', 'vatios' => 750, 'modular' => 'full_modular', 'version_atx' => '2.4', 'pcie16' => 0, 'pcie8' => 4, 'sata' => 8, 'molex' => 2, 'largo_mm' => 130, 'vent_mm' => 120, 'zero_rpm' => true],
-            historial: [
-                ['tienda' => 'PCComponentes', 'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 139.99, 'variacion_pct' => 5],
-                ['tienda' => 'Amazon España', 'desde' => Carbon::create(2022, 8, 1),  'precio_base' => 144.99, 'variacion_pct' => 5],
-                ['tienda' => 'Alternate',     'desde' => Carbon::create(2023, 2, 1),  'precio_base' => 134.99, 'variacion_pct' => 4],
-                ['tienda' => 'Coolmod',       'desde' => Carbon::create(2023, 8, 1),  'precio_base' => 132.99, 'variacion_pct' => 4],
-                ['tienda' => 'APP Informática','desde'=> Carbon::create(2024, 2, 1),  'precio_base' => 129.99, 'variacion_pct' => 3],
-                ['tienda' => 'Life Informática','desde'=> Carbon::create(2024, 8, 1), 'precio_base' => 127.99, 'variacion_pct' => 3],
             ]
         );
         $this->crearPSU(

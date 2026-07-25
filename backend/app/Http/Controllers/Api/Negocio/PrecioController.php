@@ -80,6 +80,7 @@ class PrecioController extends Controller
         // ── Construir respuesta de precios ────────────────────────────────────
         $precios = EntradaPrecio::whereIn('id', $idsArray)
             ->with(['tienda'])
+            ->orderByDesc('en_stock')
             ->orderBy('precio', 'asc')
             ->get()
             ->map(fn($p) => [

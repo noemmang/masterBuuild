@@ -75,8 +75,15 @@
               [attr.data-tooltip]="comp.descripcion || null"
               [appTooltip]="comp.descripcion || ''">
 
-              <div class="card" [class.selected]="componenteSeleccionado()?.uuid === comp.uuid" (click)="seleccionarComponente(comp)">
+              <div
+                class="card"
+                [class.selected]="componenteSeleccionado()?.uuid === comp.uuid"
+                [class.agotado]="comp.num_tiendas > 0 && !comp.en_stock"
+                (click)="seleccionarComponente(comp)">
                 <div class="card-img">
+                  @if (comp.num_tiendas > 0 && !comp.en_stock) {
+                    <span class="badge-agotado">Agotado</span>
+                  }
                   @if (comp.imagen_url) {
                     <img [src]="comp.imagen_url" [alt]="comp.nombre" />
                   } @else {

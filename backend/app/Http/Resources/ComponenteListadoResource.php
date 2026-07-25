@@ -12,14 +12,22 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * detalle de un componente concreto, vía /componentes/{uuid} y
  * /componentes/{uuid}/precios.
  *
- * Los campos precio_min, precio_max, num_tiendas, tiene_cupon y
- * tiene_regalo vienen ya calculados desde el controller con
- * withMin/withMax/withCount/withExists, así que aquí solo se formatean.
+ * Los campos precio_min, precio_max, num_tiendas, tiene_cupon,
+ * tiene_regalo, en_stock y precio_min_stock vienen ya calculados desde
+ * el controller con withMin/withMax/withCount/withExists, así que aquí
+ * solo se formatean.
  */
 class ComponenteListadoResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        // Preferimos el precio más bajo ENTRE LAS TIENDAS CON STOCK. Si
+        // ninguna tienda tiene stock ahora mismo, caemos de vuelta al
+        // precio_min "a secas" (el último visto, aunque esté agotado) en
+        // vez de dejar la tarjeta sin precio: el front decide qué hacer
+        // con eso mostrando el badge de "Agotado" según en_stock.
+        $precioMin = $this->precio_min_stock ?? $this->precio_min;
+
         return [
             'uuid'         => $this->uuid,
             'nombre'       => $this->nombre,
@@ -27,11 +35,17 @@ class ComponenteListadoResource extends JsonResource
             'imagen_url'   => $this->imagen_url,
             'descripcion'  => $this->descripcion,
             'marca'        => $this->marca ? ['nombre' => $this->marca->nombre] : null,
-            'precio_min'   => $this->precio_min !== null ? (float) $this->precio_min : null,
+            'precio_min'   => $precioMin !== null ? (float) $precioMin : null,
             'precio_max'   => $this->precio_max !== null ? (float) $this->precio_max : null,
             'num_tiendas'  => (int) $this->num_tiendas,
             'tiene_cupon'  => (bool) $this->tiene_cupon,
             'tiene_regalo' => (bool) $this->tiene_regalo,
+            // true si AL MENOS una tienda tiene stock ahora mismo. Si el
+            // componente no tiene ninguna tienda todavía (num_tiendas=0),
+            // esto viene false, pero el front no debe pintar "Agotado" en
+            // ese caso (no hay dato, no es que esté agotado); distínguelo
+            // con num_tiendas > 0.
+            'en_stock'     => (bool) $this->en_stock,
         ];
     }
 }

@@ -428,7 +428,11 @@
                 <div class="precio-info">
                   @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
                   @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
-                  <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
+                  @if (p.url) {
+                    <a [href]="p.url" target="_blank" rel="noopener" class="precio-tienda tienda-link" (click)="$event.stopPropagation()">{{ p.tienda?.nombre || 'Tienda' }}</a>
+                  } @else {
+                    <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
+                  }
                   <div class="precio-row-tags">
                     @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
                     @if (p.cupon) {

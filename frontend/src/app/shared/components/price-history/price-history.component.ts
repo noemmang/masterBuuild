@@ -412,7 +412,7 @@ export class PriceHistoryComponent implements OnChanges, OnDestroy {
   formatPrecio(v: number | null): string {
     if (v === null || v === undefined) return '—';
     return v.toLocaleString('es-ES', {
-      style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
+      style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2,
     });
   }
 

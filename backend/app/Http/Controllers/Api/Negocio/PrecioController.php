@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Negocio;
 use App\Http\Controllers\Controller;
 use App\Models\Componentes\Componente;
 use App\Models\Negocio\EntradaPrecio;
+use App\Models\Negocio\UrlProductoTienda;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +78,16 @@ class PrecioController extends Controller
             $cuponesPorTienda = [$mejorTiendaId => $cuponesActivos->first()];
         }
 
+        // ── URL "de configuración" por tienda (fallback) ──────────────────────
+        // El scrape guarda en cada entradas_precio.url la url exacta que se
+        // descargó en ese momento; normalmente coincide con la configurada
+        // en urls_producto_tienda, pero puede venir vacía (dato insertado a
+        // mano, tinker, importaciones antiguas...). Para que el link a la
+        // tienda nunca se quede muerto, si la entrada no trae url propia
+        // caemos en la url configurada para ese componente/tienda.
+        $urlsConfiguradasPorTienda = UrlProductoTienda::where('componente_id', $componente->id)
+            ->pluck('url', 'tienda_id');
+
         // ── Construir respuesta de precios ────────────────────────────────────
         $precios = EntradaPrecio::whereIn('id', $idsArray)
             ->with(['tienda'])
@@ -88,7 +99,7 @@ class PrecioController extends Controller
                 'tienda'      => $p->tienda ? ['uuid' => $p->tienda->uuid, 'nombre' => $p->tienda->nombre] : null,
                 'precio'      => (float) $p->precio,
                 'en_stock'    => $p->en_stock,
-                'url'         => $p->url,
+                'url'         => $p->url ?: ($urlsConfiguradasPorTienda[$p->tienda_id] ?? null),
                 'actualizado' => $p->scraped_at?->diffForHumans(),
                 'cupon'       => isset($cuponesPorTienda[$p->tienda_id])
                     ? $this->formatearCupon($cuponesPorTienda[$p->tienda_id])

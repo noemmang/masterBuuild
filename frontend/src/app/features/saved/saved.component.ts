@@ -173,7 +173,7 @@ export class SavedComponent implements OnInit {
 
   formatPrecio(precio: number | null | undefined): string {
     if (!precio) return 'Sin precio';
-    return precio.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    return precio.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   nombreCategoria(slug: string): string {

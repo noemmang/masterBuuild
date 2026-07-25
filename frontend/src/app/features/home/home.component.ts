@@ -281,6 +281,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   formatPrecio(precio: number | null): string {
     if (!precio) return 'Sin precio';
-    return precio.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    return precio.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 }

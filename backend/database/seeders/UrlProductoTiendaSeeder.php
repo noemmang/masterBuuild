@@ -82,7 +82,7 @@ class UrlProductoTiendaSeeder extends Seeder
             'AMD Ryzen 5 7600' => [
                 'PCComponentes' => 'https://www.pccomponentes.com/procesador-amd-ryzen-5-7600-3-8-5-1-ghz-box',
                 'Coolmod'       => 'https://www.coolmod.com/amd-ryzen-5-7600-5-1ghz-socket-am5-boxed',
-                'Neobyte'       => 'https://www.neobyte.es/amd-ryzen-5-7600x-procesador-am5-15297.html',
+                'Neobyte'       => 'https://www.neobyte.es/amd-ryzen-5-7600-procesador-am5-16669.html',
             ],
             'AMD Ryzen 7 7700X' => [
                 'PCComponentes' => 'https://www.pccomponentes.com/procesador-amd-ryzen-7-7700x-4-5-ghz-box-sin-ventilador',
@@ -90,7 +90,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte'       => 'https://www.neobyte.es/amd-ryzen-7-7700x-procesador-am5-15298.html',
             ],
             'AMD Ryzen 7 7700' => [
-                'PCComponentes' => 'https://www.pccomponentes.com/procesador-amd-ryzen-7-7700-3-8-5-3-ghz-box',
+                'PCComponentes' => 'https://www.pccomponentes.com/procesador-amd-ryzen-7-7700-8-nucleos-3-8-ghz-frecuencia-base-5-3-ghz-turbo-graficos-integrados-box',
                 'Coolmod'       => 'https://www.coolmod.com/amd-ryzen-7-7700-5-3ghz-socket-am5-boxed',
                 'Neobyte'       => 'https://www.neobyte.es/amd-ryzen-7-7700-procesador-am5-16670.html',
             ],
@@ -1049,7 +1049,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte'       => 'https://www.neobyte.es/deepcool-assassin-iv-disipador-cpu-20084.html',
             ],
             'DeepCool AK620 G2' => [
-                'PCComponentes' => 'https://www.pccomponentes.com/search/?query=DeepCool+AK620',
+                'PCComponentes' => 'https://www.pccomponentes.com/ventilador-cpu-refrigeracion-aire-deepcool-socket-am4-am5-lga1700-120mm-ak620-g2-doble-ventilador',
                 'Coolmod'       => '',
                 'Neobyte'       => 'https://www.neobyte.es/deepcool-ak620-g2-refrigeracion-cpu-37700.html',
             ],
@@ -1198,7 +1198,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte'       => '',
             ],
             'Lian Li UNI FAN SL140 RGB (x2)' => [
-                'PCComponentes' => 'https://www.pccomponentes.com/search/?query=Lian+Li+UNI+FAN+SL140+RGB',
+                'PCComponentes' => 'https://www.pccomponentes.com/lian-li-uni-fan-sl140-dual-rgb-pwm-ventilador-suplementario-140mm-blanco',
                 'Coolmod'       => 'https://www.coolmod.com/lian-li-uni-fan-sl140-rgb-pwm-dual-pack-blanco-ventilador-14-cm',
                 'Neobyte'       => '',
             ],
@@ -1208,7 +1208,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte'       => '',
             ],
             'Noctua NF-A12x25 PWM' => [
-                'PCComponentes' => 'https://www.pccomponentes.com/ventilador-suplementario-noctua-nf-a12x25-120mm-2000rpm-pwm-5v-con-kit-anti-vibracion',
+                'PCComponentes' => 'https://www.pccomponentes.com/noctua-nf-a12x15-pwm-120mm',
                 'Coolmod'       => 'https://www.coolmod.com/noctua-nf-a12x25-pwm-ventilador-12-cm',
                 'Neobyte'       => 'https://www.neobyte.es/noctua-nf-a12x25-pwm-ventilador-caja-120-mm-3784.html',
             ],
@@ -1238,7 +1238,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte'       => '',
             ],
             'Phanteks D30 140mm DRGB (x3)' => [
-                'PCComponentes' => 'https://www.pccomponentes.com/search/?query=Phanteks+D30+140mm+DRGB+%28x3%29',
+                'PCComponentes' => 'https://www.pccomponentes.com/phanteks-d30-regular-blade-kit-3-ventiladores-suplementarios-drgb-120mm-negros',
                 'Coolmod'       => 'https://www.coolmod.com/phanteks-d30-pack-3u-pwm-drgb-reverse-120mm-negro',
                 'Neobyte'       => '',
             ],

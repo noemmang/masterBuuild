@@ -949,6 +949,12 @@ $topbar-h:  52px;
   text-overflow: ellipsis;
 }
 
+a.tienda-link {
+  cursor: pointer;
+  text-decoration: none;
+  &:hover { text-decoration: underline; color: var(--accent); }
+}
+
 .ver-oferta { font-size: 0.75rem; color: var(--accent); text-decoration: none; &:hover { text-decoration: underline; } }
 
 .precio-valor {

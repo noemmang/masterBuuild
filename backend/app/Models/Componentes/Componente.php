@@ -131,47 +131,6 @@ class Componente extends BaseModel
         return $this->hasMany(\App\Models\Negocio\UrlProductoTienda::class, 'componente_id');
     }
 
-    public function cupones()
-    {
-        return $this->belongsToMany(
-            \App\Models\Negocio\Cupon::class,
-            'cupon_componente',
-            'componente_id',
-            'cupon_id'
-        )->withTimestamps();
-    }
-
-    public function cuponesActivos()
-    {
-        return $this->cupones()->activos();
-    }
-
-    public function regalos()
-    {
-        return $this->belongsToMany(
-            \App\Models\Negocio\Regalo::class,
-            'regalo_componente',
-            'componente_id',
-            'regalo_id'
-        )->withPivot([
-            'tienda_id',
-            'fecha_inicio',
-            'fecha_expiracion',
-            'activo',
-        ])->withTimestamps();
-    }
-
-    public function regalosActivos()
-    {
-        return $this->regalos()
-                    ->wherePivot('activo', true)
-                    ->wherePivot('fecha_inicio', '<=', now())
-                    ->where(fn($q) =>
-                        $q->whereNull('regalo_componente.fecha_expiracion')
-                        ->orWhere('regalo_componente.fecha_expiracion', '>=', now())
-                    );
-    }
-
     public function guardadoPor()
     {
         return $this->belongsToMany(

@@ -48,14 +48,6 @@ class ComponenteController extends Controller
             });
         }
 
-        if ($request->boolean('con_cupon')) {
-            $query->whereHas('cuponesActivos');
-        }
-
-        if ($request->boolean('con_regalo')) {
-            $query->whereHas('regalosActivos');
-        }
-
         // ── Filtros específicos por categoría ────────────────────────────────
 
         if ($request->filled('capacidad_gb')) {
@@ -192,20 +184,17 @@ class ComponenteController extends Controller
 
         // ── Agregados para el listado ──────────────────────────────────────
         //
-        // Antes se cargaban las relaciones completas (preciosActuales.tienda,
-        // cuponesActivos, regalosActivos) solo para que el frontend calculara
-        // el mínimo/máximo/nº de tiendas y comprobara si había algún cupón o
-        // regalo. Eso traía objetos enteros (tienda, cupón, regalo...) que no
-        // se usan en la card del listado. Con withMin/withMax/withCount/
-        // withExists Postgres calcula esos valores en la misma query y solo
-        // viajan los escalares que realmente hacen falta.
+        // Antes se cargaban las relaciones completas (preciosActuales.tienda)
+        // solo para que el frontend calculara el mínimo/máximo/nº de tiendas.
+        // Eso traía objetos enteros (tienda...) que no se usan en la card del
+        // listado. Con withMin/withMax/withCount Postgres calcula esos
+        // valores en la misma query y solo viajan los escalares que
+        // realmente hacen falta.
 
         $query
             ->withMin('preciosActuales as precio_min', 'precio')
             ->withMax('preciosActuales as precio_max', 'precio')
             ->withCount('preciosActuales as num_tiendas')
-            ->withExists('cuponesActivos as tiene_cupon')
-            ->withExists('regalosActivos as tiene_regalo')
             ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
             ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio');
 
@@ -264,9 +253,6 @@ class ComponenteController extends Controller
                 'marca',
                 'fabricante',
                 'preciosActuales.tienda',
-                'preciosActuales.cupon',
-                'cuponesActivos.tienda',
-                'regalosActivos',
             ],
             self::RELACIONES_POR_CATEGORIA[$componente->categoria] ?? []
         );

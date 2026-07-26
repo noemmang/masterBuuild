@@ -31,53 +31,6 @@ class PrecioController extends Controller
 
         $idsArray = array_column($ids, 'id');
 
-        // ── Tiendas que realmente tienen un precio activo ─────────────────────
-        $tiendaIdsConPrecio = EntradaPrecio::whereIn('id', $idsArray)
-            ->pluck('tienda_id')
-            ->toArray();
-
-        // ── Mejor precio (tienda más barata) ──────────────────────────────────
-        $mejorTiendaId = EntradaPrecio::whereIn('id', $idsArray)
-            ->orderBy('precio', 'asc')
-            ->value('tienda_id');
-
-        // ── Regalos activos por tienda ────────────────────────────────────────
-        $regalosPorTienda = [];
-        $regalosActivos   = $componente->regalosActivos()->get();
-
-        foreach ($regalosActivos as $regalo) {
-            $regalosPorTienda[$regalo->pivot->tienda_id] = $regalo;
-        }
-
-        // Fallback: si ninguna tienda del regalo vende este componente,
-        // lo asignamos al mejor precio disponible.
-        $hayMatchRegalo = !empty(array_intersect(array_keys($regalosPorTienda), $tiendaIdsConPrecio));
-
-        if (!$hayMatchRegalo && $regalosActivos->isNotEmpty() && $mejorTiendaId) {
-            $regalosPorTienda = [$mejorTiendaId => $regalosActivos->first()];
-        }
-
-        // ── Cupones activos por tienda ────────────────────────────────────────
-        // Los cupones están en cupon_componente (many-to-many) y cada cupón
-        // pertenece a una tienda vía cupon.tienda_id.
-        $cuponesPorTienda = [];
-        $cuponesActivos   = $componente->cuponesActivos()->get();
-
-        foreach ($cuponesActivos as $cupon) {
-            // Guardamos el primero por tienda (el más relevante)
-            if (!isset($cuponesPorTienda[$cupon->tienda_id])) {
-                $cuponesPorTienda[$cupon->tienda_id] = $cupon;
-            }
-        }
-
-        // Fallback: si ninguna tienda del cupón vende este componente,
-        // lo asignamos al mejor precio disponible (misma lógica que regalos).
-        $hayMatchCupon = !empty(array_intersect(array_keys($cuponesPorTienda), $tiendaIdsConPrecio));
-
-        if (!$hayMatchCupon && $cuponesActivos->isNotEmpty() && $mejorTiendaId) {
-            $cuponesPorTienda = [$mejorTiendaId => $cuponesActivos->first()];
-        }
-
         // ── URL "de configuración" por tienda (fallback) ──────────────────────
         // El scrape guarda en cada entradas_precio.url la url exacta que se
         // descargó en ese momento; normalmente coincide con la configurada
@@ -101,12 +54,6 @@ class PrecioController extends Controller
                 'en_stock'    => $p->en_stock,
                 'url'         => $p->url ?: ($urlsConfiguradasPorTienda[$p->tienda_id] ?? null),
                 'actualizado' => $p->scraped_at?->diffForHumans(),
-                'cupon'       => isset($cuponesPorTienda[$p->tienda_id])
-                    ? $this->formatearCupon($cuponesPorTienda[$p->tienda_id])
-                    : null,
-                'regalo'      => isset($regalosPorTienda[$p->tienda_id])
-                    ? $this->formatearRegalo($regalosPorTienda[$p->tienda_id])
-                    : null,
             ]);
 
         return response()->json([
@@ -114,28 +61,6 @@ class PrecioController extends Controller
             'precios'      => $precios,
             'mejor_precio' => $precios->first(),
         ]);
-    }
-
-    // ── Helpers de formato ────────────────────────────────────────────────────
-
-    private function formatearCupon($cupon): array
-    {
-        return [
-            'codigo'    => $cupon->codigo,
-            'tipo'      => $cupon->tipo,
-            'descuento' => $cupon->tipo === 'porcentaje'
-                ? (float) $cupon->porcentaje_descuento
-                : (float) $cupon->descuento_fijo,
-        ];
-    }
-
-    private function formatearRegalo($regalo): array
-    {
-        return [
-            'nombre'         => $regalo->nombre,
-            'imagen_url'     => $regalo->imagen_url,
-            'valor_estimado' => (float) $regalo->valor_estimado,
-        ];
     }
 
     // ── GET /api/v1/componentes/{uuid}/precios/historial ──────────────────────

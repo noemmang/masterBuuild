@@ -7,11 +7,9 @@ use App\Http\Controllers\Api\Componentes\GabineteController;
 use App\Http\Controllers\Api\Negocio\PrecioController;
 use App\Http\Controllers\Api\Negocio\GuardadoController;
 use App\Http\Controllers\Api\Negocio\AlertaController;
-use App\Http\Controllers\Api\Negocio\CuponController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
-use App\Http\Controllers\Api\Negocio\RegalosController;
 
 Route::prefix('v1')->group(function () {
 
@@ -37,7 +35,6 @@ Route::prefix('v1')->group(function () {
         Route::get('categoria/{categoria}',    [ComponenteController::class, 'porCategoria']);
         Route::get('{uuid}/precios',           [PrecioController::class, 'actuales']);
         Route::get('{uuid}/precios/historial', [PrecioController::class, 'historial']);
-        Route::get('{uuid}/regalos',           [RegalosController::class, 'porComponente']);
         Route::get('{uuid}/gabinete/visor',    [GabineteController::class, 'visor']);
     });
 

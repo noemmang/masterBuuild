@@ -119,12 +119,10 @@ class RecomendadorController extends Controller
         $data = $request->validate([
             'perfil'      => 'required|in:gaming_basico,gaming_alto,edicion_video,renderizado,oficina',
             'presupuesto' => 'required|numeric|min:200',
-            'con_cupones' => 'boolean',
         ]);
 
         $perfil      = $data['perfil'];
         $presupuesto = $data['presupuesto'];
-        $conCupones  = $data['con_cupones'] ?? true;
 
         // Verificar presupuesto mínimo
         $minimoRequerido = self::PRESUPUESTO_MINIMO[$perfil];
@@ -144,7 +142,7 @@ class RecomendadorController extends Controller
 
         // ── CPU ──────────────────────────────────────────
         $presupuestoCpu = $presupuesto * $distribucion['cpu'];
-        $cpu = $this->mejorCPU($presupuestoCpu, $perfilConfig['nucleos_min'], $conCupones);
+        $cpu = $this->mejorCPU($presupuestoCpu, $perfilConfig['nucleos_min']);
 
         if (!$cpu) {
             return response()->json([
@@ -161,8 +159,7 @@ class RecomendadorController extends Controller
         $placaBase = $this->mejorPlacaBase(
             $presupuestoPlaca,
             $cpu['socket_id'],
-            $cpu['tipo_memoria_id'],
-            $conCupones
+            $cpu['tipo_memoria_id']
         );
 
         if ($placaBase) {
@@ -175,8 +172,7 @@ class RecomendadorController extends Controller
         $ram = $this->mejorRAM(
             $presupuestoRam,
             $cpu['tipo_memoria_id'],
-            $perfilConfig['ram_min_gb'],
-            $conCupones
+            $perfilConfig['ram_min_gb']
         );
 
         if ($ram) {
@@ -189,8 +185,7 @@ class RecomendadorController extends Controller
             $presupuestoGpu = $presupuesto * $distribucion['gpu'];
             $gpu = $this->mejorGPU(
                 $presupuestoGpu,
-                $perfilConfig['vram_min_gb'],
-                $conCupones
+                $perfilConfig['vram_min_gb']
             );
 
             if ($gpu) {
@@ -202,7 +197,7 @@ class RecomendadorController extends Controller
         // ── PSU ──────────────────────────────────────────
         $consumoEstimado = ($cpu['tdp_watts'] ?? 65) + ($configuracion['gpu']['tdp_watts'] ?? 0) + 50;
         $presupuestoPsu  = $presupuesto * $distribucion['psu'];
-        $psu = $this->mejorPSU($presupuestoPsu, $consumoEstimado, $conCupones);
+        $psu = $this->mejorPSU($presupuestoPsu, $consumoEstimado);
 
         if ($psu) {
             $configuracion['psu'] = $psu;
@@ -217,15 +212,13 @@ class RecomendadorController extends Controller
             $refrigeracion = $this->mejorRefrigeracionLiquida(
                 $presupuestoRefrig,
                 $cpu['socket_id'],
-                $cpu['tdp_watts'],
-                $conCupones
+                $cpu['tdp_watts']
             );
         } else {
             $refrigeracion = $this->mejorRefrigeracionAire(
                 $presupuestoRefrig,
                 $cpu['socket_id'],
-                $cpu['tdp_watts'],
-                $conCupones
+                $cpu['tdp_watts']
             );
         }
 
@@ -239,8 +232,7 @@ class RecomendadorController extends Controller
         $gabinete = $this->mejorGabinete(
             $presupuestoGabinete,
             $configuracion['gpu']['longitud_mm'] ?? 0,
-            $configuracion['refrigeracion']['altura_mm'] ?? 0,
-            $conCupones
+            $configuracion['refrigeracion']['altura_mm'] ?? 0
         );
 
         if ($gabinete) {
@@ -262,12 +254,12 @@ class RecomendadorController extends Controller
 
     // ── Helpers privados ──────────────────────────────────
 
-    private function mejorCPU(float $presupuesto, int $nucleosMin, bool $conCupones): ?array
+    private function mejorCPU(float $presupuesto, int $nucleosMin): ?array
     {
         $cpu = CPU::where('nucleos', '>=', $nucleosMin)
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda', 'socket', 'tipoMemoria'])
             ->get()
@@ -276,7 +268,7 @@ class RecomendadorController extends Controller
 
         if (!$cpu) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($cpu->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($cpu->componente);
 
         return [
             'uuid'           => $cpu->componente->uuid,
@@ -290,16 +282,15 @@ class RecomendadorController extends Controller
             'tdp_watts'      => $cpu->tdp_watts,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
-            'con_cupon'      => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorGPU(float $presupuesto, int $vramMin, bool $conCupones): ?array
+    private function mejorGPU(float $presupuesto, int $vramMin): ?array
     {
         $gpu = GPU::where('vram_gb', '>=', $vramMin)
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda'])
             ->get()
@@ -308,7 +299,7 @@ class RecomendadorController extends Controller
 
         if (!$gpu) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($gpu->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($gpu->componente);
 
         return [
             'uuid'           => $gpu->componente->uuid,
@@ -318,17 +309,16 @@ class RecomendadorController extends Controller
             'longitud_mm'    => $gpu->longitud_mm,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
-            'con_cupon'      => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorRAM(float $presupuesto, int $tipoMemoriaId, int $capacidadMin, bool $conCupones): ?array
+    private function mejorRAM(float $presupuesto, int $tipoMemoriaId, int $capacidadMin): ?array
     {
         $ram = RAM::where('tipo_memoria_id', $tipoMemoriaId)
             ->where('capacidad_total_gb', '>=', $capacidadMin)
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda'])
             ->get()
@@ -337,7 +327,7 @@ class RecomendadorController extends Controller
 
         if (!$ram) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($ram->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($ram->componente);
 
         return [
             'uuid'            => $ram->componente->uuid,
@@ -346,17 +336,16 @@ class RecomendadorController extends Controller
             'velocidad_mhz'   => $ram->velocidad_mhz,
             'precio_efectivo' => $mejorPrecio['precio'],
             'tienda'          => $mejorPrecio['tienda'],
-            'con_cupon'       => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorPlacaBase(float $presupuesto, int $socketId, int $tipoMemoriaId, bool $conCupones): ?array
+    private function mejorPlacaBase(float $presupuesto, int $socketId, int $tipoMemoriaId): ?array
     {
         $placa = PlacaBase::where('socket_id', $socketId)
             ->where('tipo_memoria_id', $tipoMemoriaId)
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda', 'chipset'])
             ->get()
@@ -365,7 +354,7 @@ class RecomendadorController extends Controller
 
         if (!$placa) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($placa->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($placa->componente);
 
         return [
             'uuid'           => $placa->componente->uuid,
@@ -374,18 +363,17 @@ class RecomendadorController extends Controller
             'slots_m2'       => $placa->slots_m2,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
-            'con_cupon'      => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorPSU(float $presupuesto, int $consumoTotal, bool $conCupones): ?array
+    private function mejorPSU(float $presupuesto, int $consumoTotal): ?array
     {
         $vatiosMinimos = ceil($consumoTotal * 1.3);
 
         $psu = PSU::where('vatios', '>=', $vatiosMinimos)
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda', 'certificacion'])
             ->get()
@@ -394,7 +382,7 @@ class RecomendadorController extends Controller
 
         if (!$psu) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($psu->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($psu->componente);
 
         return [
             'uuid'           => $psu->componente->uuid,
@@ -403,11 +391,10 @@ class RecomendadorController extends Controller
             'certificacion'  => $psu->certificacion->nombre,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
-            'con_cupon'      => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorRefrigeracionAire(float $presupuesto, int $socketId, int $tdpCpu, bool $conCupones): ?array
+    private function mejorRefrigeracionAire(float $presupuesto, int $socketId, int $tdpCpu): ?array
     {
         $refrig = RefrigeracionAire::where('tdp_max_watts', '>=', $tdpCpu)
             ->whereHas('socketsCompatibles', fn($q) =>
@@ -415,7 +402,7 @@ class RecomendadorController extends Controller
             )
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda'])
             ->get()
@@ -424,7 +411,7 @@ class RecomendadorController extends Controller
 
         if (!$refrig) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($refrig->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($refrig->componente);
 
         return [
             'uuid'           => $refrig->componente->uuid,
@@ -434,11 +421,10 @@ class RecomendadorController extends Controller
             'altura_mm'      => $refrig->altura_mm,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
-            'con_cupon'      => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorRefrigeracionLiquida(float $presupuesto, int $socketId, int $tdpCpu, bool $conCupones): ?array
+    private function mejorRefrigeracionLiquida(float $presupuesto, int $socketId, int $tdpCpu): ?array
     {
         $refrig = RefrigeracionLiquida::where('tdp_max_watts', '>=', $tdpCpu)
             ->whereHas('socketsCompatibles', fn($q) =>
@@ -446,7 +432,7 @@ class RecomendadorController extends Controller
             )
             ->whereHas('componente.preciosActuales', fn($q) =>
                 $q->where('en_stock', true)
-                  ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+                  ->where('precio', '<=', $presupuesto)
             )
             ->with(['componente.preciosActuales.tienda'])
             ->get()
@@ -455,7 +441,7 @@ class RecomendadorController extends Controller
 
         if (!$refrig) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($refrig->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($refrig->componente);
 
         return [
             'uuid'            => $refrig->componente->uuid,
@@ -465,15 +451,14 @@ class RecomendadorController extends Controller
             'tam_radiador_mm' => $refrig->tam_radiador_mm,
             'precio_efectivo' => $mejorPrecio['precio'],
             'tienda'          => $mejorPrecio['tienda'],
-            'con_cupon'       => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function mejorGabinete(float $presupuesto, int $longitudGpu, int $alturaCooler, bool $conCupones): ?array
+    private function mejorGabinete(float $presupuesto, int $longitudGpu, int $alturaCooler): ?array
     {
         $query = Gabinete::whereHas('componente.preciosActuales', fn($q) =>
             $q->where('en_stock', true)
-              ->whereRaw('COALESCE(precio_con_cupon, precio) <= ?', [$presupuesto])
+              ->where('precio', '<=', $presupuesto)
         );
 
         if ($longitudGpu > 0) {
@@ -491,7 +476,7 @@ class RecomendadorController extends Controller
 
         if (!$gabinete) return null;
 
-        $mejorPrecio = $this->obtenerMejorPrecio($gabinete->componente, $conCupones);
+        $mejorPrecio = $this->obtenerMejorPrecio($gabinete->componente);
 
         return [
             'uuid'                => $gabinete->componente->uuid,
@@ -500,31 +485,23 @@ class RecomendadorController extends Controller
             'altura_cooler_max_mm'=> $gabinete->altura_cooler_max_mm,
             'precio_efectivo'     => $mejorPrecio['precio'],
             'tienda'              => $mejorPrecio['tienda'],
-            'con_cupon'           => $mejorPrecio['con_cupon'],
         ];
     }
 
-    private function obtenerMejorPrecio($componente, bool $conCupones): array
+    private function obtenerMejorPrecio($componente): array
     {
-        $precios = $componente->preciosActuales
+        $mejor = $componente->preciosActuales
             ->where('en_stock', true)
-            ->sortBy(fn($p) => $conCupones
-                ? ($p->precio_con_cupon ?? $p->precio)
-                : $p->precio
-            );
-
-        $mejor = $precios->first();
+            ->sortBy('precio')
+            ->first();
 
         if (!$mejor) {
-            return ['precio' => 0, 'tienda' => null, 'con_cupon' => false];
+            return ['precio' => 0, 'tienda' => null];
         }
 
         return [
-            'precio'    => $conCupones
-                ? ($mejor->precio_con_cupon ?? $mejor->precio)
-                : $mejor->precio,
-            'tienda'    => $mejor->tienda->nombre,
-            'con_cupon' => !is_null($mejor->precio_con_cupon),
+            'precio' => (float) $mejor->precio,
+            'tienda' => $mejor->tienda->nombre,
         ];
     }
 }

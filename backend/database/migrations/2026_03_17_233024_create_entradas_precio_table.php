@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('moneda', 3)->default('EUR');
             $table->string('url')->nullable();
             $table->boolean('en_stock')->default(true);
-            $table->foreignId('cupon_id')->nullable()->constrained('cupones')->nullOnDelete();
-            $table->decimal('precio_con_cupon', 10, 2)->nullable();
             $table->timestamp('scraped_at')->useCurrent();
             $table->timestamps();
             $table->softDeletes();

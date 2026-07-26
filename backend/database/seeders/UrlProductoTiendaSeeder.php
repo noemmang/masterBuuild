@@ -1125,7 +1125,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod'       => 'https://www.coolmod.com/deepcool-lt240-argb-240mm-negro',
                 'Neobyte'       => 'https://www.neobyte.es/deepcool-lt240-argb-refrigeracion-liquida-240mm-25308.html',
             ],
-            'Arctic Liquid Freezer III 280' => [
+            'Arctic Liquid Freezer III Pro 280' => [
                 'PCComponentes' => 'https://www.pccomponentes.com/refrigeracion-liquida-arctic-liquid-freezer-iii-pro-280mm-2-ventiladores-vrm-premium',
                 'Coolmod'       => 'https://www.coolmod.com/arctic-liquid-freezer-iii-pro-280-negro',
                 'Neobyte'       => 'https://www.neobyte.es/arctic-liquid-freezer-iii-pro-240-refrigeracion-liquida-240mm-33168.html',

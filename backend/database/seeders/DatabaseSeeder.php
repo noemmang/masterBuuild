@@ -14,8 +14,6 @@ class DatabaseSeeder extends Seeder
             TiendasSeeder::class,
             ComponentesSeeder::class,
             UrlProductoTiendaSeeder::class,
-            CuponesSeeder::class,
-            RegalosSeeder::class,
         ]);
     }
 }

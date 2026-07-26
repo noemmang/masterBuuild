@@ -12,10 +12,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * detalle de un componente concreto, vía /componentes/{uuid} y
  * /componentes/{uuid}/precios.
  *
- * Los campos precio_min, precio_max, num_tiendas, tiene_cupon,
- * tiene_regalo, en_stock y precio_min_stock vienen ya calculados desde
- * el controller con withMin/withMax/withCount/withExists, así que aquí
- * solo se formatean.
+ * Los campos precio_min, precio_max, num_tiendas, en_stock y
+ * precio_min_stock vienen ya calculados desde el controller con
+ * withMin/withMax/withCount/withExists, así que aquí solo se formatean.
  */
 class ComponenteListadoResource extends JsonResource
 {
@@ -38,8 +37,6 @@ class ComponenteListadoResource extends JsonResource
             'precio_min'   => $precioMin !== null ? (float) $precioMin : null,
             'precio_max'   => $this->precio_max !== null ? (float) $this->precio_max : null,
             'num_tiendas'  => (int) $this->num_tiendas,
-            'tiene_cupon'  => (bool) $this->tiene_cupon,
-            'tiene_regalo' => (bool) $this->tiene_regalo,
             // true si AL MENOS una tienda tiene stock ahora mismo. Si el
             // componente no tiene ninguna tienda todavía (num_tiendas=0),
             // esto viene false, pero el front no debe pintar "Agotado" en

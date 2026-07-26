@@ -32,8 +32,6 @@ class GuardadoController extends Controller
                         ? ($g->componente->preciosActuales->firstWhere('tienda_id', $g->tienda_id)?->tienda->nombre
                           ?? $g->componente->preciosActuales->sortBy('precio')->first()?->tienda->nombre)
                         : $g->componente->preciosActuales->sortBy('precio')->first()?->tienda->nombre,
-                    'con_cupon'     => $g->componente->cuponesActivos->isNotEmpty(),
-                    'con_regalo'    => $g->componente->regalosActivos->isNotEmpty(),
                 ],
             ]);
 

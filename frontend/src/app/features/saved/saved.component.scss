@@ -322,10 +322,6 @@
   justify-content: center;
   pointer-events: auto;
 
-  &.naranja { background: var(--orange); color: #fff; }
-  &.verde   { background: var(--success); color: #fff; }
-  &.regalo  { background: var(--success); color: #fff; svg { display: block; } }
-
   &.badge-guardado {
     background: var(--accent);
     color: #fff;

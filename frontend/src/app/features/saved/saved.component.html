@@ -71,22 +71,12 @@
                     </svg>
                   }
                   <div class="comp-badges">
-                    <!-- Derecha: alerta, cupón y regalo (el botón eliminar ocupa la izquierda) -->
+                    <!-- Derecha: alerta (el botón eliminar ocupa la izquierda) -->
                     <div class="comp-icons-right">
                       @if (alertas().some(a => a.componente.uuid === g.componente.uuid && a.activa)) {
                         <span class="badge badge-alerta" title="Alerta de precio activa">
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                          </svg>
-                        </span>
-                      }
-                      @if (g.componente.con_cupon) {
-                        <span class="badge naranja" title="Tiene cupón de descuento">%</span>
-                      }
-                      @if (g.componente.con_regalo) {
-                        <span class="badge regalo" title="Incluye regalo">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
                           </svg>
                         </span>
                       }

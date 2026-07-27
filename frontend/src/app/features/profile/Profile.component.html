@@ -240,30 +240,6 @@
             <span class="prf-toggle-thumb"></span>
           </button>
         </div>
-
-        <div class="prf-divider"></div>
-
-        <div class="prf-toggle-row">
-          <div>
-            <p class="prf-toggle-label">Nuevos cupones</p>
-            <p class="prf-toggle-desc">Avísame cuando haya nuevos cupones para mis componentes guardados.</p>
-          </div>
-          <button class="prf-toggle" [class.activo]="notifCupones()" (click)="notifCupones.update(v => !v)">
-            <span class="prf-toggle-thumb"></span>
-          </button>
-        </div>
-
-        <div class="prf-divider"></div>
-
-        <div class="prf-toggle-row">
-          <div>
-            <p class="prf-toggle-label">Regalos y bundles</p>
-            <p class="prf-toggle-desc">Avísame cuando un componente guardado incluya un regalo.</p>
-          </div>
-          <button class="prf-toggle" [class.activo]="notifRegalos()" (click)="notifRegalos.update(v => !v)">
-            <span class="prf-toggle-thumb"></span>
-          </button>
-        </div>
       </div>
     </section>
 

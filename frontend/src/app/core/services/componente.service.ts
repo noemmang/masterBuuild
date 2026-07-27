@@ -199,10 +199,6 @@ export class ComponenteService {
     return this.http.get(`${this.API}/componentes/${uuid}/precios`);
   }
 
-  getRegalos(uuid: string): Observable<{ regalos: Regalo[] }> {
-    return this.http.get<{ regalos: Regalo[] }>(`${this.API}/componentes/${uuid}/regalos`);
-  }
-
   getDetalle(uuid: string): Observable<ComponenteDetalle> {
     return this.http.get<any>(`${this.API}/componentes/${uuid}`).pipe(
       map(c => ({

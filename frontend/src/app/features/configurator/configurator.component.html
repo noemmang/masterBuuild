@@ -235,19 +235,6 @@
                       </span>
                     }
                   </div>
-                  <!-- Derecha: cupón y regalo -->
-                  <div class="card-icons-right">
-                    @if (comp.tiene_cupon) {
-                      <span class="cfg-badge naranja" title="Tiene cupón de descuento">%</span>
-                    }
-                    @if (comp.tiene_regalo) {
-                      <span class="cfg-badge regalo" title="Incluye regalo">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                          <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-                        </svg>
-                      </span>
-                    }
-                  </div>
                 </div>
 
                 @if (esApilable(slotActivo()) && cantidadEnSlot(comp.uuid) > 0) {
@@ -424,7 +411,7 @@
                  (click)="seleccionarPrecio(p)">
 
               <!-- Fila principal de tienda -->
-              <div class="precio-row" [class.tiene-extras]="p.cupon || p.regalo">
+              <div class="precio-row">
                 <div class="precio-info">
                   @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
                   @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
@@ -435,80 +422,10 @@
                   }
                   <div class="precio-row-tags">
                     @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
-                    @if (p.cupon) {
-                      <span class="tag-cupon">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                          <line x1="7" y1="7" x2="7.01" y2="7"/>
-                        </svg>
-                        Cupón
-                      </span>
-                    }
-                    @if (p.regalo) {
-                      <span class="tag-regalo">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                          <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-                        </svg>
-                        Regalo
-                      </span>
-                    }
                   </div>
                 </div>
                 <span class="precio-valor" [class.accent]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0">{{ formatPrecio(p.precio) }}</span>
               </div>
-
-              <!-- Expansión combinada: cupón + regalo en un solo bloque -->
-              @if (p.cupon || p.regalo) {
-                <div class="precio-extra extras-combinados">
-                  @if (p.cupon) {
-                    <div class="cupon-extra">
-                      <div class="extra-left">
-                        <span class="extra-label">Código descuento</span>
-                        <code class="cupon-codigo">{{ p.cupon.codigo }}</code>
-                        @if (p.cupon.tipo === 'porcentaje') {
-                          <span class="cupon-desc">−{{ p.cupon.descuento }}%</span>
-                        } @else {
-                          <span class="cupon-desc">−{{ formatPrecio(p.cupon.descuento) }}</span>
-                        }
-                      </div>
-                      <button class="btn-copiar" (click)="copiarCodigo(p.cupon.codigo); $event.stopPropagation()" [class.copiado]="copiado() === p.cupon.codigo">
-                        @if (copiado() === p.cupon.codigo) {
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M20 6 9 17l-5-5"/>
-                          </svg>
-                        } @else {
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                          </svg>
-                        }
-                        {{ copiado() === p.cupon.codigo ? 'Copiado' : 'Copiar' }}
-                      </button>
-                    </div>
-                  }
-                  @if (p.cupon && p.regalo) {
-                    <div class="extras-divider"></div>
-                  }
-                  @if (p.regalo) {
-                    <div class="regalo-extra">
-                      <div class="regalo-img-wrap">
-                        @if (p.regalo.imagen_url) {
-                          <img [src]="p.regalo.imagen_url" [alt]="p.regalo.nombre" class="regalo-img" />
-                        } @else {
-                          <div class="regalo-img-placeholder">🎁</div>
-                        }
-                      </div>
-                      <div class="regalo-info">
-                        <span class="extra-label">Regalo incluido</span>
-                        <span class="regalo-nombre">{{ p.regalo.nombre }}</span>
-                        @if (p.regalo.valor_estimado) {
-                          <span class="regalo-valor">Valor estimado: {{ formatPrecio(p.regalo.valor_estimado) }}</span>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
 
             </div><!-- /precio-card -->
 

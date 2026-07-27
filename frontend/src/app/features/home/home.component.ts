@@ -28,9 +28,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Datos estáticos ──────────────────────────────────────
 
   stats = [
-    { valor: '12.000+', label: 'Componentes' },
-    { valor: '45+',     label: 'Tiendas' },
-    { valor: '1M+',     label: 'Precios rastreados' },
+    { valor: '300+', label: 'Componentes' },
+    { valor: '2',     label: 'Tiendas' },
     { valor: '24h',     label: 'Actualización' },
   ];
 
@@ -90,20 +89,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   tiendas = [
-    { nombre: 'PcComponentes',  logo: '/logo-tiendas/PcComponentes.png',           url: 'https://www.pccomponentes.com' },
+    // { nombre: 'PcComponentes',  logo: '/logo-tiendas/PcComponentes.png',           url: 'https://www.pccomponentes.com' },
     { nombre: 'Coolmod',        logo: '/logo-tiendas/logo_coolmod.png',            url: 'https://www.coolmod.com' },
-    { nombre: 'Media Markt',    logo: '/logo-tiendas/Media_Markt_logo.svg.png',    url: 'https://www.mediamarkt.es' },
+    // { nombre: 'Media Markt',    logo: '/logo-tiendas/Media_Markt_logo.svg.png',    url: 'https://www.mediamarkt.es' },
     { nombre: 'Neobyte',        logo: '/logo-tiendas/neobyte_computers.png',       url: 'https://www.neobyte.es' },
-    { nombre: 'PC Box',         logo: '/logo-tiendas/PC-BOX-logo.webp',            url: 'https://www.pcbox.com' }, 
-    { nombre: 'Aussar',         logo: '/logo-tiendas/aussar-LOGO_1.jpg',           url: 'https://www.aussar.es' },
-    { nombre: 'WORTEN',         logo: '/logo-tiendas/Worten_logo.png',             url: 'https://www.worten.es' },
-    { nombre: 'CaseKing',       logo: '/logo-tiendas/caseking_gmbh.png',           url: 'https://www.caseking.es' }, 
-    { nombre: 'Red Computer',   logo: '/logo-tiendas/red_computer.png',            url: 'https://www.redcomputer.es' },
-    { nombre: 'Alternate',      logo: '/logo-tiendas/alternate_de_color.png',      url: 'https://www.alternate.es' }, 
-    { nombre: 'Info Computer',      logo: '/logo-tiendas/infocmputerlogo.png',     url: 'https://www.info-computer.com' }, 
-    { nombre: 'Life Informática',   logo: '/logo-tiendas/life-logo-blue.jpg',      url: 'https://lifeinformatica.com' },
-    { nombre: 'FNAC',               logo: '/logo-tiendas/fnaclogo1-2.png',         url: 'https://www.fnac.es' },
-    { nombre: 'APP Informática',    logo: '/logo-tiendas/logo_app___48c5b83060a390d4c4dcda4cbcf53f36.webp',             url: 'https://www.appinformatica.com' },
+    // { nombre: 'PC Box',         logo: '/logo-tiendas/PC-BOX-logo.webp',            url: 'https://www.pcbox.com' }, 
+    // { nombre: 'Aussar',         logo: '/logo-tiendas/aussar-LOGO_1.jpg',           url: 'https://www.aussar.es' },
+    // { nombre: 'WORTEN',         logo: '/logo-tiendas/Worten_logo.png',             url: 'https://www.worten.es' },
+    // { nombre: 'CaseKing',       logo: '/logo-tiendas/caseking_gmbh.png',           url: 'https://www.caseking.es' }, 
+    // { nombre: 'Red Computer',   logo: '/logo-tiendas/red_computer.png',            url: 'https://www.redcomputer.es' },
+    // { nombre: 'Alternate',      logo: '/logo-tiendas/alternate_de_color.png',      url: 'https://www.alternate.es' }, 
+    // { nombre: 'Info Computer',      logo: '/logo-tiendas/infocmputerlogo.png',     url: 'https://www.info-computer.com' }, 
+    // { nombre: 'Life Informática',   logo: '/logo-tiendas/life-logo-blue.jpg',      url: 'https://lifeinformatica.com' },
+    // { nombre: 'FNAC',               logo: '/logo-tiendas/fnaclogo1-2.png',         url: 'https://www.fnac.es' },
+    // { nombre: 'APP Informática',    logo: '/logo-tiendas/logo_app___48c5b83060a390d4c4dcda4cbcf53f36.webp',             url: 'https://www.appinformatica.com' },
   ];
 
   marcas = [

@@ -167,9 +167,6 @@ export class SearchComponent implements OnInit {
   /** Precio (tienda) seleccionado en el panel */
   precioSeleccionado = signal<any | null>(null);
 
-  /** Código de cupón copiado recientemente (se limpia tras 2 s) */
-  copiado = signal<string | null>(null);
-
   logueado = this.auth.estaAutenticado();
 
   guardadosMap = signal<Map<string, string>>(new Map());
@@ -399,7 +396,6 @@ export class SearchComponent implements OnInit {
     this.componenteSeleccionado.set(null);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
-    this.copiado.set(null);
     this.precioSeleccionado.set(null);
   }
 
@@ -408,7 +404,6 @@ export class SearchComponent implements OnInit {
     this.componenteSeleccionado.set(comp);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);
-    this.copiado.set(null);
     this.precioSeleccionado.set(null);
     this.cargandoPrecios.set(true);
     this.precios.set([]);
@@ -437,17 +432,6 @@ export class SearchComponent implements OnInit {
     const topbarH    = 52; // altura del top-bar sticky
     const offset     = headerH + topbarH + 16; // 16px de margen visual
     scrollContainer.scrollTo({ top: cardTop - offset, behavior: 'smooth' });
-  }
-
-  // ── Copiar código de cupón ─────────────────────────────────────────────────
-
-  copiarCodigo(codigo: string): void {
-    navigator.clipboard.writeText(codigo).then(() => {
-      this.copiado.set(codigo);
-      setTimeout(() => {
-        if (this.copiado() === codigo) this.copiado.set(null);
-      }, 2000);
-    });
   }
 
   // ── Guardados / alertas ────────────────────────────────────────────────────

@@ -59,8 +59,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   // Notificaciones
   notifBajadaPrecio = signal(true);
-  notifCupones      = signal(true);
-  notifRegalos      = signal(false);
 
   // Eliminar cuenta
   confirmarEliminar = false;

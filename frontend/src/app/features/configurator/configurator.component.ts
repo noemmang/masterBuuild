@@ -146,7 +146,6 @@ export class ConfiguratorComponent implements OnInit {
   guardandoAlerta    = signal(false);
   mostrarAlerta      = signal(false);
   precioObjetivo     = signal<number | null>(null);
-  copiado            = signal<string | null>(null);
 
   // ── Guardar configuración ─────────────────────────────────────
   modalGuardarAbierto = signal(false);
@@ -743,15 +742,6 @@ export class ConfiguratorComponent implements OnInit {
 
   setPrecioObjetivo(v: string): void {
     this.precioObjetivo.set(v ? Number(v) : null);
-  }
-
-  copiarCodigo(codigo: string): void {
-    navigator.clipboard.writeText(codigo).then(() => {
-      this.copiado.set(codigo);
-      setTimeout(() => {
-        if (this.copiado() === codigo) this.copiado.set(null);
-      }, 2000);
-    });
   }
 
   // ── Guardar configuración ─────────────────────────────────────

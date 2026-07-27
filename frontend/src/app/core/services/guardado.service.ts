@@ -17,8 +17,6 @@ export interface ComponenteGuardado {
     mejor_precio: number | null;
     precio_actual: number | null;
     tienda: string | null;
-    con_cupon: boolean;
-    con_regalo: boolean;
   };
 }
 

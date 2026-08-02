@@ -172,7 +172,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Intel Core Ultra 7 265K' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-ultra-7-265k-5-5ghz-socket-1851-boxed',
-                'Neobyte' => 'https://www.neobyte.es/intel-core-ultra-7-265kf-procesador-1851-24399.html',
+                'Neobyte' => 'https://www.neobyte.es/intel-core-ultra-7-265k-procesador-1851-24398.html',
             ],
             'Intel Core Ultra 9 285K' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-ultra-9-285k-5-7ghz-socket-1851-boxed',
@@ -207,10 +207,6 @@ class UrlProductoTiendaSeeder extends Seeder
             'ASUS ROG Strix B550-F Gaming' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-b550-f-gaming-socket-am4-placa-base',
                 'Neobyte' => 'https://www.neobyte.es/placa-base-asus-rog-strix-b550-f-gaming-6609.html',
-            ],
-            'Gigabyte B550 Aorus Pro AX' => [
-                'Coolmod' => 'https://www.coolmod.com/gigabyte-b550i-aorus-pro-ax-socket-am4-placa-base',
-                'Neobyte' => '',
             ],
             'Gigabyte X570 Aorus Master' => [
                 'Coolmod' => '',
@@ -276,7 +272,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Gigabyte X870E Aorus Master' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-x870e-aorus-master-x3d-ice-socket-am5',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-x870e-aorus-elite-x3d-placa-base-am5-atx-32163.html',
             ],
 
             // ---------- Placas base LGA1700 ----------
@@ -504,12 +500,6 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/powercolor-red-devil-amd-radeon-rx-9070-xt-oc-16gb-gddr6',
                 'Neobyte' => '',
             ],
-            'XFX Speedster MERC 310 Radeon RX 9070 XT 16GB' => [
-                'Coolmod' => 'https://www.coolmod.com/xfx-quicksilver-amd-radeon-rx-9070-xt-gaming-16gb-gddr6/',
-                'Neobyte' => '',
-                'Coolmod' => '',
-                'Neobyte' => 'https://www.neobyte.es/samsung-970-evo-plus-1tb-ssd-m2-pcie-30-3942.html',
-            ],
             'Samsung 990 Pro 2TB NVMe PCIe 4.0' => [
                 'Coolmod' => 'https://www.coolmod.com/samsung-990-pro-2tb-pcie-x4-nvme',
                 'Neobyte' => 'https://www.neobyte.es/samsung-990-pro-2tb-ssd-m2-pci-express-40-16306.html',
@@ -550,10 +540,6 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/kingston-ssdnow-a400-480gb-25-sata3-disco-ssd',
                 'Neobyte' => 'https://www.neobyte.es/disco-ssd-kingston-480gb-a400-sa400s37-480g-1709.html',
             ],
-            'Corsair MP600 Core XT 4TB SATA SSD' => [
-                'Coolmod' => '',
-                'Neobyte' => 'https://www.neobyte.es/corsair-mp600-core-xt-4tb-pcie-40-unidad-ssd-m2-17119.html',
-            ],
             'Seagate Barracuda 4TB HDD 3.5"' => [
                 'Coolmod' => 'https://www.coolmod.com/seagate-barracuda-compute-4tb-35-disco-duro',
                 'Neobyte' => 'https://www.neobyte.es/seagate-barracuda-4tb-disco-duro-35-sata-174.html',
@@ -570,7 +556,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Fractal Design North' => [
                 'Coolmod' => 'https://www.coolmod.com/fractal-design-north-negro',
-                'Neobyte' => 'https://www.neobyte.es/fractal-design-north-xl-charcoal-black-caja-e-atx-23552.html',
+                'Neobyte' => 'https://www.neobyte.es/fractal-design-north-charcoal-black-caja-atx-18432.html',
             ],
             'Corsair 4000D' => [
                 'Coolmod' => 'https://www.coolmod.com/corsair-frame-4000d-blanco',
@@ -602,7 +588,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Antec Performance 1M' => [
                 'Coolmod' => 'https://www.coolmod.com/antec-performance-1m-aventurine',
-                'Neobyte' => 'https://www.neobyte.es/asus-prime-ap201-tempered-glass-caja-microatx-17385.html',
+                'Neobyte' => 'https://www.neobyte.es/antec-performance-1-m-aventurine-caja-mini-itx-26830.html',
             ],
             'Jonsbo Z20' => [
                 'Coolmod' => '',
@@ -752,7 +738,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Arctic Liquid Freezer III Pro 280' => [
                 'Coolmod' => 'https://www.coolmod.com/arctic-liquid-freezer-iii-pro-280-negro',
-                'Neobyte' => 'https://www.neobyte.es/arctic-liquid-freezer-iii-pro-240-refrigeracion-liquida-240mm-33168.html',
+                'Neobyte' => 'https://www.neobyte.es/arctic-liquid-freezer-iii-pro-280-black-refrigeracion-liquida-280mm-34754.html',
             ],
             'NZXT Kraken Elite 280' => [
                 'Coolmod' => 'https://www.coolmod.com/nzxt-kraken-elite-280-rgb-2025-lcd-display-negro',
@@ -768,7 +754,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Arctic Liquid Freezer III Pro 420' => [
                 'Coolmod' => 'https://www.coolmod.com/arctic-liquid-freezer-iii-pro-420-negro',
-                'Neobyte' => 'https://www.neobyte.es/arctic-liquid-freezer-iii-pro-360-black-refrigeracion-liquida-360mm-34757.html',
+                'Neobyte' => 'https://www.neobyte.es/arctic-liquid-freezer-iii-pro-420-black-refrigeracion-liquida-420mm-34761.html',
             ],
             'NZXT Kraken Elite 420' => [
                 'Coolmod' => 'https://www.coolmod.com/nzxt-kraken-elite-420-rgb-lcd-display-negro',

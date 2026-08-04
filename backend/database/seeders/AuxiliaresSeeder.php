@@ -125,6 +125,7 @@ class AuxiliaresSeeder extends Seeder
             ['nombre' => 'A520',  'fabricante' => 'AMD',   'socket_id' => $am4,     'activo' => true,  'descripcion' => 'Chipset AMD A520 (AM4). Gama de entrada. Sin OC de CPU ni PCIe 4.0.'],
             // AMD AM5
             ['nombre' => 'B650',  'fabricante' => 'AMD',   'socket_id' => $am5,     'activo' => true,  'descripcion' => 'Chipset AMD B650 (AM5). PCIe 5.0 en CPU. DDR5. Gama media con OC.'],
+            ['nombre' => 'B850',  'fabricante' => 'AMD',   'socket_id' => $am5,     'activo' => true,  'descripcion' => 'Chipset AMD B850 (AM5). PCIe 5.0 en CPU. DDR5. Gama media con OC.'],
             ['nombre' => 'B650E', 'fabricante' => 'AMD',   'socket_id' => $am5,     'activo' => true,  'descripcion' => 'Chipset AMD B650E (AM5). PCIe 5.0 en CPU y M.2. Superset de B650.'],
             ['nombre' => 'X670',  'fabricante' => 'AMD',   'socket_id' => $am5,     'activo' => true,  'descripcion' => 'Chipset AMD X670 (AM5). Doble chipset. PCIe 5.0 extendido. Gama alta.'],
             ['nombre' => 'X670E', 'fabricante' => 'AMD',   'socket_id' => $am5,     'activo' => true,  'descripcion' => 'Chipset AMD X670E (AM5). PCIe 5.0 en slot GPU y M.2. Flagship AM5.'],

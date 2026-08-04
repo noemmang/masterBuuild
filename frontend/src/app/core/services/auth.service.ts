@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface Usuario {
   uuid: string;
@@ -24,7 +25,7 @@ interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API = '/api/v1';
+  private readonly API = environment.apiUrl;
   usuario = signal<Usuario | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {

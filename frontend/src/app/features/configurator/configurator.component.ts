@@ -9,6 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
 import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
+import { environment } from '../../../environments/environment';
 
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
@@ -616,7 +617,7 @@ export class ConfiguratorComponent implements OnInit {
     };
 
     this.cargandoCompat.set(true);
-    this.http.post<Compatibilidad>('/api/v1/configurador/validar', payload).subscribe({
+    this.http.post<Compatibilidad>(`${environment.apiUrl}/configurador/validar`, payload).subscribe({
       next: (res) => { this.compatibilidad.set(res); this.cargandoCompat.set(false); },
       error: ()    => this.cargandoCompat.set(false),
     });

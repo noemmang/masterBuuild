@@ -65,15 +65,15 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante']] ?? $marcaId;
-        $componente = Componente::create([ 'nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'cpu', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true, ]);
-        CPU::create([ 'componente_id' => $componente->id, 'socket_id' => $this->sockets[$cpu['socket']] ?? null, 'arquitectura_id' => $this->arqs[$cpu['arquitectura']] ?? null, 'tipo_memoria_id' => $this->tiposRam[$cpu['tipo_memoria']] ?? null, 'nucleos' => $cpu['nucleos'], 'hilos' => $cpu['hilos'], 'frecuencia_base_ghz' => $cpu['frecuencia_base_ghz'], 'frecuencia_boost_ghz' => $cpu['frecuencia_boost_ghz'] ?? null, 'tdp_watts' => $cpu['tdp_watts'], 'tdp_max_watts' => $cpu['tdp_max_watts'] ?? null, 'frecuencia_memoria_max_mhz'=> $cpu['frecuencia_memoria_max_mhz'], 'memoria_max_gb' => $cpu['memoria_max_gb'], 'grafica_integrada' => $cpu['grafica_integrada'], 'nombre_grafica_integrada' => $cpu['nombre_grafica_integrada'] ?? null, 'proceso_nm' => $cpu['proceso_nm'], 'incluye_cooler' => $cpu['incluye_cooler'], 'overclock' => $cpu['overclock'], ]);
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [ 'nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'cpu', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true, ]);
+        CPU::updateOrCreate(['componente_id' => $componente->id], [ 'componente_id' => $componente->id, 'socket_id' => $this->sockets[$cpu['socket']] ?? null, 'arquitectura_id' => $this->arqs[$cpu['arquitectura']] ?? null, 'tipo_memoria_id' => $this->tiposRam[$cpu['tipo_memoria']] ?? null, 'nucleos' => $cpu['nucleos'], 'hilos' => $cpu['hilos'], 'frecuencia_base_ghz' => $cpu['frecuencia_base_ghz'], 'frecuencia_boost_ghz' => $cpu['frecuencia_boost_ghz'] ?? null, 'tdp_watts' => $cpu['tdp_watts'], 'tdp_max_watts' => $cpu['tdp_max_watts'] ?? null, 'frecuencia_memoria_max_mhz'=> $cpu['frecuencia_memoria_max_mhz'], 'memoria_max_gb' => $cpu['memoria_max_gb'], 'grafica_integrada' => $cpu['grafica_integrada'], 'nombre_grafica_integrada' => $cpu['nombre_grafica_integrada'] ?? null, 'proceso_nm' => $cpu['proceso_nm'], 'incluye_cooler' => $cpu['incluye_cooler'], 'overclock' => $cpu['overclock'], ]);
     }
 
     protected function crearGPU(array $comp, array $gpu): void
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante']] ?? $marcaId;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'        => $comp['nombre'],
             'marca_id'      => $marcaId,
             'fabricante_id' => $fabId,
@@ -83,7 +83,7 @@ class ComponentesSeeder extends Seeder
             'descripcion'   => $comp['descripcion'] ?? null,
             'activo'        => true,
         ]);
-        \App\Models\Componentes\GPU::create([
+        \App\Models\Componentes\GPU::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'           => $componente->id,
             'arquitectura_id'         => $this->arqs[$gpu['arquitectura']] ?? null,
             'tipo_vram_id'            => \App\Models\Auxiliares\TipoVRAM::where('nombre', $gpu['tipo_vram'])->first()?->id,
@@ -108,7 +108,7 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante']] ?? $marcaId;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'        => $comp['nombre'],
             'marca_id'      => $marcaId,
             'fabricante_id' => $fabId,
@@ -118,7 +118,7 @@ class ComponentesSeeder extends Seeder
             'descripcion'   => $comp['descripcion'] ?? null,
             'activo'        => true,
         ]);
-        \App\Models\Componentes\Almacenamiento::create([
+        \App\Models\Componentes\Almacenamiento::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'          => $componente->id,
             'interfaz_id'            => \App\Models\Auxiliares\InterfazAlmacenamiento::where('nombre', $alm['interfaz'])->first()?->id,
             'factor_forma_id'        => \App\Models\Auxiliares\FactorFormaAlmacenamiento::where('nombre', $alm['factor_forma'])->first()?->id,
@@ -138,7 +138,7 @@ class ComponentesSeeder extends Seeder
     protected function crearVentilador(array $comp, array $vent): void
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'        => $comp['nombre'],
             'marca_id'      => $marcaId,
             'fabricante_id' => $marcaId,
@@ -148,7 +148,7 @@ class ComponentesSeeder extends Seeder
             'descripcion'   => $comp['descripcion'] ?? null,
             'activo'        => true,
         ]);
-        \App\Models\Componentes\Ventilador::create([
+        \App\Models\Componentes\Ventilador::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'        => $componente->id,
             'tipo_ventilador_id'   => \App\Models\Auxiliares\TipoVentilador::where('nombre', $vent['tipo'])->first()?->id,
             'rpm_min'              => $vent['rpm_min'],
@@ -340,8 +340,8 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante']] ?? $marcaId;
-        $componente = \App\Models\Componentes\Componente::create(['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'placa_base', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
-        \App\Models\Componentes\PlacaBase::create(['componente_id' => $componente->id, 'socket_id' => $this->sockets[$pb['socket']] ?? null, 'chipset_id' => $this->chipsets[$pb['chipset']] ?? null, 'factor_forma_id' => $this->factores[$pb['factor_forma']] ?? null, 'tipo_memoria_id' => $this->tiposRam[$pb['tipo_memoria']] ?? null, 'version_pcie_id' => $this->versionesPcie[$pb['version_pcie']] ?? null, 'slots_memoria' => $pb['slots_memoria'], 'memoria_max_gb' => $pb['memoria_max_gb'], 'frecuencia_memoria_max_mhz' => $pb['frecuencia_memoria_max_mhz'], 'slots_pcie_x16' => $pb['slots_pcie_x16'], 'slots_pcie_x4' => $pb['slots_pcie_x4'] ?? 0, 'slots_pcie_x1' => $pb['slots_pcie_x1'] ?? 0, 'slots_m2' => $pb['slots_m2'], 'puertos_sata' => $pb['puertos_sata'], 'puertos_usb_traseros' => $pb['puertos_usb_traseros'], 'conector_atx' => $pb['conector_atx'], 'conector_cpu' => $pb['conector_cpu'], 'wifi' => $pb['wifi'], 'bluetooth' => $pb['bluetooth'], 'thunderbolt' => $pb['thunderbolt'] ?? false, 'audio_chipset' => $pb['audio_chipset'], 'lan_chipset' => $pb['lan_chipset'], 'lan_velocidad_gbps' => $pb['lan_velocidad_gbps']]);
+        $componente = \App\Models\Componentes\Componente::updateOrCreate(['nombre' => $comp['nombre']], ['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'placa_base', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
+        \App\Models\Componentes\PlacaBase::updateOrCreate(['componente_id' => $componente->id], ['componente_id' => $componente->id, 'socket_id' => $this->sockets[$pb['socket']] ?? null, 'chipset_id' => $this->chipsets[$pb['chipset']] ?? null, 'factor_forma_id' => $this->factores[$pb['factor_forma']] ?? null, 'tipo_memoria_id' => $this->tiposRam[$pb['tipo_memoria']] ?? null, 'version_pcie_id' => $this->versionesPcie[$pb['version_pcie']] ?? null, 'slots_memoria' => $pb['slots_memoria'], 'memoria_max_gb' => $pb['memoria_max_gb'], 'frecuencia_memoria_max_mhz' => $pb['frecuencia_memoria_max_mhz'], 'slots_pcie_x16' => $pb['slots_pcie_x16'], 'slots_pcie_x4' => $pb['slots_pcie_x4'] ?? 0, 'slots_pcie_x1' => $pb['slots_pcie_x1'] ?? 0, 'slots_m2' => $pb['slots_m2'], 'puertos_sata' => $pb['puertos_sata'], 'puertos_usb_traseros' => $pb['puertos_usb_traseros'], 'conector_atx' => $pb['conector_atx'], 'conector_cpu' => $pb['conector_cpu'], 'wifi' => $pb['wifi'], 'bluetooth' => $pb['bluetooth'], 'thunderbolt' => $pb['thunderbolt'] ?? false, 'audio_chipset' => $pb['audio_chipset'], 'lan_chipset' => $pb['lan_chipset'], 'lan_velocidad_gbps' => $pb['lan_velocidad_gbps']]);
     }
 
     protected function cargarAuxiliaresPlacasBase(): void
@@ -365,6 +365,10 @@ class ComponentesSeeder extends Seeder
         $this->crearPlacaBase(
             comp: ['nombre' => 'ASUS ROG Strix B550-F Gaming', 'marca' => 'ASUS', 'fabricante' => 'ASUS', 'modelo' => 'ROG Strix B550-F Gaming', 'descripcion' => 'Placa base ATX AM4 con chipset B550. Excelente VRM, Wi-Fi 6 integrado, 2.5G LAN y soporte PCIe 4.0 desde CPU. Ideal para Ryzen 5000.', 'imagen_url' => 'https://www.aussar.es/81951-large_default/asus-am4-rog-strix-b550-f-gaming-wifi-ii.jpg'],
             pb: ['socket' => 'AM4', 'chipset' => 'B550', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 128, 'frecuencia_memoria_max_mhz' => 4400, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 2, 'slots_m2' => 2, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x4', 'USB 3.2 Gen2 Type-C x1', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5]
+        );
+        $this->crearPlacaBase(
+            comp: ['nombre' => 'Gigabyte B550 Aorus Pro AX', 'marca' => 'Gigabyte', 'fabricante' => 'Gigabyte', 'modelo' => 'B550 Aorus Pro AX', 'descripcion' => 'Placa base ATX AM4 B550 con Wi-Fi 6 y Bluetooth 5.0. Diseño Aorus con RGB, 12+2 fases VRM y soporte PCIe 4.0 para GPU y M.2.', 'imagen_url' => 'https://img.pccomponentes.com/articles/30/300743/196-gigabyte-b550-aorus-pro.jpg'],
+            pb: ['socket' => 'AM4', 'chipset' => 'B550', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 128, 'frecuencia_memoria_max_mhz' => 5100, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x2', 'USB 3.2 Gen2 Type-C x1', 'USB 3.2 Gen1 Type-A x3', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5]
         );
         $this->crearPlacaBase(
             comp: ['nombre' => 'Gigabyte X570 Aorus Master', 'marca' => 'Gigabyte', 'fabricante' => 'Gigabyte', 'modelo' => 'X570 Aorus Master', 'descripcion' => 'Placa base ATX AM4 X570 flagship de Gigabyte. VRM de 14+2 fases con thermal armor, Wi-Fi 6 y ALC1220-VB. Referencia para Ryzen 9 5950X.', 'imagen_url' => 'https://cdn.mos.cms.futurecdn.net/wgYZfV3o2YvJnKPqose95E-1200-80.png'],
@@ -532,8 +536,8 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante']] ?? $marcaId;
-        $componente = \App\Models\Componentes\Componente::create(['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'ram', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
-        \App\Models\Componentes\RAM::create(['componente_id' => $componente->id, 'tipo_memoria_id' => $this->tiposRam[$ram['tipo_memoria']] ?? null, 'capacidad_gb' => $ram['capacidad_gb'], 'modulos' => $ram['modulos'], 'capacidad_total_gb' => $ram['capacidad_total_gb'], 'velocidad_mhz' => $ram['velocidad_mhz'], 'latencia_cas' => $ram['latencia_cas'], 'voltaje' => $ram['voltaje'], 'factor_forma' => $ram['factor_forma'], 'altura_mm' => $ram['altura_mm'], 'tiene_rgb' => $ram['tiene_rgb'], 'ecc' => $ram['ecc'], 'xmp' => $ram['xmp'], 'expo' => $ram['expo']]);
+        $componente = \App\Models\Componentes\Componente::updateOrCreate(['nombre' => $comp['nombre']], ['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'ram', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
+        \App\Models\Componentes\RAM::updateOrCreate(['componente_id' => $componente->id], ['componente_id' => $componente->id, 'tipo_memoria_id' => $this->tiposRam[$ram['tipo_memoria']] ?? null, 'capacidad_gb' => $ram['capacidad_gb'], 'modulos' => $ram['modulos'], 'capacidad_total_gb' => $ram['capacidad_total_gb'], 'velocidad_mhz' => $ram['velocidad_mhz'], 'latencia_cas' => $ram['latencia_cas'], 'voltaje' => $ram['voltaje'], 'factor_forma' => $ram['factor_forma'], 'altura_mm' => $ram['altura_mm'], 'tiene_rgb' => $ram['tiene_rgb'], 'ecc' => $ram['ecc'], 'xmp' => $ram['xmp'], 'expo' => $ram['expo']]);
     }
 
     public function seedRAMs(): void
@@ -694,6 +698,10 @@ class ComponentesSeeder extends Seeder
             comp: ['nombre' => 'PowerColor Red Devil Radeon RX 9070 XT 16GB', 'marca' => 'PowerColor', 'fabricante' => 'AMD', 'modelo' => 'RX 9070 XT 16G-E/OC', 'descripcion' => 'RX 9070 XT 16 GB GDDR6, bus 256-bit. El flagship de RDNA 4 con cooler Red Devil de triple ventilador. Supera a la RTX 5070 en rasterización y tiene FSR 4 Neural.', 'imagen_url' => 'https://pausehardware.com/wp-content/uploads/2025/03/test-rx-9070-xt-16gb-780x470.webp'],
             gpu: ['arquitectura' => 'RDNA 4', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 1840, 'frecuencia_boost_mhz' => 2970, 'tdp_watts' => 304, 'slots_pcie' => 2.5, 'longitud_mm' => 330, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 750, 'salidas_video' => ['3x DisplayPort 2.1', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true]
         );
+        $this->crearGPU(
+            comp: ['nombre' => 'XFX Speedster MERC 310 Radeon RX 9070 XT 16GB', 'marca' => 'XFX', 'fabricante' => 'AMD', 'modelo' => 'RX-907XMERCB9', 'descripcion' => 'RX 9070 XT 16 GB GDDR6 con cooler MERC 310 de triple ventilador. Segunda opción premium de RDNA 4 para 1440p/4K con buen overclocking de fábrica.', 'imagen_url' => 'https://m.media-amazon.com/images/I/61ruKPG4BgL._AC_UF350,350_QL80_.jpg'],
+            gpu: ['arquitectura' => 'RDNA 4', 'tipo_vram' => 'GDDR6', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 1840, 'frecuencia_boost_mhz' => 2920, 'tdp_watts' => 304, 'slots_pcie' => 2.5, 'longitud_mm' => 335, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 750, 'salidas_video' => ['3x DisplayPort 2.1', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => false, 'fsr' => true]
+        );
         // ── Intel GPU ────────────────────────────────────────────────
         $this->crearGPU(
             comp: ['nombre' => 'ASRock Intel Arc A380 Challenger ITX 6GB (SFF)', 'marca' => 'ASRock', 'fabricante' => 'Intel', 'modelo' => 'A380 Challenger ITX 6G OC', 'descripcion' => 'Arc A380 6 GB GDDR6, bus 96-bit. Formato ITX de solo 173 mm. La única GPU de gama de entrada Intel Arc con soporte AV1 encode/decode. Perfecta para builds SFF ultracompactos.', 'imagen_url' => 'https://acf.geeknetic.es/imagenes/auto/22/10/13/54l-rx1-image.png'],
@@ -774,6 +782,10 @@ class ComponentesSeeder extends Seeder
             comp: ['nombre' => 'Kingston A400 480GB SATA SSD', 'marca' => 'Kingston', 'fabricante' => 'Kingston', 'modelo' => 'SA400S37/480G', 'descripcion' => 'SSD SATA III 2.5" de 480 GB con TLC y sin DRAM. 500/450 MB/s. El SSD de entrada más vendido de la historia en España. Perfecto para dar una segunda vida a equipos con HDD mecánico a mínimo coste.', 'imagen_url' => 'https://m.media-amazon.com/images/I/81Dz-1BA-3L._AC_UF350,350_QL80_.jpg'],
             alm: ['interfaz' => 'SATA III', 'factor_forma' => '2.5"', 'tipo_nand' => 'TLC', 'tipo' => 'ssd', 'capacidad_gb' => 480, 'velocidad_lectura_mbs' => 500, 'velocidad_escritura_mbs' => 450, 'rpm' => null, 'cache_mb' => null, 'tbw' => 160, 'cifrado' => false, 'dram' => false]
         );
+        $this->crearAlmacenamiento(
+            comp: ['nombre' => 'Corsair MP600 Core XT 4TB SATA SSD', 'marca' => 'Corsair', 'fabricante' => 'Corsair', 'modelo' => 'CSSD-F4000GBMP600CXT', 'descripcion' => 'SSD SATA III 2.5" de 4 TB con QLC Micron. 560/500 MB/s. La opción de máxima capacidad en formato 2.5" SATA para almacenamiento masivo en NAS doméstico o PC de edición de vídeo. Sin DRAM.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/1069/10697013/3540-corsair-mp600-core-xt-4-tb-gen4-pcie-x4-nvme-m2-mejor-precio.jpg'],
+            alm: ['interfaz' => 'SATA III', 'factor_forma' => '2.5"', 'tipo_nand' => 'QLC', 'tipo' => 'ssd', 'capacidad_gb' => 4000, 'velocidad_lectura_mbs' => 560, 'velocidad_escritura_mbs' => 500, 'rpm' => null, 'cache_mb' => null, 'tbw' => 1400, 'cifrado' => false, 'dram' => false]
+        );
         // ── HDD 3.5" ──────────────────────────────────────────────────────────
         $this->crearAlmacenamiento(
             comp: ['nombre' => 'Seagate Barracuda 4TB HDD 3.5"', 'marca' => 'Seagate', 'fabricante' => 'Seagate', 'modelo' => 'ST4000DM004', 'descripcion' => 'HDD SATA III 3.5" de 4 TB a 5400 rpm con 256 MB de caché. El disco mecánico de uso general más vendido en España. Ideal como almacenamiento secundario masivo junto a un SSD NVMe.', 'imagen_url' => 'https://www.asusbymacman.es/45469-medium_default/seagate-barracuda-4tb-sata-iii-35-st4000dm004-disco-duro.jpg'],
@@ -790,7 +802,7 @@ class ComponentesSeeder extends Seeder
     protected function crearGabinete(array $comp, array $gab): void
     {
         $marcaId    = $this->marcas[$comp['marca']] ?? null;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'        => $comp['nombre'],
             'marca_id'      => $marcaId,
             'fabricante_id' => $marcaId,
@@ -801,7 +813,7 @@ class ComponentesSeeder extends Seeder
             'activo'        => true,
         ]);
     
-        $g = Gabinete::create([
+        $g = Gabinete::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'                    => $componente->id,
             'tipo_gabinete_id'                 => $gab['tipo_id'],
             'estructura_gabinete_id'           => $gab['estructura_id'],
@@ -943,8 +955,8 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId = $this->marcas[$comp['marca']] ?? null;
         $fabId   = $this->marcas[$comp['fabricante'] ?? $comp['marca']] ?? $marcaId;
-        $componente = Componente::create(['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'psu', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
-        PSU::create(['componente_id' => $componente->id, 'certificacion_id' => $this->certs[$psu['cert']] ?? null, 'tipo_psu_id' => $this->tipos[$psu['tipo']] ?? null, 'vatios' => $psu['vatios'], 'modular' => $psu['modular'], 'version_atx' => $psu['version_atx'] ?? null, 'conectores_pcie_16pin' => $psu['pcie16'] ?? 0, 'conectores_pcie_8pin' => $psu['pcie8'] ?? 0, 'conectores_sata' => $psu['sata'], 'conectores_molex' => $psu['molex'], 'largo_mm' => $psu['largo_mm'], 'ventilador_mm' => $psu['vent_mm'], 'ventilador_zero_rpm' => $psu['zero_rpm']]);
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], ['nombre' => $comp['nombre'], 'marca_id' => $marcaId, 'fabricante_id' => $fabId, 'categoria' => 'psu', 'modelo' => $comp['modelo'], 'imagen_url' => $comp['imagen_url'] ?? null, 'descripcion' => $comp['descripcion'] ?? null, 'activo' => true]);
+        PSU::updateOrCreate(['componente_id' => $componente->id], ['componente_id' => $componente->id, 'certificacion_id' => $this->certs[$psu['cert']] ?? null, 'tipo_psu_id' => $this->tipos[$psu['tipo']] ?? null, 'vatios' => $psu['vatios'], 'modular' => $psu['modular'], 'version_atx' => $psu['version_atx'] ?? null, 'conectores_pcie_16pin' => $psu['pcie16'] ?? 0, 'conectores_pcie_8pin' => $psu['pcie8'] ?? 0, 'conectores_sata' => $psu['sata'], 'conectores_molex' => $psu['molex'], 'largo_mm' => $psu['largo_mm'], 'ventilador_mm' => $psu['vent_mm'], 'ventilador_zero_rpm' => $psu['zero_rpm']]);
     }
 
     protected function seedPSUs(): void
@@ -1012,7 +1024,7 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId    = $this->marcas[$comp['marca']] ?? null;
         $fabId      = $this->marcas[$comp['fabricante'] ?? $comp['marca']] ?? $marcaId;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'      => $comp['nombre'],
             'marca_id'    => $marcaId,
             'fabricante_id'=> $fabId,
@@ -1022,7 +1034,7 @@ class ComponentesSeeder extends Seeder
             'descripcion' => $comp['descripcion'] ?? null,
             'activo'      => true,
         ]);
-        $ra = RefrigeracionAire::create([
+        $ra = RefrigeracionAire::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'         => $componente->id,
             'tipo_refrigeracion_id' => $this->tiposRefrig['Aire'] ?? null,
             'tdp_max_watts'         => $aire['tdp_max_watts'],
@@ -1051,7 +1063,7 @@ class ComponentesSeeder extends Seeder
     {
         $marcaId    = $this->marcas[$comp['marca']] ?? null;
         $fabId      = $this->marcas[$comp['fabricante'] ?? $comp['marca']] ?? $marcaId;
-        $componente = Componente::create([
+        $componente = Componente::updateOrCreate(['nombre' => $comp['nombre']], [
             'nombre'       => $comp['nombre'],
             'marca_id'     => $marcaId,
             'fabricante_id'=> $fabId,
@@ -1061,7 +1073,7 @@ class ComponentesSeeder extends Seeder
             'descripcion'  => $comp['descripcion'] ?? null,
             'activo'       => true,
         ]);
-        $rl = RefrigeracionLiquida::create([
+        $rl = RefrigeracionLiquida::updateOrCreate(['componente_id' => $componente->id], [
             'componente_id'         => $componente->id,
             'tipo_refrigeracion_id' => $this->tiposRefrig['Líquida AIO'] ?? null,
             'tdp_max_watts'         => $liq['tdp_max_watts'],

@@ -842,8 +842,8 @@ class ComponentesSeeder extends Seeder
             'particion_max_mm'                 => $gab['p_max']  ?? null,
         ]);
     
-        $g->factoresForma()->attach(array_unique($gab['ff']));
-        $g->tiposPSU()->attach(array_unique($gab['psu_tipos']));
+        $g->factoresForma()->sync(array_unique($gab['ff']));
+        $g->tiposPSU()->sync(array_unique($gab['psu_tipos']));
     }
  
     protected function seedGabinetes(): void
@@ -887,7 +887,7 @@ class ComponentesSeeder extends Seeder
         );
         $this->crearGabinete(
             comp: ['nombre' => 'Lian Li PC-O11 Vision', 'marca' => 'Lian Li', 'modelo' => 'G99.O11VX.00', 'descripcion' => 'Mid Tower ATX de doble cámara estilo pecera con paneles TG en tres lados. Interior dividido en cámara principal (mobo+GPU) y secundaria (PSU+almacenamiento). Ideal para builds de lujo con refrigeración líquida custom.', 'imagen_url' => 'https://i.ytimg.com/vi/sYBH2_qJji4/maxresdefault.jpg'],
-            gab: ['tipo_id' => $mid->id, 'estructura_id' => $sand->id, 'ff' => [$atx, $eatx, $matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 455, 'cooler_max' => 174, 'psu_max' => 220, 'bahias35' => 0, 'bahias25' => 4, 'vent_front' => 3, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 360, 420], 'usb_front' => ['2xUSB3', '1xUSB-C 3.2 Gen2'], 'vert_pcie' => true, 'panel' => 'Tempered Glass 3 caras', 'ancho' => 304, 'alto' => 464.5, 'prof' => 480, 'cam_p' => 295, 'cam_s' => 155]
+            gab: ['tipo_id' => $mid->id, 'estructura_id' => $sand->id, 'ff' => [$atx, $eatx, $matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 455, 'cooler_max' => 174, 'psu_max' => 220, 'bahias35' => 0, 'bahias25' => 4, 'vent_front' => 3, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 360, 420], 'usb_front' => ['2xUSB3', '1xUSB-C 3.2 Gen2'], 'vert_pcie' => true, 'panel' => 'Tempered Glass 3 caras', 'ancho' => 304, 'alto' => 465, 'prof' => 480, 'cam_p' => 295, 'cam_s' => 155]
         );
         $this->crearGabinete(
             comp: ['nombre' => 'Corsair 5000X RGB', 'marca' => 'Corsair', 'modelo' => 'CC-9011212-WW', 'descripcion' => 'Mid Tower ATX "full glass" con paneles TG en frontal, lateral y superior. Tres ventiladores LL RGB de 120 mm incluidos y sistema de gestión de cables ocultos. Uno de los más espectaculares en su gama de precio.', 'imagen_url' => 'https://brightstarcomp.com/cdn/shop/files/85be533a2e6f170e16b4c571a613af88.jpg?v=1741573544'],
@@ -896,14 +896,14 @@ class ComponentesSeeder extends Seeder
         // mATX 
         $this->crearGabinete(
             comp: ['nombre' => 'Jonsbo D31 Mesh', 'marca' => 'Jonsbo', 'modelo' => 'D31 MESH Black', 'descripcion' => 'Mini Tower mATX con frontal de malla de alto flujo de aire, panel lateral TG y soporte para radiadores de 240 mm. Compacto, silencioso y de fabricación en aluminio.', 'imagen_url' => 'https://jonsbo.vn/wp-content/uploads/2025/08/c42.jpg'],
-            gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 400, 'cooler_max' => 168, 'psu_max' => 220, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 1, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass + Frente malla', 'ancho' => 205, 'alto' => 347.5, 'prof' => 440]
+            gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 400, 'cooler_max' => 168, 'psu_max' => 220, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 1, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass + Frente malla', 'ancho' => 205, 'alto' => 348, 'prof' => 440]
         );
         $this->crearGabinete(
             comp: ['nombre' => 'ASUS Prime AP201', 'marca' => 'ASUS', 'modelo' => 'AP201', 'descripcion' => 'Mini Tower mATX de diseño compacto con estructura de malla de acero en tres lados y soporte para refrigeración líquida de 240 mm. Compatible con GPU de hasta 338 mm a pesar de su volumen reducido (24,4 L).', 'imagen_url' => 'https://dlcdnwebimgs.asus.com/files/media/e4438114-3b1a-475b-86fd-18521d62b2e7/v1/video/ASUS-Prime-AP201.jpg'],
             gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 338, 'cooler_max' => 170, 'psu_max' => 180, 'bahias35' => 0, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 2, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['1xUSB3', '1xUSB-C 3.2 Gen2'], 'vert_pcie' => false, 'panel' => 'Malla de acero 3 caras', 'ancho' => 205, 'alto' => 460, 'prof' => 350]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Antec Performance 1 M', 'marca' => 'Antec', 'modelo' => 'P1M Black', 'descripcion' => 'SFF Mini-ITX con paneles laterales de aluminio anodizado, panel TG y aislamiento acústico. Solo compatible con placas Mini-ITX. Enfocado en silencio y calidad de acabado.', 'imagen_url' => 'https://www.asusbymacman.es/51114-thickbox_default/antec-performance-1-m-aventurine-caja.jpg'],
+            comp: ['nombre' => 'Antec Performance 1M', 'marca' => 'Antec', 'modelo' => 'P1M Black', 'descripcion' => 'SFF Mini-ITX con paneles laterales de aluminio anodizado, panel TG y aislamiento acústico. Solo compatible con placas Mini-ITX. Enfocado en silencio y calidad de acabado.', 'imagen_url' => 'https://www.asusbymacman.es/51114-thickbox_default/antec-performance-1-m-aventurine-caja.jpg'],
             gab: ['tipo_id' => $sff->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pSFX, $pSFXL], 'gpu_max' => 350, 'cooler_max' => 85, 'psu_max' => 130, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280], 'usb_front' => ['2xUSB3'], 'vert_pcie' => false, 'panel' => 'Aluminio + Tempered Glass', 'ancho' => 175, 'alto' => 260, 'prof' => 424]
         );
         $this->crearGabinete(
@@ -941,7 +941,7 @@ class ComponentesSeeder extends Seeder
         );
         $this->crearGabinete(
             comp: ['nombre' => 'Jonsbo D31 STD', 'marca' => 'Jonsbo', 'modelo' => 'D31 STD Black', 'descripcion' => 'Mini Tower ITX compacto con frontal de aluminio cepillado y panel lateral TG. Compatible con PSU ATX estándar y GPU de hasta 400 mm en un volumen de solo 31 L.', 'imagen_url' => 'https://minhancomputercdn.com/media/product/12582_v____case_jonsbo_d31_std_sc_black__13_.jpg'],
-            gab: ['tipo_id' => $mitx->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pATX], 'gpu_max' => 400, 'cooler_max' => 168, 'psu_max' => 220, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 1, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Aluminio + Tempered Glass', 'ancho' => 205, 'alto' => 347.5, 'prof' => 440]
+            gab: ['tipo_id' => $mitx->id, 'estructura_id' => $conv->id, 'ff' => [$itx], 'psu_tipos' => [$pATX], 'gpu_max' => 400, 'cooler_max' => 168, 'psu_max' => 220, 'bahias35' => 1, 'bahias25' => 2, 'vent_front' => 1, 'vent_sup' => 3, 'vent_tras' => 1, 'vent_incl' => 0, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240, 280, 360], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Aluminio + Tempered Glass', 'ancho' => 205, 'alto' => 348, 'prof' => 440]
         );
         $this->crearGabinete(
             comp: ['nombre' => 'Lian Li A4-H2O', 'marca' => 'Lian Li', 'modelo' => 'PC-A4H2OX4', 'descripcion' => 'SFF ITX de doble cámara optimizado para refrigeración líquida de 240 mm en tan solo 11 L. Estructura de aluminio anodizado en negro o plata. GPU horizontal en cámara principal de hasta 322 mm.', 'imagen_url' => 'https://i.ytimg.com/vi/gnwHhJiSv1g/maxresdefault.jpg'],

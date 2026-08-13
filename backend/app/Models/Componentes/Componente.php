@@ -153,21 +153,12 @@ class Componente extends BaseModel
         return $query->where('activo', true);
     }
 
-    // Oculta un componente cuando el scraping ya no consigue leer NINGUNA
-    // de sus URLs configuradas (todas sus urls_producto_tienda llevan
-    // fallos_consecutivos >= umbral y están marcadas no_disponible), lo
-    // que normalmente significa que el producto ha desaparecido/ha sido
-    // descatalogado en todas las tiendas donde lo teníamos.
-    //
-    // Si el componente todavía no tiene ninguna urls_producto_tienda
-    // configurada (por ejemplo, porque en el seeder se dejó url vacía a
-    // propósito) NO se oculta: se sigue mostrando igual que hasta ahora,
-    // simplemente sin precio ("Sin precio" en el front).
+    // Solo se muestran los componentes con al menos un precio actual
+    // en stock (es decir, que el scraping de esta mañana confirmó que
+    // existe y se puede comprar). Si ninguna tienda lo tiene en stock
+    // ahora mismo, o nunca se ha podido scrapear, se oculta.
     public function scopeDisponible($query)
     {
-        return $query->where(function ($q) {
-            $q->whereDoesntHave('urlsProductoTienda')
-              ->orWhereHas('urlsProductoTienda', fn ($sub) => $sub->where('no_disponible', false));
-        });
+        return $query->whereHas('preciosActuales', fn ($q) => $q->where('en_stock', true));
     }
 }

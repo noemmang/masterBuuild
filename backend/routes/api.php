@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
+use App\Http\Controllers\Api\ScrapeController;
 
 Route::prefix('v1')->group(function () {
 
@@ -77,5 +78,8 @@ Route::prefix('v1')->group(function () {
             Route::patch  ('{uuid}', [ConfiguracionController::class, 'update']);
             Route::delete ('{uuid}', [ConfiguracionController::class, 'destroy']);
         });
+
+        // Scrape — ejecución protegida con clave secreta para azure functions
+        Route::post('/scrape/ejecutar', [ScrapeController::class, 'ejecutar']);
     });
 });

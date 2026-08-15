@@ -34,5 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'scrape' => [
+        'clave' => env('SCRAPE_SECRET_KEY'),
+    ],
 ];

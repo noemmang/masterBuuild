@@ -12,6 +12,8 @@ RUN install-php-extensions \
 
 WORKDIR /app
 
+COPY php.ini /usr/local/etc/php/conf.d/99-custom.ini
+
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
 

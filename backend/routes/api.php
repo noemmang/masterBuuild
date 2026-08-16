@@ -10,7 +10,6 @@ use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
-use App\Http\Controllers\Api\ScrapeController;
 
 Route::prefix('v1')->group(function () {
 
@@ -79,10 +78,4 @@ Route::prefix('v1')->group(function () {
             Route::delete ('{uuid}', [ConfiguracionController::class, 'destroy']);
         });
     });
-
-    // ── Scrape — ejecución protegida con su propia clave secreta ──
-    // No usa auth:sanctum a propósito: no la llama un usuario con
-    // sesión, la llama la Azure Function. Se protege con el header
-    // X-Scrape-Key que comprueba ScrapeController::ejecutar().
-    Route::post('scrape/ejecutar', [ScrapeController::class, 'ejecutar']);
 });

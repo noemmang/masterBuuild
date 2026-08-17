@@ -8,6 +8,7 @@ return [
 
     'allowed_origins' => [
         'https://lemon-desert-0df6a6e0f.7.azurestaticapps.net',
+        'https://masterbuild.noemmang.com',
     ],
 
     'allowed_origins_patterns' => [],

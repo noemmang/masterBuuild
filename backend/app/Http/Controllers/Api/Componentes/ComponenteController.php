@@ -32,16 +32,14 @@ class ComponenteController extends Controller
         if ($request->filled('precio_min') || $request->filled('precio_max')) {
             $precioMin = $request->filled('precio_min') ? (float) $request->precio_min : null;
             $precioMax = $request->filled('precio_max') ? (float) $request->precio_max : null;
-        
+
+            // precios_actuales ya tiene una única fila por (componente,
+            // tienda): esto era antes un whereIn anidado con un segundo
+            // MAX(id) GROUP BY sobre entradas_precio; ahora es un GROUP
+            // BY directo sobre la tabla de estado actual.
             $query->whereIn('id', function ($sub) use ($precioMin, $precioMax) {
                 $sub->select('componente_id')
-                    ->from('entradas_precio')
-                    ->whereIn('id', function ($inner) {
-                        // Precio más bajo actual por componente (última entrada por tienda)
-                        $inner->selectRaw('MAX(id)')
-                              ->from('entradas_precio')
-                              ->groupBy('componente_id', 'tienda_id');
-                    })
+                    ->from('precios_actuales')
                     ->groupBy('componente_id')
                     ->havingRaw('MIN(precio) ' . ($precioMin ? ">= {$precioMin}" : '>= 0'))
                     ->when($precioMax, fn($q) => $q->havingRaw("MIN(precio) <= {$precioMax}"));

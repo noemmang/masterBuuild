@@ -12,7 +12,6 @@ use App\Models\Componentes\PSU;
 use App\Models\Componentes\Gabinete;
 use App\Models\Componentes\RefrigeracionAire;
 use App\Models\Componentes\RefrigeracionLiquida;
-use App\Models\Negocio\EntradaPrecio;
 use Illuminate\Http\Request;
 
 class RecomendadorController extends Controller

@@ -26,20 +26,18 @@ class Tienda extends BaseModel
     const PAISES = ['ES', 'DE', 'FR', 'IT', 'UK', 'US'];
     const MONEDAS = ['EUR', 'GBP', 'USD'];
 
+    // Histórico cerrado de precios de esta tienda (ver comentario en
+    // Componente::precios()).
     public function precios()
     {
-        return $this->hasMany(EntradaPrecio::class, 'tienda_id');
+        return $this->hasMany(HistorialPrecio::class, 'tienda_id');
     }
 
+    // Precio actual por componente en esta tienda: lectura directa de
+    // precios_actuales, sin subquery.
     public function preciosActuales()
     {
-        return $this->hasMany(EntradaPrecio::class, 'tienda_id')
-                    ->whereIn('id', function ($query) {
-                        $query->selectRaw('MAX(id)')
-                              ->from('entradas_precio')
-                              ->whereColumn('tienda_id', 'tiendas.id')
-                              ->groupBy('componente_id');
-                    });
+        return $this->hasMany(PrecioActual::class, 'tienda_id');
     }
 
     public function scopeActiva($query)

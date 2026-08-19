@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | La SPA de Angular vive en un dominio/hosting aparte del backend (ver
+    | config/cors.php). Los correos de notificaciones la necesitan para
+    | construir enlaces tipo "Ver componente" que abran la app, no la API.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'https://masterbuild.noemmang.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

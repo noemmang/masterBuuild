@@ -75,4 +75,16 @@ class PrecioActual extends Model
     {
         return $query->where('en_stock', true);
     }
+
+    // El mejor precio EN STOCK para un componente, entre todas sus
+    // tiendas, ordenado de más barato a más caro. Lo usa
+    // NotificacionesVerificar para comparar contra AlertaPrecio::precio_objetivo:
+    // ->first() da el precio con el que se compara; si no hay ninguna
+    // fila (nadie lo tiene en stock ahora mismo) no hay nada que comparar.
+    public function scopeMejorPrecio($query, int $componenteId)
+    {
+        return $query->where('componente_id', $componenteId)
+                     ->where('en_stock', true)
+                     ->orderBy('precio', 'asc');
+    }
 }

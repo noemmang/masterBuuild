@@ -18,7 +18,6 @@ export const routes: Routes = [
   {
     path: 'configurador',
     loadComponent: () => import('./features/configurator/configurator.component').then(m => m.ConfiguratorComponent),
-    canActivate: [authGuard]
   },
   {
     path: 'gabinetes',

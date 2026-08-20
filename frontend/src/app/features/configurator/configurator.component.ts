@@ -670,9 +670,17 @@ export class ConfiguratorComponent implements OnInit {
 
   // ── Guardar componente ────────────────────────────────────────
 
+  /** Si no hay sesión iniciada, redirige a login guardando la página actual para volver luego */
+  private requiereLogin(): boolean {
+    if (this.auth.estaAutenticado()) return false;
+    this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+    return true;
+  }
+
   estaGuardado(uuid: string): boolean { return this.guardadosMap().has(uuid); }
 
   guardarComponente(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteDetalle();
     if (!comp || this.guardando()) return;
     this.guardando.set(true);
@@ -689,6 +697,7 @@ export class ConfiguratorComponent implements OnInit {
   }
 
   eliminarGuardado(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteDetalle();
     if (!comp || this.eliminandoGuardado()) return;
     const uuidGuardado = this.guardadosMap().get(comp.uuid);
@@ -708,6 +717,7 @@ export class ConfiguratorComponent implements OnInit {
   tieneAlerta(uuid: string): boolean { return this.alertasMap().has(uuid); }
 
   toggleFormAlerta(): void {
+    if (this.requiereLogin()) return;
     this.mostrarAlerta.update(v => !v);
     if (this.mostrarAlerta() && this.precios().length > 0) {
       this.precioObjetivo.set(Math.round(this.precios()[0].precio * 0.9));
@@ -715,9 +725,10 @@ export class ConfiguratorComponent implements OnInit {
   }
 
   guardarAlerta(): void {
-    this.guardandoAlerta.set(true);
+    if (this.requiereLogin()) return;
     const comp = this.componenteDetalle();
     if (!comp || !this.precioObjetivo() || this.guardandoAlerta()) return;
+    this.guardandoAlerta.set(true);
     this.guardadoService.crearAlerta(comp.uuid, this.precioObjetivo()!).subscribe({
       next: (res) => {
         this.alertasMap.update(m => new Map(m).set(comp.uuid, res.uuid));
@@ -729,6 +740,7 @@ export class ConfiguratorComponent implements OnInit {
   }
 
   eliminarAlerta(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteDetalle();
     if (!comp) return;
     const uuidAlerta = this.alertasMap().get(comp.uuid);
@@ -748,6 +760,7 @@ export class ConfiguratorComponent implements OnInit {
   // ── Guardar configuración ─────────────────────────────────────
 
   abrirModalGuardar(): void {
+    if (this.requiereLogin()) return;
     this.nombreConfig.set('');
     this.notasConfig.set('');
     this.modalGuardarAbierto.set(true);
@@ -758,6 +771,7 @@ export class ConfiguratorComponent implements OnInit {
   }
 
   confirmarGuardarConfig(): void {
+    if (this.requiereLogin()) return;
     if (!this.nombreConfig().trim()) return;
 
     const slotsPayload: SlotGuardado[] = this.slots

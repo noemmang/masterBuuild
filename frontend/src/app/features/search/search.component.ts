@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ComponenteService, Componente } from '../../core/services/componente.service';
 import { GuardadoService } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -117,6 +117,7 @@ export class SearchComponent implements OnInit {
   private auth            = inject(AuthService);
   private guardadoService = inject(GuardadoService);
   private el              = inject(ElementRef);
+  private router          = inject(Router);
 
   categorias = [
     { label: 'Todo',             slug: '' },
@@ -436,9 +437,17 @@ export class SearchComponent implements OnInit {
 
   // ── Guardados / alertas ────────────────────────────────────────────────────
 
+  /** Si no hay sesión iniciada, redirige a login guardando la página actual para volver luego */
+  private requiereLogin(): boolean {
+    if (this.auth.estaAutenticado()) return false;
+    this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+    return true;
+  }
+
   estaGuardado(uuid: string): boolean { return this.guardadosMap().has(uuid); }
 
   guardarComponente(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteSeleccionado();
     if (!comp || this.guardando()) return;
     this.guardando.set(true);
@@ -451,6 +460,7 @@ export class SearchComponent implements OnInit {
   }
 
   eliminarGuardado(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteSeleccionado();
     if (!comp || this.eliminando()) return;
     const uuidGuardado = this.guardadosMap().get(comp.uuid);
@@ -465,6 +475,7 @@ export class SearchComponent implements OnInit {
   tieneAlerta(uuid: string): boolean { return this.alertasMap().has(uuid); }
 
   toggleFormAlerta(): void {
+    if (this.requiereLogin()) return;
     this.mostrarAlerta.update(v => !v);
     if (this.mostrarAlerta() && this.precios().length > 0) {
       const precioRef = this.precioSeleccionado() ?? this.precios()[0];
@@ -473,6 +484,7 @@ export class SearchComponent implements OnInit {
   }
 
   guardarAlerta(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteSeleccionado();
     if (!comp || !this.precioObjetivo() || this.guardandoAlerta()) return;
     this.guardandoAlerta.set(true);
@@ -487,6 +499,7 @@ export class SearchComponent implements OnInit {
   }
 
   eliminarAlerta(): void {
+    if (this.requiereLogin()) return;
     const comp = this.componenteSeleccionado();
     if (!comp) return;
     const uuidAlerta = this.alertasMap().get(comp.uuid);

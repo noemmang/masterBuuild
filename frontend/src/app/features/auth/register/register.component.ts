@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   nombre = '';
   email = '';
   password = '';
@@ -19,7 +19,14 @@ export class RegisterComponent {
   cargando = false;
   error = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  /** Ruta a la que volver tras registrarse (p. ej. si veníamos de "Guardar" sin sesión) */
+  returnUrl = '/home';
+
+  constructor(private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+  }
 
   submit() {
     this.error = '';
@@ -29,7 +36,7 @@ export class RegisterComponent {
     }
     this.cargando = true;
     this.auth.registro(this.nombre, this.email, this.password, this.password_confirmation).subscribe({
-      next: () => this.router.navigate(['/home']),
+      next: () => this.router.navigateByUrl(this.returnUrl),
       error: (err) => {
         // Laravel devuelve { message, errors: { campo: [mensajes] } } en un 422.
         // Priorizamos el primer error de campo (ej. "El correo... no existe")

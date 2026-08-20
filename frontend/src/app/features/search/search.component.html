@@ -163,7 +163,6 @@
         </button>
       </div>
 
-      @if (logueado) {
         <div class="panel-acciones">
           @if (estaGuardado(componenteSeleccionado()!.uuid)) {
             <button class="btn-accion guardado" [disabled]="eliminando()" (click)="eliminarGuardado()">
@@ -222,7 +221,6 @@
             </button>
           </div>
         }
-      }
 
       <div class="panel-scroll">
       <div class="panel-body">

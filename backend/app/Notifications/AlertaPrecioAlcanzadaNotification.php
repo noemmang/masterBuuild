@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\Negocio\AlertaPrecio;
 use App\Models\Negocio\PrecioActual;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -17,8 +16,11 @@ use Illuminate\Notifications\Notification;
  * objetivo, el mismo comando resetea disparada_en a null para que la
  * alerta pueda volver a saltar sola en el futuro sin que el usuario
  * tenga que hacer nada — solo deja de vigilarse si borra la alerta.
+ *
+ * Sin ShouldQueue, mismo motivo que en las otras dos notificaciones: el
+ * Job de Azure no tiene ningún queue:work corriendo detrás.
  */
-class AlertaPrecioAlcanzadaNotification extends Notification implements ShouldQueue
+class AlertaPrecioAlcanzadaNotification extends Notification
 {
     use Queueable;
 

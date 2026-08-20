@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Negocio\ComponenteGuardado;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -16,8 +15,14 @@ use Illuminate\Notifications\Notification;
  * notificado_agotado_en al enviarla y no la repite hasta que
  * ComponenteDisponibleNotification confirme que volvió y resetee esa
  * columna a null.
+ *
+ * A propósito NO implementa ShouldQueue: el Job de Azure que ejecuta
+ * scrape:diario corre el comando y se apaga, sin ningún queue:work
+ * detrás para procesar la tabla jobs. Se envía en el momento, dentro del
+ * mismo proceso — a este volumen (unos pocos correos por noche) no pasa
+ * nada por que scrape:diario tarde un poco más en terminar.
  */
-class ComponenteAgotadoNotification extends Notification implements ShouldQueue
+class ComponenteAgotadoNotification extends Notification
 {
     use Queueable;
 

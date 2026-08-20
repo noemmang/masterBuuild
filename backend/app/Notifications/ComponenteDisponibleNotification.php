@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\Negocio\ComponenteGuardado;
 use App\Models\Negocio\PrecioActual;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -16,8 +15,11 @@ use Illuminate\Notifications\Notification;
  * ComponenteAgotadoNotification: el comando resetea notificado_agotado_en
  * a null justo después de enviar esta, así que si vuelve a agotarse más
  * adelante se puede avisar de nuevo.
+ *
+ * Sin ShouldQueue, mismo motivo que en ComponenteAgotadoNotification: el
+ * Job de Azure no tiene ningún queue:work corriendo detrás.
  */
-class ComponenteDisponibleNotification extends Notification implements ShouldQueue
+class ComponenteDisponibleNotification extends Notification
 {
     use Queueable;
 

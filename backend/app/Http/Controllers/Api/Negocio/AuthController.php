@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api\Negocio;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\CuentaCreadaNotification;
+use App\Notifications\CuentaEliminadaNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -32,6 +35,18 @@ class AuthController extends Controller
             'email'    => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+
+        // La cuenta ya existe pase lo que pase con el correo: si Resend
+        // falla o tarda, no queremos que el registro entero devuelva un
+        // 500 por un email que no es crítico para poder usar la app.
+        try {
+            $user->notify(new CuentaCreadaNotification($user));
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar el correo de bienvenida', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+        }
 
         $token = $user->createToken('masterbuild')->plainTextToken;
 
@@ -169,6 +184,18 @@ class AuthController extends Controller
     public function destroyMe(Request $request)
     {
         $user = $request->user();
+
+        // Se envía ANTES de borrar y con el nombre como string suelto
+        // (no el modelo), para dejar claro que el correo no depende de
+        // que el registro siga existiendo un instante después.
+        try {
+            $user->notify(new CuentaEliminadaNotification($user->name));
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar el correo de despedida', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+        }
 
         $user->tokens()->delete();
         $user->delete();

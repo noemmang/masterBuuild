@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -62,6 +62,13 @@ interface FiltrosCompat {
   radiador_mm?:             string;
 }
 
+/** Snapshot de la build en curso, para sobrevivir a una navegación (login, volver atrás, etc.) */
+interface BorradorConfigurador {
+  slots: { id: string; entradas: SlotEntrada[] }[];
+  slotActivoId: string;
+  componenteDetalle: Componente | null;
+}
+
 // ── Componente ───────────────────────────────────────────────────────────────
 
 @Component({
@@ -72,7 +79,7 @@ interface FiltrosCompat {
   styleUrl: './configurator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConfiguratorComponent implements OnInit {
+export class ConfiguratorComponent implements OnInit, OnDestroy {
 
   private auth            = inject(AuthService);
   private guardadoService = inject(GuardadoService);
@@ -206,10 +213,97 @@ export class ConfiguratorComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const cfgUuid = params['cfg'] as string | undefined;
       if (cfgUuid) {
+        this.limpiarBorrador(); // la config explícita manda sobre el borrador local
         this.restaurarConfiguracion(cfgUuid);
       } else {
-        this.cargarSlot(this.slots[0]);
+        const borrador = this.leerBorrador();
+        if (borrador) {
+          this.restaurarBorrador(borrador);
+        } else {
+          this.cargarSlot(this.slots[0]);
+        }
       }
+    });
+  }
+
+  /** Justo antes de que Angular destruya el componente (navegación a login, atrás, etc.) guardamos la build en curso */
+  ngOnDestroy(): void {
+    this.guardarBorrador();
+  }
+
+  // ── Borrador local (sessionStorage) ─────────────────────────────
+  private static readonly BORRADOR_KEY = 'mb:configurador:borrador';
+
+  private guardarBorrador(): void {
+    try {
+      const slotsConContenido = this.slots.filter(s => s.entradas.length > 0);
+      if (slotsConContenido.length === 0 && !this.componenteDetalle()) {
+        sessionStorage.removeItem(ConfiguratorComponent.BORRADOR_KEY);
+        return;
+      }
+      const data: BorradorConfigurador = {
+        slots: slotsConContenido.map(s => ({ id: s.id, entradas: s.entradas })),
+        slotActivoId: this.slotActivo().id,
+        componenteDetalle: this.componenteDetalle(),
+      };
+      sessionStorage.setItem(ConfiguratorComponent.BORRADOR_KEY, JSON.stringify(data));
+    } catch {
+      // sessionStorage no disponible (modo privado, etc.) — no es crítico
+    }
+  }
+
+  private leerBorrador(): BorradorConfigurador | null {
+    try {
+      const raw = sessionStorage.getItem(ConfiguratorComponent.BORRADOR_KEY);
+      return raw ? (JSON.parse(raw) as BorradorConfigurador) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private limpiarBorrador(): void {
+    try { sessionStorage.removeItem(ConfiguratorComponent.BORRADOR_KEY); } catch { /* no-op */ }
+  }
+
+  /** Reconstruye la build en curso a partir del borrador guardado, sin volver a preguntar al usuario */
+  private restaurarBorrador(borrador: BorradorConfigurador): void {
+    this.restaurando.set(true);
+    this.slots.forEach(s => s.entradas.splice(0));
+
+    for (const slotGuardado of borrador.slots) {
+      const slot = this.slots.find(s => s.id === slotGuardado.id);
+      if (!slot) continue;
+      slot.entradas.push(...slotGuardado.entradas);
+    }
+
+    const slotActivo =
+      this.slots.find(s => s.id === borrador.slotActivoId) ??
+      this.slots.find(s => s.entradas.length > 0) ??
+      this.slots[0];
+
+    // Recuperar el detalle técnico de cada componente para poder validar compatibilidad
+    const uuids = new Set<string>();
+    this.slots.forEach(s => s.entradas.forEach(e => uuids.add(e.componente.uuid)));
+
+    const promesas = Array.from(uuids).map(uuid => new Promise<void>((resolve) => {
+      this.componenteService.getDetalle(uuid).subscribe({
+        next: (detalle) => { this.detallesCache.set(uuid, detalle); resolve(); },
+        error: () => resolve(),
+      });
+    }));
+
+    Promise.all(promesas).then(() => {
+      this._entriesVersion.update(v => v + 1);
+      this.recalcularFiltrosCompat();
+      this.recalcularTotal();
+      this.validarCompatibilidad();
+      this.restaurando.set(false);
+      this.cargarSlot(slotActivo);
+
+      if (borrador.componenteDetalle) {
+        this.abrirPrecios(borrador.componenteDetalle);
+      }
+      this.cdr.markForCheck();
     });
   }
 
@@ -798,6 +892,7 @@ export class ConfiguratorComponent implements OnInit {
       next: () => {
         this.guardandoConfig.set(false);
         this.cerrarModalGuardar();
+        this.limpiarBorrador();
         this.router.navigate(['/guardados'], { queryParams: { tab: 'configuraciones' } });
       },
       error: () => this.guardandoConfig.set(false),

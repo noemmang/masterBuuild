@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,6 +19,13 @@ interface GrupoFiltro {
   label: string;
   opciones: OpcionFiltro[];
   tipo: 'multi' | 'min';
+}
+
+/** Snapshot de qué se estaba viendo, para restaurar el mismo listado (no solo el componente) tras una navegación */
+interface BorradorSeleccion {
+  uuid: string;
+  categoria: string;
+  busqueda: string;
 }
 
 const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
@@ -112,7 +119,7 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
 
   private auth            = inject(AuthService);
   private guardadoService = inject(GuardadoService);
@@ -161,6 +168,9 @@ export class SearchComponent implements OnInit {
     return FILTROS_POR_CATEGORIA[this.categoriaActiva()] ?? [];
   }
 
+  /** Clave de sessionStorage donde se recuerda el componente abierto para sobrevivir a la navegación (p. ej. ir a login y volver) */
+  private static readonly BORRADOR_KEY = 'mb:buscar:seleccion';
+
   componenteSeleccionado = signal<Componente | null>(null);
   precios                = signal<any[]>([]);
   cargandoPrecios        = signal(false);
@@ -190,10 +200,17 @@ export class SearchComponent implements OnInit {
     }
 
     this.route.queryParams.subscribe(params => {
-      if (params['categoria']) this.categoriaActiva.set(params['categoria']);
-      if (params['q'])         this.busqueda = params['q'];
+      const uuidParam = params['uuid'] as string | undefined;
+      // El borrador local solo se usa si no venimos de un enlace explícito con ?uuid=
+      const borrador  = uuidParam ? null : this.leerBorrador();
 
-      const uuid = params['uuid'] as string | undefined;
+      if (params['categoria'])       this.categoriaActiva.set(params['categoria']);
+      else if (borrador?.categoria)  this.categoriaActiva.set(borrador.categoria);
+
+      if (params['q'])          this.busqueda = params['q'];
+      else if (borrador?.busqueda) this.busqueda = borrador.busqueda;
+
+      const uuid = uuidParam || borrador?.uuid || undefined;
       if (uuid) {
         this.resetYCargar(uuid);
       } else {
@@ -203,6 +220,38 @@ export class SearchComponent implements OnInit {
 
     this.busqueda$.pipe(debounceTime(400), distinctUntilChanged())
       .subscribe(() => this.resetYCargar());
+  }
+
+  /** Justo antes de que Angular destruya el componente (navegación a login, atrás, etc.) guardamos qué había seleccionado */
+  ngOnDestroy(): void {
+    this.guardarBorrador();
+  }
+
+  private guardarBorrador(): void {
+    try {
+      const comp = this.componenteSeleccionado();
+      if (comp) {
+        const data: BorradorSeleccion = {
+          uuid:      comp.uuid,
+          categoria: this.categoriaActiva(),
+          busqueda:  this.busqueda,
+        };
+        sessionStorage.setItem(SearchComponent.BORRADOR_KEY, JSON.stringify(data));
+      } else {
+        sessionStorage.removeItem(SearchComponent.BORRADOR_KEY);
+      }
+    } catch {
+      // sessionStorage no disponible (modo privado, etc.) — no es crítico
+    }
+  }
+
+  private leerBorrador(): BorradorSeleccion | null {
+    try {
+      const raw = sessionStorage.getItem(SearchComponent.BORRADOR_KEY);
+      return raw ? (JSON.parse(raw) as BorradorSeleccion) : null;
+    } catch {
+      return null;
+    }
   }
 
   toggleFiltroExpandido(param: string): void {

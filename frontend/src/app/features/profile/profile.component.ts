@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { GuardadoService } from '../../core/services/guardado.service';
+import { environment } from '../../../environments/environment';
 
 type Seccion = 'perfil' | 'seguridad' | 'apariencia' | 'notificaciones' | 'privacidad' | 'eliminar';
 
@@ -131,7 +132,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   private guardarAvatar(base64: string): void {
-    this.http.patch('/api/v1/auth/me', { avatar: base64 }).subscribe({
+    this.http.patch(`${environment.apiUrl}/auth/me`, { avatar: base64 }).subscribe({
       next: () => {
         const u = this.usuario();
         if (u) {
@@ -148,7 +149,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   eliminarAvatar(): void {
-    this.http.patch('/api/v1/auth/me', { avatar: null }).subscribe({
+    this.http.patch(`${environment.apiUrl}/auth/me`, { avatar: null }).subscribe({
       next: () => {
         this.avatarUrl.set('');
         const u = this.usuario();
@@ -186,7 +187,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     if (!this.nuevoNombre.trim()) return;
     this.guardandoNombre.set(true);
     this.errorNombre.set('');
-    this.http.patch('/api/v1/auth/me', { name: this.nuevoNombre }).subscribe({
+    this.http.patch(`${environment.apiUrl}/auth/me`, { name: this.nuevoNombre }).subscribe({
       next: () => {
         const u = this.usuario();
         if (u) {
@@ -223,7 +224,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       return;
     }
     this.guardandoPass.set(true);
-    this.http.patch('/api/v1/auth/password', {
+    this.http.patch(`${environment.apiUrl}/auth/password`, {
       current_password:      this.passActual,
       password:              this.passNueva,
       password_confirmation: this.passConfirm,
@@ -262,7 +263,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   eliminarCuenta(): void {
     if (!this.confirmarEliminar) { this.confirmarEliminar = true; return; }
     this.eliminando.set(true);
-    this.http.delete('/api/v1/auth/me').subscribe({
+    this.http.delete(`${environment.apiUrl}/auth/me`).subscribe({
       next: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');

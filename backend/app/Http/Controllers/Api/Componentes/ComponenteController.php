@@ -11,7 +11,19 @@ class ComponenteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Componente::query()->activo()->disponible();
+        // visible() (y no disponible()) para que los componentes agotados
+        // no desaparezcan del listado: se siguen mostrando con su último
+        // precio conocido. disponible() exige en_stock=true y es el
+        // criterio de negocio que usa NotificacionesVerificar, no el de
+        // "se muestra en el front".
+        $query = Componente::query()->activo()->visible();
+
+        // Filtro "ver agotados": por defecto se incluyen (mostrar_agotados
+        // ausente o "true"); si el usuario lo desactiva desde el front
+        // solo se listan los que tienen alguna tienda con stock ahora.
+        if (!$request->boolean('mostrar_agotados', true)) {
+            $query->disponible();
+        }
 
         // ── Filtros generales ────────────────────────────────────────────────
 
@@ -241,9 +253,12 @@ class ComponenteController extends Controller
 
     public function show(string $uuid)
     {
+        // visible() en vez de disponible(): el detalle de un componente
+        // agotado debe poder abrirse igualmente (panel de precios en
+        // search/configurador, specs para compatibilidad, etc.).
         $componente = Componente::where('uuid', $uuid)
             ->activo()
-            ->disponible()
+            ->visible()
             ->firstOrFail();
 
         $relaciones = array_merge(
@@ -267,7 +282,7 @@ class ComponenteController extends Controller
         }
 
         $componentes = Componente::activo()
-            ->disponible()
+            ->visible()
             ->categoria($categoria)
             ->with(['marca', 'preciosActuales.tienda'])
             ->paginate(20);

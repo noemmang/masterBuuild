@@ -152,12 +152,25 @@ class Componente extends BaseModel
         return $query->where('activo', true);
     }
 
-    // Solo se muestran los componentes con al menos un precio actual
-    // en stock (es decir, que el scraping de esta mañana confirmó que
-    // existe y se puede comprar). Si ninguna tienda lo tiene en stock
-    // ahora mismo, o nunca se ha podido scrapear, se oculta.
+    // Componente con al menos una tienda con stock AHORA MISMO. Este es
+    // el criterio de negocio "disponible" (no confundir con "visible" en
+    // el front, ver scopeVisible): lo usa NotificacionesVerificar para
+    // decidir si avisar por email de que algo se agotó o volvió a haber
+    // stock, comparando este resultado noche a noche. No tocar su
+    // semántica sin revisar ese comando.
     public function scopeDisponible($query)
     {
         return $query->whereHas('preciosActuales', fn ($q) => $q->where('en_stock', true));
+    }
+
+    // Componente "visible" en listados/búsqueda del front: tiene al
+    // menos un precio actual registrado (se ha podido scrapear con
+    // éxito alguna vez), esté o no en stock ahora mismo. Los agotados
+    // se siguen mostrando con su último precio conocido (con el badge
+    // "Agotado" en el front); solo se ocultan los que nunca se llegaron
+    // a scrapear (num_tiendas = 0, no hay dato ninguno que mostrar).
+    public function scopeVisible($query)
+    {
+        return $query->whereHas('preciosActuales');
     }
 }

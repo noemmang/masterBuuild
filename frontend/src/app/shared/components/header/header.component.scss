@@ -19,6 +19,9 @@
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 1.2rem;
   font-weight: 700;
   text-decoration: none;
@@ -27,6 +30,13 @@
 
   .logo-master { color: var(--text); }
   .logo-build  { color: var(--accent); }
+}
+
+.logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .nav {

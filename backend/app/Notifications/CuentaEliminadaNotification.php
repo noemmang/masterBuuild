@@ -12,6 +12,10 @@ use Illuminate\Notifications\Notification;
  * para dejar claro que no depende de que el registro siga existiendo).
  * Igual que CuentaCreadaNotification, va envuelta en try/catch en el
  * controlador — si el correo falla, la cuenta se borra igualmente.
+ *
+ * A propósito se queda solo en 'mail' (sin canal 'database'): el usuario
+ * ya no existe justo después de enviarla, así que nunca llegaría a verse
+ * en la campanita de notificaciones de la app.
  */
 class CuentaEliminadaNotification extends Notification
 {

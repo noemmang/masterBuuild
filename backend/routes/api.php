@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Negocio\PrecioController;
 use App\Http\Controllers\Api\Negocio\GuardadoController;
 use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
+use App\Http\Controllers\Api\Negocio\NotificacionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
 
@@ -76,6 +77,16 @@ Route::prefix('v1')->group(function () {
             Route::post   ('/',      [ConfiguracionController::class, 'store']);
             Route::patch  ('{uuid}', [ConfiguracionController::class, 'update']);
             Route::delete ('{uuid}', [ConfiguracionController::class, 'destroy']);
+        });
+
+        // Notificaciones (campanita del header)
+        Route::prefix('notificaciones')->group(function () {
+            Route::get    ('/',              [NotificacionController::class, 'index']);
+            Route::get    ('contador',       [NotificacionController::class, 'contador']);
+            Route::patch  ('leer-todas',     [NotificacionController::class, 'marcarTodasLeidas']);
+            Route::patch  ('{id}/leer',      [NotificacionController::class, 'marcarLeida']);
+            Route::delete ('/',              [NotificacionController::class, 'destroyTodas']);
+            Route::delete ('{id}',           [NotificacionController::class, 'destroy']);
         });
     });
 });

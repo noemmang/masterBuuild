@@ -18,6 +18,9 @@ use Illuminate\Notifications\Notification;
  *
  * Sin ShouldQueue, mismo motivo que en ComponenteAgotadoNotification: el
  * Job de Azure no tiene ningún queue:work corriendo detrás.
+ *
+ * También va por 'database': queda guardada para mostrarse en la
+ * campanita de notificaciones del header (ver NotificacionController).
  */
 class ComponenteDisponibleNotification extends Notification
 {
@@ -31,7 +34,7 @@ class ComponenteDisponibleNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -47,10 +50,34 @@ class ComponenteDisponibleNotification extends Notification
             ]);
     }
 
+    public function toDatabase(object $notifiable): array
+    {
+        $componente = $this->guardado->componente;
+        $tienda     = $this->mejorOferta->tienda->nombre ?? null;
+        $precio     = number_format((float) $this->mejorOferta->precio, 2, ',', '.');
+
+        $mensaje = "\"{$componente->nombre}\" ha vuelto a tener stock";
+        $mensaje .= $tienda ? " en {$tienda}" : '';
+        $mensaje .= " por {$precio} €.";
+
+        return [
+            'tipo'    => 'componente_disponible',
+            'titulo'  => 'Ya está disponible de nuevo',
+            'mensaje' => $mensaje,
+            'url'     => $this->rutaProducto($componente),
+            'imagen'  => $componente->imagen_url,
+        ];
+    }
+
     private function urlProducto($componente): string
     {
-        return rtrim(config('app.frontend_url'), '/')
-            . '/buscar?uuid=' . $componente->uuid
-            . '&categoria=' . $componente->categoria;
+        return rtrim(config('app.frontend_url'), '/') . $this->rutaProducto($componente);
+    }
+
+    // Ruta relativa dentro del frontend Angular (a diferencia de
+    // urlProducto(), que arma la URL absoluta para el correo).
+    private function rutaProducto($componente): string
+    {
+        return '/buscar?uuid=' . $componente->uuid . '&categoria=' . $componente->categoria;
     }
 }

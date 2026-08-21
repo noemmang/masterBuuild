@@ -21,6 +21,9 @@ use Illuminate\Notifications\Notification;
  * detrás para procesar la tabla jobs. Se envía en el momento, dentro del
  * mismo proceso — a este volumen (unos pocos correos por noche) no pasa
  * nada por que scrape:diario tarde un poco más en terminar.
+ *
+ * También va por 'database': queda guardada para mostrarse en la
+ * campanita de notificaciones del header (ver NotificacionController).
  */
 class ComponenteAgotadoNotification extends Notification
 {
@@ -32,7 +35,7 @@ class ComponenteAgotadoNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -45,5 +48,18 @@ class ComponenteAgotadoNotification extends Notification
                 'componente' => $componente,
                 'url'        => rtrim(config('app.frontend_url'), '/') . '/guardados',
             ]);
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        $componente = $this->guardado->componente;
+
+        return [
+            'tipo'    => 'componente_agotado',
+            'titulo'  => 'Ya no está disponible',
+            'mensaje' => "\"{$componente->nombre}\" se ha agotado o ha desaparecido de las tiendas que seguimos.",
+            'url'     => '/guardados',
+            'imagen'  => $componente->imagen_url,
+        ];
     }
 }

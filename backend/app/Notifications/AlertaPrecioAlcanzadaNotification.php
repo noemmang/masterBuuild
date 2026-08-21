@@ -19,6 +19,9 @@ use Illuminate\Notifications\Notification;
  *
  * Sin ShouldQueue, mismo motivo que en las otras dos notificaciones: el
  * Job de Azure no tiene ningún queue:work corriendo detrás.
+ *
+ * También va por 'database': queda guardada para mostrarse en la
+ * campanita de notificaciones del header (ver NotificacionController).
  */
 class AlertaPrecioAlcanzadaNotification extends Notification
 {
@@ -32,7 +35,7 @@ class AlertaPrecioAlcanzadaNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -49,10 +52,30 @@ class AlertaPrecioAlcanzadaNotification extends Notification
             ]);
     }
 
+    public function toDatabase(object $notifiable): array
+    {
+        $componente = $this->alerta->componente;
+        $precio     = number_format((float) $this->mejorPrecio->precio, 2, ',', '.');
+        $objetivo   = number_format((float) $this->alerta->precio_objetivo, 2, ',', '.');
+
+        return [
+            'tipo'    => 'alerta_precio',
+            'titulo'  => '¡Tu alerta de precio saltó!',
+            'mensaje' => "\"{$componente->nombre}\" ha bajado a {$precio} € (tu objetivo era {$objetivo} €).",
+            'url'     => $this->rutaProducto($componente),
+            'imagen'  => $componente->imagen_url,
+        ];
+    }
+
     private function urlProducto($componente): string
     {
-        return rtrim(config('app.frontend_url'), '/')
-            . '/buscar?uuid=' . $componente->uuid
-            . '&categoria=' . $componente->categoria;
+        return rtrim(config('app.frontend_url'), '/') . $this->rutaProducto($componente);
+    }
+
+    // Ruta relativa dentro del frontend Angular (a diferencia de
+    // urlProducto(), que arma la URL absoluta para el correo).
+    private function rutaProducto($componente): string
+    {
+        return '/buscar?uuid=' . $componente->uuid . '&categoria=' . $componente->categoria;
     }
 }

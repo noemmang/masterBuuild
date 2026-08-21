@@ -13,6 +13,9 @@ use Illuminate\Notifications\Notification;
  * app: se envía en el mismo request, y AuthController la envuelve en un
  * try/catch para que un fallo de Resend nunca tumbe el registro (la
  * cuenta ya se creó; el correo es un plus, no un requisito).
+ *
+ * También va por 'database': queda guardada para mostrarse en la
+ * campanita de notificaciones del header (ver NotificacionController).
  */
 class CuentaCreadaNotification extends Notification
 {
@@ -24,7 +27,7 @@ class CuentaCreadaNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -35,5 +38,16 @@ class CuentaCreadaNotification extends Notification
                 'nombre' => $this->user->name,
                 'url'    => rtrim(config('app.frontend_url'), '/'),
             ]);
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        return [
+            'tipo'    => 'cuenta_creada',
+            'titulo'  => '¡Bienvenido a MasterBuild!',
+            'mensaje' => 'Tu cuenta se ha creado correctamente. Ya puedes empezar a comparar y guardar componentes.',
+            'url'     => '/home',
+            'imagen'  => null,
+        ];
     }
 }

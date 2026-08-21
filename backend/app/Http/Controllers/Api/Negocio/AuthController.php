@@ -197,6 +197,12 @@ class AuthController extends Controller
             ]);
         }
 
+        // La tabla notifications es polimórfica y no tiene FK con
+        // borrado en cascada, así que hay que limpiarla a mano o
+        // quedarían filas huérfanas apuntando a un user_id que ya no
+        // existe.
+        $user->notifications()->delete();
+
         $user->tokens()->delete();
         $user->delete();
 

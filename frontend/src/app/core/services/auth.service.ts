@@ -1,8 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { NotificacionService } from './notificacion.service';
 
 export interface Usuario {
   uuid: string;
@@ -26,6 +27,7 @@ interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = environment.apiUrl;
+  private notificaciones = inject(NotificacionService);
   usuario = signal<Usuario | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {
@@ -99,6 +101,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     this.usuario.set(null);
+    this.notificaciones.limpiarEstado();
     this.router.navigate(['/auth/login']);
   }
 

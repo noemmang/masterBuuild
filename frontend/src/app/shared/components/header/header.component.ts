@@ -2,11 +2,12 @@ import { Component, ElementRef, HostListener, inject, OnInit, Renderer2, ViewChi
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationsComponent } from '../notifications/notifications.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterLink, RouterLinkActive, CommonModule, NotificationsComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

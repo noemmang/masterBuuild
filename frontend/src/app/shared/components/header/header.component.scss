@@ -21,20 +21,11 @@
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   font-size: 1.2rem;
   font-weight: 700;
   text-decoration: none;
   letter-spacing: -0.5px;
   flex-shrink: 0;
-
-  .logo-img {
-    height: 28px;
-    width: 28px;
-    object-fit: contain;
-  }
 
   .logo-master { color: var(--text); }
   .logo-build  { color: var(--accent); }
@@ -122,6 +113,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  // Por encima del panel de notificaciones (z-index: 150 en
+  // notifications.component.scss) por si en algún momento llegaran a
+  // coincidir ambos en pantalla.
+  z-index: 160;
 }
 
 .dropdown-user {

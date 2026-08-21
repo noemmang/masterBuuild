@@ -1,0 +1,138 @@
+<div class="notif-wrap" #notifWrap>
+
+  <!-- Botón campana -->
+  <button
+    class="btn-notif"
+    (click)="toggle()"
+    [title]="'Notificaciones'"
+    [attr.aria-expanded]="panelAbierto()"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+    @if (servicio.noLeidas() > 0) {
+      <span class="notif-badge">{{ servicio.noLeidas() > 9 ? '9+' : servicio.noLeidas() }}</span>
+    }
+  </button>
+
+  <!-- Panel lateral -->
+  @if (panelAbierto()) {
+    <div class="notif-panel">
+
+      <div class="notif-panel-header">
+        <h3>Notificaciones</h3>
+        <div class="notif-panel-actions">
+          @if (servicio.noLeidas() > 0) {
+            <button class="notif-link" (click)="marcarTodasLeidas()">Marcar todo como leído</button>
+          }
+          <button class="notif-close" (click)="cerrar()" title="Cerrar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      @if (servicio.notificaciones().length > 0) {
+        <div class="notif-toolbar">
+          <button class="notif-link" (click)="descartarTodas()">Descartar todo</button>
+        </div>
+      }
+
+      <div class="notif-list">
+
+        @if (servicio.cargando() && !servicio.cargado()) {
+          @for (s of [1,2,3,4]; track s) {
+            <div class="notif-skeleton">
+              <div class="sk-icon"></div>
+              <div class="sk-lines">
+                <div class="sk-line w70"></div>
+                <div class="sk-line w100"></div>
+                <div class="sk-line w40"></div>
+              </div>
+            </div>
+          }
+        } @else if (servicio.notificaciones().length === 0) {
+          <div class="notif-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              <path d="M3 3l18 18" stroke-width="1.5"/>
+            </svg>
+            <p>No tienes notificaciones</p>
+            <span>Aquí verás la bienvenida a tu cuenta y avisos de tus guardados: agotados, disponibles de nuevo o bajadas de precio.</span>
+          </div>
+        } @else {
+
+          @for (n of servicio.notificaciones(); track n.id) {
+            <div class="notif-item" [class.no-leida]="!n.leida" (click)="abrir(n)">
+
+              @if (n.imagen) {
+                <img [src]="n.imagen" alt="" class="notif-thumb" />
+              } @else {
+                <div class="notif-icon" [class]="'tipo-' + n.tipo" [ngSwitch]="n.tipo">
+
+                  <!-- Bienvenida / cuenta creada -->
+                  <svg *ngSwitchCase="'cuenta_creada'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+
+                  <!-- Componente agotado -->
+                  <svg *ngSwitchCase="'componente_agotado'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M6.5 6.5l11 11"/>
+                  </svg>
+
+                  <!-- Componente disponible de nuevo -->
+                  <svg *ngSwitchCase="'componente_disponible'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 8l-9-5-9 5 9 5 9-5z"/>
+                    <path d="M3 8v8l9 5 9-5V8"/>
+                    <path d="M12 13v8"/>
+                  </svg>
+
+                  <!-- Alerta de precio -->
+                  <svg *ngSwitchCase="'alerta_precio'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.59 13.41L11 3.83A2 2 0 0 0 9.59 3H4a1 1 0 0 0-1 1v5.59a2 2 0 0 0 .59 1.41l9.59 9.59a2 2 0 0 0 2.82 0l4.59-4.59a2 2 0 0 0 0-2.82z"/>
+                    <circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none"/>
+                  </svg>
+
+                  <!-- Fallback genérico -->
+                  <svg *ngSwitchDefault width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  </svg>
+
+                </div>
+              }
+
+              <div class="notif-body">
+                <p class="notif-titulo">{{ n.titulo }}</p>
+                <p class="notif-mensaje">{{ n.mensaje }}</p>
+                <span class="notif-tiempo">{{ tiempoRelativo(n.creada_en) }}</span>
+              </div>
+
+              @if (!n.leida) {
+                <span class="notif-dot" title="No leída"></span>
+              }
+
+              <button class="notif-dismiss" (click)="descartar($event, n.id)" title="Descartar">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+
+            </div>
+          }
+
+          @if (servicio.ultimaPagina() > servicio.pagina()) {
+            <button class="notif-cargar-mas" (click)="cargarMas()" [disabled]="cargandoMas()">
+              {{ cargandoMas() ? 'Cargando…' : 'Cargar más' }}
+            </button>
+          }
+
+        }
+      </div>
+    </div>
+  }
+
+</div>

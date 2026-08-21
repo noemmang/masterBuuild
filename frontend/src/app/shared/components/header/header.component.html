@@ -3,8 +3,7 @@
 
     <!-- Logo -->
     <a routerLink="/home" class="logo">
-      <img src="/masterbuild_logo.png" alt="MasterBuild" class="logo-img" />
-      <span class="logo-text"><span class="logo-master">Master</span><span class="logo-build">Build</span></span>
+      <span class="logo-master">Master</span><span class="logo-build">Build</span>
     </a>
 
     <!-- Nav central -->
@@ -33,6 +32,11 @@
           </svg>
         }
       </button>
+
+      <!-- Notificaciones (solo con sesión iniciada: son notificaciones del usuario) -->
+      @if (auth.usuario()) {
+        <app-notifications />
+      }
 
       @if (auth.usuario()) {
         <div class="user-menu-wrap" #userMenuWrap>

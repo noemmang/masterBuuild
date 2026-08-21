@@ -160,6 +160,34 @@ $panel-w:   300px;
 
 .precio-sep { color: var(--text-muted); font-size: 0.8rem; }
 
+// Filtro "ver agotados"
+.btn-agotados-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  svg { flex-shrink: 0; }
+
+  &:hover { color: var(--text); }
+
+  // Activo = el filtro está restringiendo (agotados ocultos)
+  &.activo {
+    background: color-mix(in srgb, var(--error) 12%, transparent);
+    color: var(--error);
+  }
+}
+
 .orden-select {
   padding: 0.5rem 0.75rem;
   border: none;

@@ -609,6 +609,13 @@ $topbar-h:  52px;
     box-shadow: 0 0 0 2px var(--accent);
     .cfg-card-img { background: color-mix(in srgb, var(--accent) 5%, var(--bg)); }
   }
+
+  // Ninguna tienda tiene stock ahora mismo: se sigue viendo (con el
+  // último precio conocido) pero atenuado, igual que en el buscador.
+  &.agotado {
+    .cfg-card-img img { filter: grayscale(0.6); opacity: 0.7; }
+    .cfg-card-precio, .cfg-card-nombre { color: var(--text-muted); }
+  }
 }
 
 .cfg-card-img {
@@ -651,6 +658,26 @@ $topbar-h:  52px;
   flex-direction: column;
   align-items: flex-start;
   gap: 3px;
+}
+
+// Derecha: agotado
+.card-icons-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.badge-agotado {
+  background: var(--error);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  pointer-events: none;
 }
 
 // Badge base (igual que search)

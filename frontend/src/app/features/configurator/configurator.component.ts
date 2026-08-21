@@ -124,6 +124,8 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   ordenActivo    = '';
   precioMin: number | null = null;
   precioMax: number | null = null;
+  /** Filtro "ver agotados": por defecto se incluyen (con su último precio conocido) */
+  mostrarAgotados = signal(true);
   private busqueda$ = new Subject<string>();
 
   filtrosCompat   = signal<FiltrosCompat>({});
@@ -432,9 +434,10 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
     const baseParams = (): Record<string, any> => {
       const p: Record<string, any> = {
-        q:     this.busqueda,
-        page:  pagina,
-        orden: this.ordenActivo,
+        q:                this.busqueda,
+        page:             pagina,
+        orden:            this.ordenActivo,
+        mostrar_agotados: this.mostrarAgotados(),
       };
       if (this.precioMin) p['precio_min'] = this.precioMin;
       if (this.precioMax) p['precio_max'] = this.precioMax;
@@ -551,6 +554,11 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
   toggleSoloCompatibles() {
     this.soloCompatibles.update(v => !v);
+    this.cargarSlot(this.slotActivo());
+  }
+
+  toggleMostrarAgotados() {
+    this.mostrarAgotados.update(v => !v);
     this.cargarSlot(this.slotActivo());
   }
 

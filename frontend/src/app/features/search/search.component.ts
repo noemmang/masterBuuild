@@ -160,6 +160,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   ordenActivo     = '';
   precioMin: number | null = null;
   precioMax: number | null = null;
+  /** Filtro "ver agotados": por defecto se incluyen (con su último precio conocido) */
+  mostrarAgotados = true;
 
   filtrosActivos    = signal<Map<string, Set<number | string>>>(new Map());
   filtrosExpandidos = signal<Set<string>>(new Set());
@@ -353,12 +355,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (!acumular) this.componenteSeleccionado.set(null);
 
     const params = {
-      categoria:  this.categoriaActiva(),
-      q:          this.busqueda,
-      page:       this.paginaActual(),
-      orden:      this.ordenActivo,
-      precio_min: this.precioMin ?? undefined,
-      precio_max: this.precioMax ?? undefined,
+      categoria:        this.categoriaActiva(),
+      q:                this.busqueda,
+      page:             this.paginaActual(),
+      orden:            this.ordenActivo,
+      precio_min:       this.precioMin ?? undefined,
+      precio_max:       this.precioMax ?? undefined,
+      mostrar_agotados: this.mostrarAgotados,
       ...this.buildFiltrosEspecificos(),
     };
 
@@ -393,10 +396,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         }
         this.busqueda = comp.nombre;
         this.paginaActual.set(1);
+        // Forzamos mostrar_agotados=true aquí: venimos de un enlace directo
+        // (p. ej. desde Guardados) y el componente destino puede estar
+        // agotado aunque el filtro de la vista esté puesto en "solo disponibles".
         this.componenteService.buscar({
-          categoria: comp.categoria,
-          q:         comp.nombre,
-          page:      1,
+          categoria:        comp.categoria,
+          q:                comp.nombre,
+          page:             1,
+          mostrar_agotados: true,
         }).subscribe({
           next: (res) => {
             this.componentes.set(res.data);
@@ -425,6 +432,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   onBusqueda()     { this.busqueda$.next(this.busqueda); }
   onFiltroChange() { this.resetYCargar(); }
+
+  toggleMostrarAgotados(): void {
+    this.mostrarAgotados = !this.mostrarAgotados;
+    this.onFiltroChange();
+  }
 
   seleccionarPrecio(precio: any): void {
     if (this.precioSeleccionado()?.uuid === precio.uuid) {

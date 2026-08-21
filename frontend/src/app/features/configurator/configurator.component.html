@@ -159,7 +159,18 @@
         }
       </select>
 
-
+      <!-- Toggle ver agotados -->
+      <button
+        class="btn-compat-filter"
+        [class.activo]="!mostrarAgotados()"
+        (click)="toggleMostrarAgotados()"
+        [title]="mostrarAgotados() ? 'Ocultar componentes agotados' : 'Mostrar componentes agotados'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        @if (mostrarAgotados()) { Ocultar agotados } @else { Mostrar agotados }
+      </button>
 
       <!-- Toggle solo compatibles -->
       @if (numSeleccionados > 0) {
@@ -204,6 +215,7 @@
               <div
                 class="cfg-card"
                 [class.selected]="yaSeleccionado(comp.uuid)"
+                [class.agotado]="comp.num_tiendas > 0 && !comp.en_stock"
                 (click)="seleccionarComponente(comp)">
 
               <div class="cfg-card-img">
@@ -235,7 +247,14 @@
                       </span>
                     }
                   </div>
+                  <!-- Derecha: agotado -->
+                  <div class="card-icons-right">
+                    @if (comp.num_tiendas > 0 && !comp.en_stock) {
+                      <span class="badge-agotado">Agotado</span>
+                    }
+                  </div>
                 </div>
+
 
                 @if (esApilable(slotActivo()) && cantidadEnSlot(comp.uuid) > 0) {
                   <div class="card-qty-badge">×{{ cantidadEnSlot(comp.uuid) }}</div>

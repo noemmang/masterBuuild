@@ -44,6 +44,17 @@
         <span class="precio-sep">—</span>
         <input type="number" [(ngModel)]="precioMax" (change)="onFiltroChange()" placeholder="Max €" class="precio-input" />
       </div>
+      <button
+        class="btn-agotados-filter"
+        [class.activo]="!mostrarAgotados"
+        (click)="toggleMostrarAgotados()"
+        [title]="mostrarAgotados ? 'Ocultar componentes agotados' : 'Mostrar componentes agotados'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        @if (mostrarAgotados) { Ocultar agotados } @else { Mostrar agotados }
+      </button>
       <select [(ngModel)]="ordenActivo" (change)="onFiltroChange()" class="orden-select">
         @for (o of ordenes; track o.value) {
           <option [value]="o.value">{{ o.label }}</option>

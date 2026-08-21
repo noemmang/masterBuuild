@@ -136,6 +136,9 @@ export interface BuscarParams {
   precio_min?: number | null;
   precio_max?: number | null;
 
+  /** Si es false, se ocultan los componentes agotados (solo tiendas con stock). Por defecto se incluyen. */
+  mostrar_agotados?: boolean;
+
   // ── Filtros de compatibilidad ─────────────────────
   socket_id?: number;
   tipo_memoria_id?: number;
@@ -176,6 +179,7 @@ export class ComponenteService {
     set('ordenar',                   params.orden);
     set('precio_min',                params.precio_min);
     set('precio_max',                params.precio_max);
+    set('mostrar_agotados',          params.mostrar_agotados);
 
     // Compat
     set('socket_id',                 params.socket_id);

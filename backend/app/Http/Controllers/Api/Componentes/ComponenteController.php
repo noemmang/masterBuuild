@@ -163,6 +163,19 @@ class ComponenteController extends Controller
             );
         }
 
+        // Placa base: su factor de forma debe estar entre los que admite el
+        // gabinete elegido (csv de ids: un gabinete grande admite varios,
+        // ej. "1,2,3" = ATX, Micro-ATX, Mini-ITX). Antes solo existía el
+        // filtro inverso (arriba): elegir una placa filtraba los gabinetes,
+        // pero elegir un gabinete no filtraba las placas — por eso un
+        // gabinete Mini-ITX-only seguía enseñando placas ATX/Micro-ATX.
+        if ($request->filled('factores_forma_permitidos')) {
+            $factorFormaIds = array_map('intval', explode(',', $request->factores_forma_permitidos));
+            $query->whereHas('placaBase', fn($q) =>
+                $q->whereIn('factor_forma_id', $factorFormaIds)
+            );
+        }
+
         // PSU: potencia mínima requerida por la GPU
         if ($request->filled('potencia_min')) {
             $query->whereHas('psu', fn($q) =>

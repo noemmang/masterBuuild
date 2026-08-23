@@ -26,6 +26,30 @@ class ConfiguracionController extends Controller
         return response()->json($configuraciones);
     }
 
+    // Obtener una configuración concreta por uuid (para restaurarla en el
+    // configurador sin tener que pedir el listado completo del usuario).
+    //
+    // Este método se había "perdido" de este archivo: un cambio anterior lo
+    // dejó pegado por error dentro de Api\Configurador\ConfiguradorController
+    // (con el namespace y el nombre de clase de ESTE archivo todavía puestos),
+    // así que GET /v1/configuraciones/{uuid} devolvía "Method does not exist".
+    public function show(Request $request, string $uuid)
+    {
+        $c = ConfiguracionGuardada::where('uuid', $uuid)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        return response()->json([
+            'uuid'       => $c->uuid,
+            'nombre'     => $c->nombre,
+            'notas'      => $c->notas,
+            'total'      => $c->total,
+            'compatible' => $c->compatible,
+            'creada_en'  => $c->created_at->format('d/m/Y'),
+            'slots'      => $c->slots,
+        ]);
+    }
+
     // Guardar una configuración nueva
     public function store(Request $request)
     {

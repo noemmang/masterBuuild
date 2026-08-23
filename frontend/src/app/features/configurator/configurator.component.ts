@@ -54,6 +54,9 @@ interface FiltrosCompat {
   socket_id?:               number;
   tipo_memoria_id?:         number;
   factor_forma_soportado_id?: number;
+  /** CSV de ids de factor de forma que admite el gabinete elegido: filtra
+   *  la lista de placas base (dirección gabinete -> placa). */
+  factores_forma_permitidos?: string;
   longitud_max_mm?:         number;
   longitud_gpu_min_mm?:     number;
   potencia_min?:            number;
@@ -129,11 +132,15 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   private busqueda$ = new Subject<string>();
 
   filtrosCompat   = signal<FiltrosCompat>({});
-  soloCompatibles = signal(true);
+  // Antes era un toggle "Todos / Compatibles": ahora la lista siempre se
+  // filtra a lo compatible con lo ya elegido, sin opción de desactivarlo.
 
   compatibilidad = signal<Compatibilidad | null>(null);
   panelAbierto   = signal(false);
   cargandoCompat = signal(false);
+  /** true si la última llamada a /configurador/validar falló (red, 500...). Antes este caso
+   *  se tragaba en silencio y el panel se quedaba vacío sin ningún aviso. */
+  compatError    = signal(false);
 
   // ── Restauración de configuración guardada ────────────────────
   restaurando = signal(false);
@@ -449,10 +456,8 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       const paramsAire    = { ...baseParams(), categoria: 'refrigeracion_aire' };
       const paramsLiquida = { ...baseParams(), categoria: 'refrigeracion_liquida' };
 
-      if (this.soloCompatibles()) {
-        this.aplicarFiltrosCompatParaSlot('refrigeracion_aire',    this.filtrosCompat(), paramsAire);
-        this.aplicarFiltrosCompatParaSlot('refrigeracion_liquida', this.filtrosCompat(), paramsLiquida);
-      }
+      this.aplicarFiltrosCompatParaSlot('refrigeracion_aire',    this.filtrosCompat(), paramsAire);
+      this.aplicarFiltrosCompatParaSlot('refrigeracion_liquida', this.filtrosCompat(), paramsLiquida);
 
       forkJoin([
         this.componenteService.buscarConFiltros(paramsAire),
@@ -474,9 +479,7 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     }
 
     const params = { ...baseParams(), categoria: slot.categoria };
-    if (this.soloCompatibles()) {
-      this.aplicarFiltrosCompatParaSlot(slot.id, this.filtrosCompat(), params);
-    }
+    this.aplicarFiltrosCompatParaSlot(slot.id, this.filtrosCompat(), params);
 
     this.componenteService.buscarConFiltros(params).subscribe({
       next: (res) => {
@@ -523,6 +526,7 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       case 'placa_base':
         if (fc.socket_id)       params['socket_id']       = fc.socket_id;
         if (fc.tipo_memoria_id) params['tipo_memoria_id'] = fc.tipo_memoria_id;
+        if (fc.factores_forma_permitidos) params['factores_forma_permitidos'] = fc.factores_forma_permitidos;
         break;
       case 'ram':
         if (fc.tipo_memoria_id) params['tipo_memoria_id'] = fc.tipo_memoria_id;
@@ -551,11 +555,6 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
   onFiltroChange() { this.cargarSlot(this.slotActivo()); }
   onBusqueda()     { this.busqueda$.next(this.busqueda); }
-
-  toggleSoloCompatibles() {
-    this.soloCompatibles.update(v => !v);
-    this.cargarSlot(this.slotActivo());
-  }
 
   toggleMostrarAgotados() {
     this.mostrarAgotados.update(v => !v);
@@ -683,12 +682,17 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       if (Array.isArray(gab.soporte_radiadores) && gab.soporte_radiadores.length) {
         fc.radiador_mm = gab.soporte_radiadores.join(',');
       }
+      // Qué placas caben en este gabinete (dirección que antes no existía:
+      // solo se filtraban los gabinetes según la placa, nunca al revés).
+      if (Array.isArray(gab.factores_forma) && gab.factores_forma.length) {
+        fc.factores_forma_permitidos = gab.factores_forma.map((f: any) => f.id).join(',');
+      }
     }
 
     const prevJson = JSON.stringify(this.filtrosCompat());
     this.filtrosCompat.set(fc);
 
-    if (this.soloCompatibles() && JSON.stringify(fc) !== prevJson) {
+    if (JSON.stringify(fc) !== prevJson) {
       this.cargarSlot(this.slotActivo());
     }
   }
@@ -701,7 +705,11 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       if (s.entradas.length > 0) slotMap[s.id] = s.entradas[0].componente.uuid;
     });
 
-    if (Object.keys(slotMap).length === 0) { this.compatibilidad.set(null); return; }
+    if (Object.keys(slotMap).length === 0) {
+      this.compatibilidad.set(null);
+      this.compatError.set(false);
+      return;
+    }
 
     // Inferir tipo de refrigeración desde la categoría real del componente seleccionado
     const compRefrig = this.slots.find(s => s.id === 'refrigeracion')?.componente;
@@ -719,9 +727,20 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     };
 
     this.cargandoCompat.set(true);
+    this.compatError.set(false);
     this.http.post<Compatibilidad>(`${environment.apiUrl}/configurador/validar`, payload).subscribe({
-      next: (res) => { this.compatibilidad.set(res); this.cargandoCompat.set(false); },
-      error: ()    => this.cargandoCompat.set(false),
+      next: (res) => {
+        this.compatibilidad.set(res);
+        this.compatError.set(false);
+        this.cargandoCompat.set(false);
+      },
+      // Antes este caso apagaba el spinner y no hacía nada más: el panel se quedaba
+      // vacío sin explicación y era indistinguible de "todavía no hay nada que validar".
+      // Ahora se marca el error para que la plantilla pueda avisar y ofrecer reintentar.
+      error: () => {
+        this.compatError.set(true);
+        this.cargandoCompat.set(false);
+      },
     });
   }
 

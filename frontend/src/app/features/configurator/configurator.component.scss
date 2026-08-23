@@ -460,6 +460,9 @@ $topbar-h:  52px;
   }
 }
 
+// Estilo compartido por los toggles de la barra de filtros: "Mostrar
+// agotados" y (antes) el toggle "Todos/Compatibles" que se eliminó. Ojo si
+// se vuelve a tocar: este bloque lo sigue usando el botón de agotados.
 .btn-compat-filter {
   display: flex;
   align-items: center;
@@ -502,6 +505,13 @@ $topbar-h:  52px;
 
   &:hover { background: var(--surface2); color: var(--text); }
   &.tiene-errores { color: var(--error); background: rgba(187,34,34,0.1); }
+  // Antes solo se distinguía "hay errores"; con advertencias reales llegando
+  // del backend, el icono también debe avisar aunque no haya nada bloqueante.
+  &.tiene-advertencias { color: var(--orange); background: rgba(255,107,43,0.1); }
+  // Fallo al llamar a /configurador/validar (red, servidor...): se marca igual
+  // que una advertencia para no inventar un tercer color, pero es un estado
+  // distinto (no sabemos si compatibiliza o no, solo que no se pudo comprobar).
+  &.tiene-error-carga { color: var(--orange); background: rgba(255,107,43,0.1); }
 }
 
 .compat-dot {
@@ -512,6 +522,8 @@ $topbar-h:  52px;
   height: 7px;
   border-radius: 50%;
   background: var(--error);
+
+  &.advert { background: var(--orange); }
 }
 
 // Filtros precio + orden
@@ -837,6 +849,32 @@ $topbar-h:  52px;
 }
 
 .consumo-val { font-size: 0.78rem; color: var(--text-muted); }
+
+// Estado "no se pudo comprobar la compatibilidad" (antes fallaba en
+// silencio y el panel se quedaba igual que si no hubiera nada seleccionado).
+.compat-error-state {
+  margin: 1rem 1.25rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: rgba(255,107,43,0.08);
+  text-align: center;
+
+  p { font-size: 0.82rem; color: var(--text); margin-bottom: 0.75rem; }
+}
+
+.btn-reintentar {
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  background: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255,107,43,0.1); }
+}
 
 // ── PANEL PRECIOS ────────────────────────────────────────────────
 .precio-panel {

@@ -65,6 +65,10 @@ export interface ComponenteDetalle extends Componente {
     ancho_mm: number; alto_mm: number; profundidad_mm: number;
     longitud_gpu_max_mm: number; altura_cooler_max_mm: number;
     tipo_gabinete: { nombre: string }; estructura: { nombre: string };
+    /** Factores de forma de placa que admite este gabinete (belongsToMany).
+     *  Sin esto no había forma de calcular qué placas mostrar al elegir un
+     *  gabinete concreto: el filtro solo funcionaba en sentido placa→gabinete. */
+    factores_forma?: { id: number; nombre: string }[];
   };
 }
 
@@ -145,6 +149,8 @@ export interface BuscarParams {
   longitud_max_mm?: number;
   longitud_gpu_min_mm?: number;
   factor_forma_soportado_id?: number;
+  /** CSV de ids de factor de forma que admite el gabinete elegido (ej. "1,2,3") */
+  factores_forma_permitidos?: string;
   potencia_min?: number;
   tdp_min?: number;
   altura_max_mm?: number;
@@ -187,6 +193,7 @@ export class ComponenteService {
     set('longitud_max_mm',           params.longitud_max_mm);
     set('longitud_gpu_min_mm',       params.longitud_gpu_min_mm);
     set('factor_forma_soportado_id', params.factor_forma_soportado_id);
+    set('factores_forma_permitidos', params.factores_forma_permitidos);
     set('potencia_min',              params.potencia_min);
     set('tdp_min',                   params.tdp_min);
     set('altura_max_mm',             params.altura_max_mm);

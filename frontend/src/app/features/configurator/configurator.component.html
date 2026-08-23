@@ -172,30 +172,26 @@
         @if (mostrarAgotados()) { Ocultar agotados } @else { Mostrar agotados }
       </button>
 
-      <!-- Toggle solo compatibles -->
-      @if (numSeleccionados > 0) {
-        <button
-          class="btn-compat-filter"
-          [class.activo]="soloCompatibles()"
-          (click)="toggleSoloCompatibles()"
-          title="Filtrar solo compatibles">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 3H2l8 9.46V19l4 2v-8.54z"/>
-          </svg>
-          @if (soloCompatibles()) { Compatibles } @else { Todos }
-        </button>
-      }
-
       @if (!cargando()) {
         <span class="cfg-resultados">{{ totalResultados() }} resultados</span>
       }
 
       <!-- Botón panel compatibilidad -->
-      <button class="btn-compat-icon" (click)="togglePanel()" [class.tiene-errores]="numErrores() > 0">
+      <button class="btn-compat-icon"
+        (click)="togglePanel()"
+        [class.tiene-errores]="numErrores() > 0"
+        [class.tiene-advertencias]="numErrores() === 0 && numAdvert() > 0"
+        [class.tiene-error-carga]="compatError()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 0 0 1.946-.806 3.42 3.42 0 0 1 4.438 0 3.42 3.42 0 0 0 1.946.806 3.42 3.42 0 0 1 3.138 3.138 3.42 3.42 0 0 0 .806 1.946 3.42 3.42 0 0 1 0 4.438 3.42 3.42 0 0 0-.806 1.946 3.42 3.42 0 0 1-3.138 3.138 3.42 3.42 0 0 0-1.946.806 3.42 3.42 0 0 1-4.438 0 3.42 3.42 0 0 0-1.946-.806 3.42 3.42 0 0 1-3.138-3.138 3.42 3.42 0 0 0-.806-1.946 3.42 3.42 0 0 1 0-4.438 3.42 3.42 0 0 0 .806-1.946 3.42 3.42 0 0 1 3.138-3.138z"/>
         </svg>
-        @if (numErrores() > 0) { <span class="compat-dot"></span> }
+        @if (numErrores() > 0) {
+          <span class="compat-dot"></span>
+        } @else if (numAdvert() > 0) {
+          <span class="compat-dot advert"></span>
+        } @else if (compatError()) {
+          <span class="compat-dot advert"></span>
+        }
       </button>
     </div>
 
@@ -312,13 +308,22 @@
         </button>
       </div>
 
-      @if (!compatibilidad()) {
+      @if (compatError()) {
+        <div class="compat-error-state">
+          <p>No se ha podido comprobar la compatibilidad ahora mismo.</p>
+          <button class="btn-reintentar" (click)="validarCompatibilidad()">Reintentar</button>
+        </div>
+      } @else if (!compatibilidad()) {
         <p class="panel-empty">Añade componentes para ver la compatibilidad</p>
       } @else {
         <p class="compat-resumen">
           @if (numErrores() > 0)  { <span class="dot rojo"></span>&nbsp;{{ numErrores() }} error&nbsp;·&nbsp; }
           @if (numAdvert() > 0)   { <span class="dot naranja"></span>&nbsp;{{ numAdvert() }} advert.&nbsp;·&nbsp; }
-          <span class="dot verde"></span>&nbsp;{{ compatibilidad()!.notas.length }} OK
+          @if (numErrores() === 0 && numAdvert() === 0) {
+            <span class="dot verde"></span>&nbsp;Todo compatible
+          } @else if (compatibilidad()!.notas.length > 0) {
+            <span class="dot gris"></span>&nbsp;{{ compatibilidad()!.notas.length }} info
+          }
         </p>
         <div class="compat-lista">
           @for (e of compatibilidad()!.errores; track e.tipo) {

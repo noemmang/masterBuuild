@@ -17,6 +17,79 @@ export interface Componente {
   bajada_precio: boolean;
   en_stock: boolean;
   descripcion?: string | null;
+  /** Specs resumidas de la categoría (ver ComponenteListadoResource en el
+   *  backend). Antes el listado no traía ninguna especificación técnica:
+   *  una tarjeta de gabinete no dejaba ver si era ITX o ATX sin abrir su
+   *  ficha aparte, y esto es justo lo que hacía falta para poder mostrar
+   *  ese dato directamente en la rejilla de resultados. */
+  specs?: EspecsListado | null;
+}
+
+/** Una unión discriminada sería más precisa (una por "categoria"), pero
+ *  aquí basta con lo que de verdad se lee en las tarjetas — todos los
+ *  campos son opcionales porque cada categoría solo rellena los suyos. */
+export interface EspecsListado {
+  // cpu
+  socket?: string | null;
+  arquitectura?: string | null;
+  tipo_memoria?: string | null;
+  nucleos?: number;
+  hilos?: number;
+  frecuencia_base_ghz?: number;
+  frecuencia_boost_ghz?: number | null;
+  tdp_watts?: number;
+  grafica_integrada?: boolean;
+  // gpu
+  vram_gb?: number;
+  tipo_vram?: string | null;
+  version_pcie?: string | null;
+  longitud_mm?: number;
+  psu_minima_watts?: number;
+  ray_tracing?: boolean;
+  // ram
+  capacidad_total_gb?: number;
+  modulos?: number;
+  velocidad_mhz?: number;
+  latencia_cas?: string;
+  tiene_rgb?: boolean;
+  // placa_base
+  chipset?: string | null;
+  factor_forma?: string | null;
+  factor_forma_id?: number;
+  slots_memoria?: number;
+  slots_m2?: number;
+  wifi?: boolean;
+  // almacenamiento
+  tipo?: string;
+  interfaz?: string | null;
+  capacidad_gb?: number;
+  velocidad_lectura_mbs?: number | null;
+  // psu
+  vatios?: number;
+  certificacion?: string | null;
+  tipo_psu?: string | null;
+  tipo_psu_id?: number;
+  modular?: string;
+  largo_mm?: number | null;
+  // gabinete
+  tipo_gabinete?: string | null;
+  estructura?: string | null;
+  factores_forma?: string[];
+  tipos_psu?: string[];
+  longitud_gpu_max_mm?: number | null;
+  altura_cooler_max_mm?: number | null;
+  largo_psu_max_mm?: number | null;
+  soporte_radiadores?: number[] | null;
+  ancho_mm?: number;
+  alto_mm?: number;
+  profundidad_mm?: number;
+  // refrigeracion_aire / refrigeracion_liquida
+  tipo_refrigeracion?: string | null;
+  altura_mm?: number | null;
+  tam_radiador_mm?: number;
+  sockets_compatibles?: string[];
+  // ventilador
+  tam_mm?: number | null;
 }
 
 export interface PaginatedResponse {
@@ -26,50 +99,126 @@ export interface PaginatedResponse {
   total: number;
 }
 
-export interface ComponenteDetalle extends Componente {
+/**
+ * Forma de la respuesta de GET /componentes/{uuid}, espejo exacto de
+ * ComponenteDetalleResource en el backend. Los nombres de campo de aquí
+ * abajo importan de verdad: antes esta interfaz tenía nombres inventados
+ * (frecuencia_base_mhz, tdp_w, kit_modulos, perfil_xmp, tiene_wifi...)
+ * que NUNCA coincidieron con lo que el backend mandaba en realidad
+ * (frecuencia_base_ghz, tdp_watts, modulos, xmp, wifi...). TypeScript no
+ * pilla ese desfase porque la respuesta HTTP llega como `any`: cada
+ * lectura de esos campos devolvía `undefined` en silencio y ninguna
+ * comprobación de tipos lo avisaba. spec-compare.component.ts es el que
+ * más sufría esto — ver su cabecera para más detalle.
+ */
+export interface ComponenteDetalle {
+  uuid: string;
+  nombre: string;
+  categoria: string;
+  modelo: string | null;
+  imagen_url: string | null;
   descripcion: string | null;
-  cpu?: {
-    nucleos: number; hilos: number;
-    frecuencia_base_mhz: number; frecuencia_boost_mhz: number;
-    velocidad_memoria_max_mhz: number; canales_memoria: number;
-    tdp_w: number; litografia_nm: number; graficos_integrados: boolean;
-    socket: { nombre: string }; arquitectura: { nombre: string }; tipo_memoria: { nombre: string };
-  };
-  gpu?: {
-    vram_gb: number; bus_bits: number;
-    frecuencia_base_mhz: number; frecuencia_boost_mhz: number;
-    tdp_w: number; longitud_mm: number; slots_pcie: number; conectores_alimentacion: string;
-    arquitectura: { nombre: string }; tipo_vram: { nombre: string }; version_pcie: { nombre: string };
-  };
-  ram?: {
-    capacidad_gb: number; frecuencia_mhz: number; latencia_cl: number;
-    voltaje: number; kit_modulos: number; perfil_xmp: boolean; perfil_expo: boolean;
-    tipo_memoria: { nombre: string };
-  };
-  placa_base?: {
-    slots_ram: number; velocidad_ram_max_mhz: number; slots_m2: number;
-    puertos_sata: number; slots_pcie_x16: number; tiene_wifi: boolean; tiene_bluetooth: boolean;
-    socket: { nombre: string }; chipset: { nombre: string }; factor_forma: { nombre: string };
-    tipo_memoria: { nombre: string }; version_pcie: { nombre: string };
-  };
-  almacenamiento?: {
-    capacidad_gb: number; velocidad_lectura_mbs: number; velocidad_escritura_mbs: number;
-    interfaz: { nombre: string }; factor_forma: { nombre: string }; tipo_nand: { nombre: string };
-  };
-  psu?: {
-    potencia_w: number; modular: 'no' | 'semi' | 'full';
-    conector_atx: boolean; tiene_conector_12vhpwr: boolean;
-    certificacion: { nombre: string }; tipo_psu: { nombre: string };
-  };
-  gabinete?: {
-    ancho_mm: number; alto_mm: number; profundidad_mm: number;
-    longitud_gpu_max_mm: number; altura_cooler_max_mm: number;
-    tipo_gabinete: { nombre: string }; estructura: { nombre: string };
-    /** Factores de forma de placa que admite este gabinete (belongsToMany).
-     *  Sin esto no había forma de calcular qué placas mostrar al elegir un
-     *  gabinete concreto: el filtro solo funcionaba en sentido placa→gabinete. */
-    factores_forma?: { id: number; nombre: string }[];
-  };
+  marca: { nombre: string } | null;
+  fabricante: { nombre: string } | null;
+  precios: EntradaPrecioDetalle[];
+  precio_min: number | null;
+  specs: SpecsCpu | SpecsGpu | SpecsRam | SpecsPlacaBase | SpecsAlmacenamiento
+       | SpecsPsu | SpecsGabinete | SpecsRefrigeracionAire | SpecsRefrigeracionLiquida
+       | SpecsVentilador | null;
+}
+
+export interface EntradaPrecioDetalle {
+  tienda: string | null;
+  precio: number;
+  moneda: string;
+  url: string | null;
+  en_stock: boolean;
+  vigente_desde: string | null;
+}
+
+export interface SpecsCpu {
+  socket: string | null; arquitectura: string | null; tipo_memoria: string | null;
+  nucleos: number; hilos: number;
+  frecuencia_base_ghz: number; frecuencia_boost_ghz: number | null;
+  tdp_watts: number; tdp_max_watts: number | null;
+  frecuencia_memoria_max_mhz: number; memoria_max_gb: number;
+  grafica_integrada: boolean; nombre_grafica_integrada: string | null;
+  proceso_nm: number | null; incluye_cooler: boolean; overclock: boolean;
+}
+
+export interface SpecsGpu {
+  arquitectura: string | null; tipo_vram: string | null; version_pcie: string | null;
+  vram_gb: number; bus_bits: number;
+  frecuencia_base_mhz: number; frecuencia_boost_mhz: number | null;
+  tdp_watts: number; slots_pcie: number; longitud_mm: number;
+  conectores_alimentacion: string[] | null; psu_minima_watts: number;
+  salidas_video: string[] | null; ray_tracing: boolean; dlss: boolean; fsr: boolean;
+}
+
+export interface SpecsRam {
+  tipo_memoria: string | null; capacidad_gb: number; modulos: number; capacidad_total_gb: number;
+  velocidad_mhz: number; latencia_cas: string; voltaje: number; factor_forma: string;
+  altura_mm: number | null; tiene_rgb: boolean; ecc: boolean; xmp: boolean; expo: boolean;
+}
+
+export interface SpecsPlacaBase {
+  socket: string | null; chipset: string | null; factor_forma: string | null; factor_forma_id: number;
+  tipo_memoria: string | null; version_pcie: string | null;
+  slots_memoria: number; memoria_max_gb: number; frecuencia_memoria_max_mhz: number;
+  slots_pcie_x16: number; slots_pcie_x4: number; slots_pcie_x1: number; slots_m2: number;
+  puertos_sata: number; puertos_usb_traseros: string[] | null;
+  conector_atx: string; conector_cpu: string;
+  wifi: boolean; bluetooth: boolean; thunderbolt: boolean;
+  audio_chipset: string | null; lan_chipset: string | null; lan_velocidad_gbps: number;
+}
+
+export interface SpecsAlmacenamiento {
+  tipo: string; interfaz: string | null; factor_forma: string | null; tipo_nand: string | null;
+  capacidad_gb: number; velocidad_lectura_mbs: number | null; velocidad_escritura_mbs: number | null;
+  rpm: number | null; cache_mb: number | null; tbw: number | null; cifrado: boolean; dram: boolean;
+}
+
+export interface SpecsPsu {
+  certificacion: string | null; tipo_psu: string | null; tipo_psu_id: number; vatios: number;
+  modular: string; version_atx: string | null;
+  conectores_pcie_16pin: number; conectores_pcie_8pin: number;
+  conectores_sata: number; conectores_molex: number;
+  largo_mm: number | null; ventilador_mm: number | null; ventilador_zero_rpm: boolean;
+}
+
+export interface SpecsGabinete {
+  tipo_gabinete: string | null; estructura: string | null;
+  factores_forma: string[]; tipos_psu: string[];
+  longitud_gpu_max_mm: number | null; altura_cooler_max_mm: number | null; largo_psu_max_mm: number | null;
+  bahias_35: number | null; bahias_25: number | null;
+  ventiladores_frontales: number | null; ventiladores_traseros: number | null; ventiladores_superiores: number | null;
+  ventiladores_incluidos: number | null;
+  tam_ventilador_frontal_mm: number | null; tam_ventilador_superior_mm: number | null; tam_ventilador_trasero_mm: number | null;
+  soporte_radiadores: number[] | null; puertos_usb_frontales: string[] | null;
+  montaje_vertical_pcie: boolean; panel_frontal: string | null;
+  ancho_mm: number; alto_mm: number; profundidad_mm: number;
+}
+
+export interface SpecsRefrigeracionAire {
+  tipo_refrigeracion: string | null; sockets_compatibles: string[];
+  tdp_max_watts: number; altura_mm: number | null;
+  rpm_min: number | null; rpm_max: number | null; ruido_db_min: number | null; ruido_db_max: number | null;
+  num_ventiladores: number | null; tam_ventilador_mm: number | null; tiene_rgb: boolean;
+}
+
+export interface SpecsRefrigeracionLiquida {
+  tipo_refrigeracion: string | null; sockets_compatibles: string[];
+  tdp_max_watts: number; tam_radiador_mm: number;
+  ancho_radiador_mm: number | null; alto_radiador_mm: number | null; grosor_radiador_mm: number | null;
+  num_ventiladores: number; tam_ventilador_mm: number;
+  pantalla_cabezal: boolean; flujo_personalizable: boolean; incluye_pasta_termica: boolean; tiene_rgb: boolean;
+}
+
+export interface SpecsVentilador {
+  tipo: string | null; rpm_min: number | null; rpm_max: number | null;
+  ruido_db_min: number | null; ruido_db_max: number | null;
+  flujo_aire_cfm: number | null; static_pressure_mmh2o: number | null;
+  num_ventiladores: number; tiene_rgb: boolean; pwm: boolean; tam_mm: number | null;
 }
 
 export interface EntradaPrecio {
@@ -143,18 +292,25 @@ export interface BuscarParams {
   /** Si es false, se ocultan los componentes agotados (solo tiendas con stock). Por defecto se incluyen. */
   mostrar_agotados?: boolean;
 
-  // ── Filtros de compatibilidad ─────────────────────
-  socket_id?: number;
-  tipo_memoria_id?: number;
-  longitud_max_mm?: number;
-  longitud_gpu_min_mm?: number;
-  factor_forma_soportado_id?: number;
-  /** CSV de ids de factor de forma que admite el gabinete elegido (ej. "1,2,3") */
-  factores_forma_permitidos?: string;
-  potencia_min?: number;
-  tdp_min?: number;
-  altura_max_mm?: number;
-  radiador_mm?: string;
+  // ── Selección actual del configurador ─────────────────────────────
+  //
+  // Uuid de lo que el usuario ya tiene elegido en cada categoría (los
+  // slots vacíos simplemente no se mandan). El backend calcula toda la
+  // compatibilidad a partir de esto (ver CompatibilidadService): no hace
+  // falta calcular aquí ningún socket_id/factor_forma/potencia_min a
+  // mano. Antes existían ~10 campos de filtro sueltos que había que
+  // rellenar bien desde el frontend para cada categoría, y ninguno cubría
+  // fuente↔gabinete — de ahí que un gabinete Mini-ITX siguiera enseñando
+  // fuentes ATX.
+  cpu_uuid?: string;
+  placa_base_uuid?: string;
+  ram_uuid?: string;
+  gpu_uuid?: string;
+  psu_uuid?: string;
+  gabinete_uuid?: string;
+  refrigeracion_uuid?: string;
+  almacenamiento_uuid?: string;
+  ventilador_uuid?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -187,17 +343,16 @@ export class ComponenteService {
     set('precio_max',                params.precio_max);
     set('mostrar_agotados',          params.mostrar_agotados);
 
-    // Compat
-    set('socket_id',                 params.socket_id);
-    set('tipo_memoria_id',           params.tipo_memoria_id);
-    set('longitud_max_mm',           params.longitud_max_mm);
-    set('longitud_gpu_min_mm',       params.longitud_gpu_min_mm);
-    set('factor_forma_soportado_id', params.factor_forma_soportado_id);
-    set('factores_forma_permitidos', params.factores_forma_permitidos);
-    set('potencia_min',              params.potencia_min);
-    set('tdp_min',                   params.tdp_min);
-    set('altura_max_mm',             params.altura_max_mm);
-    set('radiador_mm',               params.radiador_mm);
+    // Selección actual, para que el backend calcule la compatibilidad
+    set('cpu_uuid',                  params.cpu_uuid);
+    set('placa_base_uuid',           params.placa_base_uuid);
+    set('ram_uuid',                  params.ram_uuid);
+    set('gpu_uuid',                  params.gpu_uuid);
+    set('psu_uuid',                  params.psu_uuid);
+    set('gabinete_uuid',             params.gabinete_uuid);
+    set('refrigeracion_uuid',        params.refrigeracion_uuid);
+    set('almacenamiento_uuid',       params.almacenamiento_uuid);
+    set('ventilador_uuid',           params.ventilador_uuid);
 
     return this.http.get<any>(`${this.API}/componentes`, { params: httpParams }).pipe(
       map(res => ({
@@ -211,20 +366,15 @@ export class ComponenteService {
     return this.http.get(`${this.API}/componentes/${uuid}/precios`);
   }
 
+  /**
+   * GET /componentes/{uuid}. La respuesta ya viene en el shape exacto de
+   * ComponenteDetalleResource (ver backend) — a diferencia del listado, no
+   * hace falta pasar por mapearComponente() porque el backend ya no manda
+   * el modelo Eloquent en crudo (con relaciones sin transformar y decimales
+   * como string); cada campo llega tal cual se define en ComponenteDetalle.
+   */
   getDetalle(uuid: string): Observable<ComponenteDetalle> {
-    return this.http.get<any>(`${this.API}/componentes/${uuid}`).pipe(
-      map(c => ({
-        ...this.mapearComponente(c),
-        descripcion:    c.descripcion    ?? null,
-        cpu:            c.cpu            ?? undefined,
-        gpu:            c.gpu            ?? undefined,
-        ram:            c.ram            ?? undefined,
-        placa_base:     c.placa_base     ?? undefined,
-        almacenamiento: c.almacenamiento ?? undefined,
-        psu:            c.psu            ?? undefined,
-        gabinete:       c.gabinete       ?? undefined,
-      }) as ComponenteDetalle)
-    );
+    return this.http.get<ComponenteDetalle>(`${this.API}/componentes/${uuid}`);
   }
 
   getGabineteVisor(uuid: string): Observable<GabineteVisor> {
@@ -244,52 +394,33 @@ export class ComponenteService {
     );
   }
 
+  /**
+   * El listado (GET /componentes) siempre viene con los agregados ya
+   * calculados en el backend (precio_min, precio_max, num_tiendas,
+   * en_stock) vía withMin/withMax/withCount/withExists — es el único sitio
+   * que llama a este método. GET /componentes/{uuid} (getDetalle) ya no
+   * pasa por aquí: desde que devuelve ComponenteDetalleResource tiene su
+   * propio shape plano (precios[], precio_min) que se usa tal cual, así
+   * que la rama que antes recalculaba estos mismos campos a mano a partir
+   * de precios_actuales/cupones_activos/regalos_activos (el shape antiguo,
+   * sin pasar por un Resource) ya no hacía falta y se ha quitado.
+   */
   private mapearComponente(c: any): Componente {
-    // El listado (GET /componentes) ya viene con los agregados calculados
-    // en el backend (precio_min, precio_max, num_tiendas, tiene_cupon,
-    // tiene_regalo) vía withMin/withMax/withCount/withExists. El detalle
-    // (GET /componentes/{uuid}) todavía manda las relaciones completas
-    // (precios_actuales, cupones_activos, regalos_activos), así que si no
-    // vienen los agregados los calculamos aquí igual que antes.
-    const tieneAgregados = c.precio_min !== undefined;
-
-    let precio_min    = c.precio_min ?? null;
-    let precio_max    = c.precio_max ?? null;
-    let num_tiendas   = c.num_tiendas ?? 0;
-    let tiene_cupon   = !!c.tiene_cupon;
-    let tiene_regalo  = !!c.tiene_regalo;
-    // En el listado ya viene calculado por el backend (withExists).
-    let en_stock      = !!c.en_stock;
-
-    if (!tieneAgregados) {
-      const preciosActuales = c.precios_actuales ?? [];
-      const precios: number[] = preciosActuales.map((p: any) => Number(p.precio));
-      const tiendas = preciosActuales.map((p: any) => p.tienda?.nombre).filter(Boolean);
-
-      precio_min   = precios.length > 0 ? Math.min(...precios) : null;
-      precio_max   = precios.length > 0 ? Math.max(...precios) : null;
-      num_tiendas  = new Set(tiendas).size || precios.length;
-      tiene_cupon  = (c.cupones_activos ?? []).length > 0;
-      tiene_regalo = (c.regalos_activos ?? []).length > 0;
-      // Detalle: no vienen los agregados, así que miramos si alguna
-      // entrada de precios_actuales dice en_stock=true.
-      en_stock     = preciosActuales.some((p: any) => !!p.en_stock);
-    }
-
     return {
       uuid:          c.uuid,
       nombre:        c.nombre,
       categoria:     c.categoria,
       imagen_url:    c.imagen_url,
       marca:         c.marca ?? null,
-      precio_min,
-      precio_max,
-      num_tiendas,
-      tiene_cupon,
-      tiene_regalo,
-      en_stock,
+      precio_min:    c.precio_min ?? null,
+      precio_max:    c.precio_max ?? null,
+      num_tiendas:   c.num_tiendas ?? 0,
+      tiene_cupon:   !!c.tiene_cupon,
+      tiene_regalo:  !!c.tiene_regalo,
+      en_stock:      !!c.en_stock,
       bajada_precio: false,
       descripcion:   c.descripcion ?? null,
+      specs:         c.specs ?? null,
     };
   }
 }

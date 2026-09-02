@@ -32,6 +32,10 @@ export interface FilaSpec {
   max?: number;
   higherBetter?: boolean;
   sinBarra?: boolean;
+  /** El valor es un array (p.ej. factores de forma o tipos de PSU que
+   *  admite un gabinete) y se muestra unido por comas en vez de como
+   *  texto/número suelto. */
+  lista?: boolean;
 }
 
 const COLORES = ['#00AADD', '#9b59b6', '#e67e22'] as const;
@@ -49,33 +53,34 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Rendimiento',
         filas: [
-          { label: 'Núcleos',      prop: 'cpu.nucleos',              max: 32,   higherBetter: true },
-          { label: 'Hilos',        prop: 'cpu.hilos',                max: 64,   higherBetter: true },
-          { label: 'Frec. base',   prop: 'cpu.frecuencia_base_mhz',  max: 6000, higherBetter: true, unit: 'MHz' },
-          { label: 'Frec. boost',  prop: 'cpu.frecuencia_boost_mhz', max: 6500, higherBetter: true, unit: 'MHz' },
-          { label: 'Litografía',   prop: 'cpu.litografia_nm',        max: 12,   higherBetter: false, unit: 'nm' },
+          { label: 'Núcleos',      prop: 'specs.nucleos',              max: 32,  higherBetter: true },
+          { label: 'Hilos',        prop: 'specs.hilos',                max: 64,  higherBetter: true },
+          { label: 'Frec. base',   prop: 'specs.frecuencia_base_ghz',  max: 6,   higherBetter: true, unit: 'GHz' },
+          { label: 'Frec. boost',  prop: 'specs.frecuencia_boost_ghz', max: 6.5, higherBetter: true, unit: 'GHz' },
+          { label: 'Proceso',      prop: 'specs.proceso_nm',           max: 12,  higherBetter: false, unit: 'nm' },
         ],
       },
       {
         titulo: 'Memoria',
         filas: [
-          { label: 'Tipo RAM',  prop: 'cpu.tipo_memoria.nombre',       sinBarra: true },
-          { label: 'Vel. máx.', prop: 'cpu.velocidad_memoria_max_mhz', max: 8000, higherBetter: true, unit: 'MHz' },
-          { label: 'Canales',   prop: 'cpu.canales_memoria',           max: 4,   higherBetter: true },
-          { label: 'iGPU',      prop: 'cpu.graficos_integrados',       sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'Tipo RAM',  prop: 'specs.tipo_memoria',               sinBarra: true },
+          { label: 'Vel. máx.', prop: 'specs.frecuencia_memoria_max_mhz', max: 8000, higherBetter: true, unit: 'MHz' },
+          { label: 'RAM máx.',  prop: 'specs.memoria_max_gb',             max: 256,  higherBetter: true, unit: 'GB' },
+          { label: 'iGPU',      prop: 'specs.grafica_integrada',          sinBarra: true, bool: { si: 'Sí', no: 'No' } },
         ],
       },
       {
         titulo: 'Plataforma',
         filas: [
-          { label: 'Socket',       prop: 'cpu.socket.nombre',       sinBarra: true },
-          { label: 'Arquitectura', prop: 'cpu.arquitectura.nombre', sinBarra: true },
+          { label: 'Socket',       prop: 'specs.socket',       sinBarra: true },
+          { label: 'Arquitectura', prop: 'specs.arquitectura', sinBarra: true },
         ],
       },
       {
         titulo: 'Consumo',
         filas: [
-          { label: 'TDP', prop: 'cpu.tdp_w', max: 300, higherBetter: false, unit: 'W' },
+          { label: 'TDP',      prop: 'specs.tdp_watts',     max: 300, higherBetter: false, unit: 'W' },
+          { label: 'TDP máx.', prop: 'specs.tdp_max_watts', max: 350, higherBetter: false, unit: 'W' },
         ],
       },
     ],
@@ -86,32 +91,33 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Rendimiento',
         filas: [
-          { label: 'VRAM',        prop: 'gpu.vram_gb',              max: 32,   higherBetter: true,  unit: 'GB' },
-          { label: 'Bus',         prop: 'gpu.bus_bits',             max: 512,  higherBetter: true,  unit: 'bits' },
-          { label: 'Frec. base',  prop: 'gpu.frecuencia_base_mhz',  max: 3000, higherBetter: true,  unit: 'MHz' },
-          { label: 'Frec. boost', prop: 'gpu.frecuencia_boost_mhz', max: 3500, higherBetter: true,  unit: 'MHz' },
+          { label: 'VRAM',        prop: 'specs.vram_gb',              max: 32,   higherBetter: true,  unit: 'GB' },
+          { label: 'Bus',         prop: 'specs.bus_bits',             max: 512,  higherBetter: true,  unit: 'bits' },
+          { label: 'Frec. base',  prop: 'specs.frecuencia_base_mhz',  max: 3000, higherBetter: true,  unit: 'MHz' },
+          { label: 'Frec. boost', prop: 'specs.frecuencia_boost_mhz', max: 3500, higherBetter: true,  unit: 'MHz' },
         ],
       },
       {
         titulo: 'Tipo',
         filas: [
-          { label: 'Tipo VRAM',    prop: 'gpu.tipo_vram.nombre',          sinBarra: true },
-          { label: 'Arquitectura', prop: 'gpu.arquitectura.nombre',       sinBarra: true },
-          { label: 'PCIe',         prop: 'gpu.version_pcie.nombre',       sinBarra: true },
-          { label: 'Conectores',   prop: 'gpu.conectores_alimentacion',   sinBarra: true },
+          { label: 'Tipo VRAM',    prop: 'specs.tipo_vram',    sinBarra: true },
+          { label: 'Arquitectura', prop: 'specs.arquitectura', sinBarra: true },
+          { label: 'PCIe',         prop: 'specs.version_pcie', sinBarra: true },
+          { label: 'Ray tracing',  prop: 'specs.ray_tracing',  sinBarra: true, bool: { si: 'Sí', no: 'No' } },
         ],
       },
       {
-        titulo: 'Dimensiones',
+        titulo: 'Dimensiones y alimentación',
         filas: [
-          { label: 'Longitud', prop: 'gpu.longitud_mm', max: 400, higherBetter: false, unit: 'mm' },
-          { label: 'Slots',    prop: 'gpu.slots_pcie',  max: 4,   higherBetter: false },
+          { label: 'Longitud',      prop: 'specs.longitud_mm',         max: 400, higherBetter: false, unit: 'mm' },
+          { label: 'Slots',         prop: 'specs.slots_pcie',          max: 4,   higherBetter: false },
+          { label: 'PSU mínima',    prop: 'specs.psu_minima_watts',    max: 1000, higherBetter: false, unit: 'W' },
         ],
       },
       {
         titulo: 'Consumo',
         filas: [
-          { label: 'TDP', prop: 'gpu.tdp_w', max: 600, higherBetter: false, unit: 'W' },
+          { label: 'TDP', prop: 'specs.tdp_watts', max: 600, higherBetter: false, unit: 'W' },
         ],
       },
     ],
@@ -122,19 +128,20 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Especificaciones',
         filas: [
-          { label: 'Capacidad',   prop: 'ram.capacidad_gb',   max: 128,  higherBetter: true,  unit: 'GB' },
-          { label: 'Frecuencia',  prop: 'ram.frecuencia_mhz', max: 8000, higherBetter: true,  unit: 'MHz' },
-          { label: 'Latencia CL', prop: 'ram.latencia_cl',    max: 60,   higherBetter: false },
-          { label: 'Voltaje',     prop: 'ram.voltaje',        max: 2,    higherBetter: false, unit: 'V' },
-          { label: 'Kit módulos', prop: 'ram.kit_modulos',    max: 4,    higherBetter: true },
+          { label: 'Capacidad total', prop: 'specs.capacidad_total_gb', max: 128,  higherBetter: true,  unit: 'GB' },
+          { label: 'Velocidad',       prop: 'specs.velocidad_mhz',      max: 8000, higherBetter: true,  unit: 'MHz' },
+          { label: 'Latencia CAS',    prop: 'specs.latencia_cas',       sinBarra: true },
+          { label: 'Voltaje',         prop: 'specs.voltaje',            max: 2,    higherBetter: false, unit: 'V' },
+          { label: 'Módulos',         prop: 'specs.modulos',            max: 4,    higherBetter: true },
         ],
       },
       {
         titulo: 'Compatibilidad',
         filas: [
-          { label: 'Tipo', prop: 'ram.tipo_memoria.nombre', sinBarra: true },
-          { label: 'XMP',  prop: 'ram.perfil_xmp',          sinBarra: true, bool: { si: 'Sí', no: 'No' } },
-          { label: 'EXPO', prop: 'ram.perfil_expo',         sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'Tipo', prop: 'specs.tipo_memoria', sinBarra: true },
+          { label: 'XMP',  prop: 'specs.xmp',          sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'EXPO', prop: 'specs.expo',         sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'ECC',  prop: 'specs.ecc',          sinBarra: true, bool: { si: 'Sí', no: 'No' } },
         ],
       },
     ],
@@ -145,28 +152,29 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Especificaciones',
         filas: [
-          { label: 'Slots RAM',      prop: 'placa_base.slots_ram',             max: 8,    higherBetter: true },
-          { label: 'RAM máx.',       prop: 'placa_base.velocidad_ram_max_mhz', max: 8000, higherBetter: true, unit: 'MHz' },
-          { label: 'Slots M.2',      prop: 'placa_base.slots_m2',              max: 6,    higherBetter: true },
-          { label: 'Puertos SATA',   prop: 'placa_base.puertos_sata',          max: 8,    higherBetter: true },
-          { label: 'Slots PCIe x16', prop: 'placa_base.slots_pcie_x16',        max: 4,    higherBetter: true },
+          { label: 'Slots RAM',      prop: 'specs.slots_memoria',              max: 8,    higherBetter: true },
+          { label: 'RAM máx.',       prop: 'specs.frecuencia_memoria_max_mhz', max: 8000, higherBetter: true, unit: 'MHz' },
+          { label: 'Slots M.2',      prop: 'specs.slots_m2',                   max: 6,    higherBetter: true },
+          { label: 'Puertos SATA',   prop: 'specs.puertos_sata',               max: 8,    higherBetter: true },
+          { label: 'Slots PCIe x16', prop: 'specs.slots_pcie_x16',             max: 4,    higherBetter: true },
         ],
       },
       {
         titulo: 'Conectividad',
         filas: [
-          { label: 'WiFi',      prop: 'placa_base.tiene_wifi',      sinBarra: true, bool: { si: 'Sí', no: 'No' } },
-          { label: 'Bluetooth', prop: 'placa_base.tiene_bluetooth', sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'WiFi',        prop: 'specs.wifi',        sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'Bluetooth',   prop: 'specs.bluetooth',   sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'Thunderbolt', prop: 'specs.thunderbolt', sinBarra: true, bool: { si: 'Sí', no: 'No' } },
         ],
       },
       {
         titulo: 'Plataforma',
         filas: [
-          { label: 'Socket',       prop: 'placa_base.socket.nombre',       sinBarra: true },
-          { label: 'Chipset',      prop: 'placa_base.chipset.nombre',      sinBarra: true },
-          { label: 'Factor forma', prop: 'placa_base.factor_forma.nombre', sinBarra: true },
-          { label: 'Tipo RAM',     prop: 'placa_base.tipo_memoria.nombre', sinBarra: true },
-          { label: 'PCIe',         prop: 'placa_base.version_pcie.nombre', sinBarra: true },
+          { label: 'Socket',       prop: 'specs.socket',        sinBarra: true },
+          { label: 'Chipset',      prop: 'specs.chipset',       sinBarra: true },
+          { label: 'Factor forma', prop: 'specs.factor_forma',  sinBarra: true },
+          { label: 'Tipo RAM',     prop: 'specs.tipo_memoria',  sinBarra: true },
+          { label: 'PCIe',         prop: 'specs.version_pcie',  sinBarra: true },
         ],
       },
     ],
@@ -177,17 +185,18 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Rendimiento',
         filas: [
-          { label: 'Capacidad',    prop: 'almacenamiento.capacidad_gb',             max: 8000,  higherBetter: true, unit: 'GB' },
-          { label: 'Lect. sec.',   prop: 'almacenamiento.velocidad_lectura_mbs',    max: 15000, higherBetter: true, unit: 'MB/s' },
-          { label: 'Escrit. sec.', prop: 'almacenamiento.velocidad_escritura_mbs',  max: 15000, higherBetter: true, unit: 'MB/s' },
+          { label: 'Capacidad',    prop: 'specs.capacidad_gb',            max: 8000,  higherBetter: true, unit: 'GB' },
+          { label: 'Lect. sec.',   prop: 'specs.velocidad_lectura_mbs',   max: 15000, higherBetter: true, unit: 'MB/s' },
+          { label: 'Escrit. sec.', prop: 'specs.velocidad_escritura_mbs', max: 15000, higherBetter: true, unit: 'MB/s' },
+          { label: 'TBW',          prop: 'specs.tbw',                     max: 3600,  higherBetter: true, unit: 'TBW' },
         ],
       },
       {
         titulo: 'Tipo',
         filas: [
-          { label: 'Interfaz',     prop: 'almacenamiento.interfaz.nombre',     sinBarra: true },
-          { label: 'Factor forma', prop: 'almacenamiento.factor_forma.nombre', sinBarra: true },
-          { label: 'NAND',         prop: 'almacenamiento.tipo_nand.nombre',    sinBarra: true },
+          { label: 'Interfaz',     prop: 'specs.interfaz',     sinBarra: true },
+          { label: 'Factor forma', prop: 'specs.factor_forma', sinBarra: true },
+          { label: 'NAND',         prop: 'specs.tipo_nand',    sinBarra: true },
         ],
       },
     ],
@@ -198,17 +207,18 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Especificaciones',
         filas: [
-          { label: 'Potencia', prop: 'psu.potencia_w', max: 1600, higherBetter: true, unit: 'W' },
+          { label: 'Potencia', prop: 'specs.vatios', max: 1600, higherBetter: true, unit: 'W' },
+          { label: 'Longitud', prop: 'specs.largo_mm', max: 220, higherBetter: false, unit: 'mm' },
         ],
       },
       {
         titulo: 'Tipo',
         filas: [
-          { label: 'Certificación', prop: 'psu.certificacion.nombre',   sinBarra: true },
-          { label: 'Tipo',          prop: 'psu.tipo_psu.nombre',        sinBarra: true },
-          { label: 'Modular',       prop: 'psu.modular',                sinBarra: true },
-          { label: '12VHPWR',       prop: 'psu.tiene_conector_12vhpwr', sinBarra: true, bool: { si: 'Sí', no: 'No' } },
-          { label: 'ATX',           prop: 'psu.conector_atx',           sinBarra: true, bool: { si: 'Sí', no: 'No' } },
+          { label: 'Certificación',        prop: 'specs.certificacion',           sinBarra: true },
+          { label: 'Tipo (factor forma)',  prop: 'specs.tipo_psu',                sinBarra: true },
+          { label: 'Modular',              prop: 'specs.modular',                 sinBarra: true },
+          { label: 'Norma ATX',            prop: 'specs.version_atx',             sinBarra: true },
+          { label: 'Conectores PCIe 16p.', prop: 'specs.conectores_pcie_16pin',   sinBarra: true },
         ],
       },
     ],
@@ -219,23 +229,26 @@ export const CATEGORIAS: CategoriaConfig[] = [
       {
         titulo: 'Dimensiones',
         filas: [
-          { label: 'Alto',        prop: 'gabinete.alto_mm',         max: 650, higherBetter: false, unit: 'mm' },
-          { label: 'Ancho',       prop: 'gabinete.ancho_mm',        max: 350, higherBetter: false, unit: 'mm' },
-          { label: 'Profundidad', prop: 'gabinete.profundidad_mm',  max: 600, higherBetter: false, unit: 'mm' },
+          { label: 'Alto',        prop: 'specs.alto_mm',         max: 650, higherBetter: false, unit: 'mm' },
+          { label: 'Ancho',       prop: 'specs.ancho_mm',        max: 350, higherBetter: false, unit: 'mm' },
+          { label: 'Profundidad', prop: 'specs.profundidad_mm',  max: 600, higherBetter: false, unit: 'mm' },
         ],
       },
       {
         titulo: 'Compatibilidad',
         filas: [
-          { label: 'GPU máx.',    prop: 'gabinete.longitud_gpu_max_mm',  max: 500, higherBetter: true, unit: 'mm' },
-          { label: 'Cooler máx.', prop: 'gabinete.altura_cooler_max_mm', max: 200, higherBetter: true, unit: 'mm' },
+          { label: 'GPU máx.',    prop: 'specs.longitud_gpu_max_mm',  max: 500, higherBetter: true, unit: 'mm' },
+          { label: 'Cooler máx.', prop: 'specs.altura_cooler_max_mm', max: 200, higherBetter: true, unit: 'mm' },
+          { label: 'PSU máx.',    prop: 'specs.largo_psu_max_mm',     max: 250, higherBetter: true, unit: 'mm' },
         ],
       },
       {
         titulo: 'Tipo',
         filas: [
-          { label: 'Tipo',       prop: 'gabinete.tipo_gabinete.nombre', sinBarra: true },
-          { label: 'Estructura', prop: 'gabinete.estructura.nombre',    sinBarra: true },
+          { label: 'Tipo',            prop: 'specs.tipo_gabinete',  sinBarra: true },
+          { label: 'Estructura',      prop: 'specs.estructura',     sinBarra: true },
+          { label: 'Placas admitidas',prop: 'specs.factores_forma', sinBarra: true, lista: true },
+          { label: 'Fuentes admitidas', prop: 'specs.tipos_psu',    sinBarra: true, lista: true },
         ],
       },
     ],
@@ -423,6 +436,7 @@ export class SpecCompareComponent implements OnInit {
   getValor(comp: ComponenteDetalle, fila: FilaSpec): string {
     const raw = getPath(comp, fila.prop);
     if (raw === null || raw === undefined) return '—';
+    if (fila.lista && Array.isArray(raw)) return raw.length ? raw.join(', ') : '—';
     if (fila.bool) return raw ? fila.bool.si : fila.bool.no;
     if (typeof raw === 'number' && fila.unit) return `${raw.toLocaleString('es-ES')} ${fila.unit}`;
     return String(raw);

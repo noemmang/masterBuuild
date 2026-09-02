@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ComponenteService, Componente, ComponenteDetalle } from '../../core/services/componente.service';
+import { ComponenteService, Componente } from '../../core/services/componente.service';
 import { GuardadoService, SlotGuardado, ConfiguracionGuardada } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
@@ -48,21 +48,6 @@ interface Compatibilidad {
   errores:      { tipo: string; mensaje: string }[];
   notas:        { tipo: string; mensaje: string }[];
   consumo_total_watts: number;
-}
-
-interface FiltrosCompat {
-  socket_id?:               number;
-  tipo_memoria_id?:         number;
-  factor_forma_soportado_id?: number;
-  /** CSV de ids de factor de forma que admite el gabinete elegido: filtra
-   *  la lista de placas base (dirección gabinete -> placa). */
-  factores_forma_permitidos?: string;
-  longitud_max_mm?:         number;
-  longitud_gpu_min_mm?:     number;
-  potencia_min?:            number;
-  tdp_min?:                 number;
-  altura_max_mm?:           number;
-  radiador_mm?:             string;
 }
 
 /** Snapshot de la build en curso, para sobrevivir a una navegación (login, volver atrás, etc.) */
@@ -131,9 +116,8 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   mostrarAgotados = signal(true);
   private busqueda$ = new Subject<string>();
 
-  filtrosCompat   = signal<FiltrosCompat>({});
-  // Antes era un toggle "Todos / Compatibles": ahora la lista siempre se
-  // filtra a lo compatible con lo ya elegido, sin opción de desactivarlo.
+  /** Antes era un toggle "Todos / Compatibles": ahora la lista siempre se
+   *  filtra a lo compatible con lo ya elegido, sin opción de desactivarlo. */
 
   compatibilidad = signal<Compatibilidad | null>(null);
   panelAbierto   = signal(false);
@@ -170,8 +154,17 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   nombreConfig        = signal('');
   notasConfig         = signal('');
 
-  // ── Cache de detalles completos ───────────────────────────────
-  private detallesCache = new Map<string, ComponenteDetalle>();
+  // detallesCache se ha eliminado: solo existía para poder inspeccionar
+  // socket/tipo_memoria/longitud/etc. de cada componente elegido y
+  // recalcular a mano los filtros de compatibilidad en el frontend. Esa
+  // lógica vivía en recalcularFiltrosCompat() y solo tenía en cuenta 4 de
+  // las 9 categorías (cpu/placa/gpu/gabinete — psu y refrigeración nunca
+  // llegaban a filtrar nada), así que un gabinete Mini-ITX seguía
+  // enseñando fuentes ATX. Ahora el backend calcula la compatibilidad
+  // directamente a partir de los uuids seleccionados (ver
+  // CompatibilidadService en el backend y seleccionUuids() más abajo), así
+  // que no hace falta traer ni guardar el detalle completo de cada
+  // componente solo para poder filtrar.
 
   // ── Total / desglose ──────────────────────────────────────────
   totalEstimado  = signal<number>(0);
@@ -290,30 +283,22 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       this.slots.find(s => s.entradas.length > 0) ??
       this.slots[0];
 
-    // Recuperar el detalle técnico de cada componente para poder validar compatibilidad
-    const uuids = new Set<string>();
-    this.slots.forEach(s => s.entradas.forEach(e => uuids.add(e.componente.uuid)));
+    // Antes esto disparaba un getDetalle() por cada componente para poder
+    // rellenar detallesCache (necesario para recalcularFiltrosCompat()).
+    // Ya no hace falta: los slots restaurados ya traen todo lo que se
+    // necesita (uuid, nombre, precio...) desde el propio borrador, y el
+    // filtrado de compatibilidad ahora lo calcula el backend a partir de
+    // esos uuids directamente.
+    this._entriesVersion.update(v => v + 1);
+    this.recalcularTotal();
+    this.validarCompatibilidad();
+    this.restaurando.set(false);
+    this.cargarSlot(slotActivo);
 
-    const promesas = Array.from(uuids).map(uuid => new Promise<void>((resolve) => {
-      this.componenteService.getDetalle(uuid).subscribe({
-        next: (detalle) => { this.detallesCache.set(uuid, detalle); resolve(); },
-        error: () => resolve(),
-      });
-    }));
-
-    Promise.all(promesas).then(() => {
-      this._entriesVersion.update(v => v + 1);
-      this.recalcularFiltrosCompat();
-      this.recalcularTotal();
-      this.validarCompatibilidad();
-      this.restaurando.set(false);
-      this.cargarSlot(slotActivo);
-
-      if (borrador.componenteDetalle) {
-        this.abrirPrecios(borrador.componenteDetalle);
-      }
-      this.cdr.markForCheck();
-    });
+    if (borrador.componenteDetalle) {
+      this.abrirPrecios(borrador.componenteDetalle);
+    }
+    this.cdr.markForCheck();
   }
 
   // ── Restaurar configuración ───────────────────────────────────
@@ -353,7 +338,17 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
         const p = new Promise<void>((resolve) => {
           this.componenteService.getDetalle(compGuardado.uuid).subscribe({
             next: (detalle) => {
-              // Construir un Componente básico a partir del detalle
+              // Construir un Componente básico a partir del detalle. Antes
+              // esto leía precio_max/num_tiendas/tiene_cupon/tiene_regalo/
+              // en_stock/bajada_precio directamente de ComponenteDetalle
+              // porque esa interfaz heredaba de Componente — pero el
+              // backend nunca mandó esos campos en show() (no existen ahí,
+              // solo en el listado), así que siempre llegaban undefined.
+              // Aquí se derivan del array `precios`, que es lo que sí trae
+              // show() de verdad.
+              const precios = detalle.precios ?? [];
+              const conStock = precios.filter(pr => pr.en_stock);
+              const importes = precios.map(pr => pr.precio);
               const comp: Componente = {
                 uuid:        detalle.uuid,
                 nombre:      detalle.nombre,
@@ -361,15 +356,14 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
                 imagen_url:  detalle.imagen_url,
                 marca:       detalle.marca,
                 precio_min:  compGuardado.precio ?? detalle.precio_min,
-                precio_max:  detalle.precio_max,
-                num_tiendas: detalle.num_tiendas,
-                tiene_cupon: detalle.tiene_cupon,
-                tiene_regalo:  detalle.tiene_regalo,
-                en_stock: detalle.en_stock,
-                bajada_precio: detalle.bajada_precio,
+                precio_max:  importes.length ? Math.max(...importes) : null,
+                num_tiendas: precios.length,
+                tiene_cupon: false,
+                tiene_regalo: false,
+                en_stock: conStock.length > 0,
+                bajada_precio: false,
               };
               slot.entradas.push({ componente: comp, cantidad: compGuardado.cantidad });
-              this.detallesCache.set(comp.uuid, detalle);
               resolve();
             },
             error: () => resolve(), // Si falla un componente, continuamos con los demás
@@ -381,7 +375,6 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
     // Cuando todos los componentes están cargados, recalcular y validar
     Promise.all(promesas).then(() => {
-      this.recalcularFiltrosCompat();
       this.recalcularTotal();
       this.validarCompatibilidad();
       this.restaurando.set(false);
@@ -453,11 +446,9 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
     // El slot de refrigeración carga aire y líquida en paralelo y mergea los resultados
     if (slot.id === 'refrigeracion') {
-      const paramsAire    = { ...baseParams(), categoria: 'refrigeracion_aire' };
-      const paramsLiquida = { ...baseParams(), categoria: 'refrigeracion_liquida' };
-
-      this.aplicarFiltrosCompatParaSlot('refrigeracion_aire',    this.filtrosCompat(), paramsAire);
-      this.aplicarFiltrosCompatParaSlot('refrigeracion_liquida', this.filtrosCompat(), paramsLiquida);
+      const uuids = this.seleccionUuids();
+      const paramsAire    = { ...baseParams(), ...uuids, categoria: 'refrigeracion_aire' };
+      const paramsLiquida = { ...baseParams(), ...uuids, categoria: 'refrigeracion_liquida' };
 
       forkJoin([
         this.componenteService.buscarConFiltros(paramsAire),
@@ -478,8 +469,7 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const params = { ...baseParams(), categoria: slot.categoria };
-    this.aplicarFiltrosCompatParaSlot(slot.id, this.filtrosCompat(), params);
+    const params = { ...baseParams(), ...this.seleccionUuids(), categoria: slot.categoria };
 
     this.componenteService.buscarConFiltros(params).subscribe({
       next: (res) => {
@@ -513,44 +503,33 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  private aplicarFiltrosCompatParaSlot(
-    slotId: string,
-    fc: FiltrosCompat,
-    params: Record<string, any>,
-  ): void {
-    switch (slotId) {
-      case 'cpu':
-        if (fc.socket_id)       params['socket_id']       = fc.socket_id;
-        if (fc.tipo_memoria_id) params['tipo_memoria_id'] = fc.tipo_memoria_id;
-        break;
-      case 'placa_base':
-        if (fc.socket_id)       params['socket_id']       = fc.socket_id;
-        if (fc.tipo_memoria_id) params['tipo_memoria_id'] = fc.tipo_memoria_id;
-        if (fc.factores_forma_permitidos) params['factores_forma_permitidos'] = fc.factores_forma_permitidos;
-        break;
-      case 'ram':
-        if (fc.tipo_memoria_id) params['tipo_memoria_id'] = fc.tipo_memoria_id;
-        break;
-      case 'gpu':
-        if (fc.longitud_max_mm) params['longitud_max_mm'] = fc.longitud_max_mm;
-        break;
-      case 'gabinete':
-        if (fc.factor_forma_soportado_id) params['factor_forma_soportado_id'] = fc.factor_forma_soportado_id;
-        if (fc.longitud_gpu_min_mm) params['longitud_gpu_min_mm'] = fc.longitud_gpu_min_mm;
-        break;
-      case 'psu':
-        if (fc.potencia_min) params['potencia_min'] = fc.potencia_min;
-        break;
-      case 'refrigeracion_aire':
-        if (fc.socket_id)     params['socket_id']    = fc.socket_id;
-        if (fc.tdp_min)       params['tdp_min']       = fc.tdp_min;
-        if (fc.altura_max_mm) params['altura_max_mm'] = fc.altura_max_mm;
-        break;
-      case 'refrigeracion_liquida':
-        if (fc.socket_id)   params['socket_id']  = fc.socket_id;
-        if (fc.radiador_mm) params['radiador_mm'] = fc.radiador_mm;
-        break;
+  /**
+   * Uuid seleccionado en cada categoría ahora mismo, tal cual, para que el
+   * backend calcule la compatibilidad (ver CompatibilidadService). No
+   * importa qué slot se está mirando ni en qué orden se fueron eligiendo
+   * los componentes: siempre se manda la foto completa de la selección
+   * actual, y es el backend quien decide qué reglas aplican a la
+   * categoría pedida.
+   */
+  private seleccionUuids(): Record<string, string> {
+    const params: Record<string, string> = {};
+    const mapa: Record<string, string> = {
+      cpu: 'cpu_uuid',
+      placa_base: 'placa_base_uuid',
+      ram: 'ram_uuid',
+      gpu: 'gpu_uuid',
+      psu: 'psu_uuid',
+      gabinete: 'gabinete_uuid',
+      refrigeracion: 'refrigeracion_uuid',
+      almacenamiento: 'almacenamiento_uuid',
+      ventilador: 'ventilador_uuid',
+    };
+    for (const slot of this.slots) {
+      const uuid = slot.componente?.uuid;
+      const key = mapa[slot.id];
+      if (uuid && key) params[key] = uuid;
     }
+    return params;
   }
 
   onFiltroChange() { this.cargarSlot(this.slotActivo()); }
@@ -582,36 +561,28 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     // Notificar cambio de entradas para que los computed signals reactivos se actualicen
     this._entriesVersion.update(v => v + 1);
 
-    if (!this.detallesCache.has(comp.uuid)) {
-      this.componenteService.getDetalle(comp.uuid).subscribe({
-        next: (detalle) => {
-          this.detallesCache.set(comp.uuid, detalle);
-          this.recalcularFiltrosCompat();
-          this.validarCompatibilidad();
-          this.cdr.markForCheck();
-        },
-      });
-    } else {
-      this.recalcularFiltrosCompat();
-      this.validarCompatibilidad();
-    }
-
+    // Antes esto esperaba a un getDetalle() del componente recién elegido
+    // (para poder calcular filtros a mano en el frontend) antes de validar.
+    // Ya no hace falta: validarCompatibilidad() manda uuids directamente y
+    // el backend ya tiene todos los datos que necesita.
+    this.validarCompatibilidad();
     this.recalcularTotal();
     this.abrirPrecios(comp);
   }
 
   quitarComponente(slot: Slot, event: Event, idx = 0) {
     event.stopPropagation();
-    const uuid = slot.entradas[idx]?.componente.uuid;
     slot.entradas.splice(idx, 1);
-    if (uuid) this.detallesCache.delete(uuid);
     this._entriesVersion.update(v => v + 1);
-    this.recalcularFiltrosCompat();
     this.validarCompatibilidad();
     this.recalcularTotal();
     if (this.componenteDetalle() && slot.entradas.length === 0) {
       this.componenteDetalle.set(null);
     }
+    // Quitar una pieza puede levantar restricciones sobre otras categorías
+    // (p.ej. quitar el gabinete vuelve a dejar ver fuentes ATX), así que
+    // hay que refrescar lo que se esté mirando ahora mismo.
+    this.cargarSlot(this.slotActivo());
   }
 
   cambiarCantidad(slot: Slot, idx: number, delta: number) {
@@ -619,13 +590,11 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     if (!entrada) return;
     const nueva = entrada.cantidad + delta;
     if (nueva <= 0) {
-      this.detallesCache.delete(entrada.componente.uuid);
       slot.entradas.splice(idx, 1);
     } else {
       entrada.cantidad = nueva;
     }
     this._entriesVersion.update(v => v + 1);
-    this.recalcularFiltrosCompat();
     this.validarCompatibilidad();
     this.recalcularTotal();
   }
@@ -635,66 +604,8 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
     if (isNaN(n) || n < 1) return;
     const entrada = slot.entradas[idx];
     if (entrada) { entrada.cantidad = n; }
-    this.recalcularFiltrosCompat();
     this.validarCompatibilidad();
     this.recalcularTotal();
-  }
-
-  // ── Filtros de compatibilidad dinámica ────────────────────────
-
-  private recalcularFiltrosCompat(): void {
-    const fc: FiltrosCompat = {};
-
-    const cpuUuid  = this.slots.find(s => s.id === 'cpu')?.componente?.uuid;
-    const pbUuid   = this.slots.find(s => s.id === 'placa_base')?.componente?.uuid;
-    const gpuUuid  = this.slots.find(s => s.id === 'gpu')?.componente?.uuid;
-    const gabUuid  = this.slots.find(s => s.id === 'gabinete')?.componente?.uuid;
-
-    const cpu      = cpuUuid ? this.detallesCache.get(cpuUuid)  : undefined;
-    const pb       = pbUuid  ? this.detallesCache.get(pbUuid)   : undefined;
-    const gpu      = gpuUuid ? this.detallesCache.get(gpuUuid)  : undefined;
-    const gabinete = gabUuid ? this.detallesCache.get(gabUuid)  : undefined;
-
-    if (cpu?.cpu) {
-      const c = cpu.cpu as any;
-      if (c.socket_id)       fc.socket_id       = c.socket_id;
-      if (c.tipo_memoria_id) fc.tipo_memoria_id = c.tipo_memoria_id;
-      fc.tdp_min = c.tdp_max_watts ?? c.tdp_watts;
-    }
-
-    if (pb?.placa_base) {
-      const p = pb.placa_base as any;
-      if (!fc.socket_id       && p.socket_id)       fc.socket_id       = p.socket_id;
-      if (!fc.tipo_memoria_id && p.tipo_memoria_id) fc.tipo_memoria_id = p.tipo_memoria_id;
-      if (p.factor_forma_id) fc.factor_forma_soportado_id = p.factor_forma_id;
-    }
-
-    if (gpu?.gpu) {
-      const g = gpu.gpu as any;
-      if (g.longitud_mm)      fc.longitud_gpu_min_mm = g.longitud_mm;
-      if (g.psu_minima_watts) fc.potencia_min        = g.psu_minima_watts;
-    }
-
-    if (gabinete?.gabinete) {
-      const gab = gabinete.gabinete as any;
-      if (gab.longitud_gpu_max_mm)  fc.longitud_max_mm = gab.longitud_gpu_max_mm;
-      if (gab.altura_cooler_max_mm) fc.altura_max_mm   = gab.altura_cooler_max_mm;
-      if (Array.isArray(gab.soporte_radiadores) && gab.soporte_radiadores.length) {
-        fc.radiador_mm = gab.soporte_radiadores.join(',');
-      }
-      // Qué placas caben en este gabinete (dirección que antes no existía:
-      // solo se filtraban los gabinetes según la placa, nunca al revés).
-      if (Array.isArray(gab.factores_forma) && gab.factores_forma.length) {
-        fc.factores_forma_permitidos = gab.factores_forma.map((f: any) => f.id).join(',');
-      }
-    }
-
-    const prevJson = JSON.stringify(this.filtrosCompat());
-    this.filtrosCompat.set(fc);
-
-    if (JSON.stringify(fc) !== prevJson) {
-      this.cargarSlot(this.slotActivo());
-    }
   }
 
   // ── Compatibilidad ────────────────────────────────────────────

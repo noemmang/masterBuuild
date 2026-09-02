@@ -3,7 +3,7 @@ name: Backend - Build & Deploy
 on:
   push:
     branches:
-      - dev_noe
+      - main
     paths:
       - "backend/**"
       - ".github/workflows/backend-deploy.yml"

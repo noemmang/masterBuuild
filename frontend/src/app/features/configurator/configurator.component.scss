@@ -973,6 +973,15 @@ $topbar-h:  52px;
   &.mejor.seleccionado {
     background: color-mix(in srgb, var(--accent) 8%, transparent);
   }
+
+  // Esta tienda concreta no tiene stock ahora mismo (aunque el
+  // componente en general sí lo tenga en otra tienda): mismo tratamiento
+  // visual que .cfg-card.agotado, para que sea coherente en toda la app.
+  &.agotado {
+    opacity: 0.65;
+    .precio-tienda, .precio-valor { color: var(--text-muted); }
+    .ver-oferta { pointer-events: none; opacity: 0.5; }
+  }
 }
 
 .precio-row {

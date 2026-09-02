@@ -528,6 +528,12 @@ app-price-history {
   &.mejor.seleccionado {
     background: color-mix(in srgb, var(--accent) 8%, transparent);
   }
+
+  &.agotado {
+    opacity: 0.65;
+    .precio-tienda, .precio-valor { color: var(--text-muted); }
+    .ver-oferta { pointer-events: none; opacity: 0.5; }
+  }
 }
 
 .precio-row {

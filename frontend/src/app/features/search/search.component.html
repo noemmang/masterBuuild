@@ -245,13 +245,14 @@
             <!-- Card de tienda: agrupa fila + extras -->
             <div class="precio-card"
                  [class.mejor]="i === 0"
+                 [class.agotado]="!p.en_stock"
                  [class.seleccionado]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0"
                  (click)="seleccionarPrecio(p)">
 
               <!-- Fila principal de tienda -->
               <div class="precio-row">
               <div class="precio-info">
-                @if (i === 0) { <span class="mejor-badge">Mejor precio</span> }
+                @if (i === 0 && p.en_stock) { <span class="mejor-badge">Mejor precio</span> }
                 @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
                 @if (p.url) {
                   <a [href]="p.url" target="_blank" rel="noopener" class="precio-tienda tienda-link" (click)="$event.stopPropagation()">{{ p.tienda?.nombre || 'Tienda' }}</a>
@@ -259,6 +260,7 @@
                   <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
                 }
                 <div class="precio-row-tags">
+                  @if (!p.en_stock) { <span class="badge-agotado">Agotado</span> }
                   @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
                 </div>
               </div>

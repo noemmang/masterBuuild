@@ -67,7 +67,12 @@ class Gabinete extends BaseModel
         return $this->belongsToMany(FactorForma::class, 'gabinete_factor_forma', 'gabinete_id', 'factor_forma_id');
     }
 
-    public function tiposPSU()
+    // Nombre del método a propósito en minúsculas tras la P (tiposPsu, no
+    // tiposPSU): Str::snake('tiposPSU') da "tipos_p_s_u", no "tipos_psu"
+    // como cabría esperar (cada mayúscula suelta se separa). Esto rompía
+    // en silencio la clave JSON cada vez que el modelo se serializaba
+    // directamente (p.ej. antes en show()).
+    public function tiposPsu()
     {
         return $this->belongsToMany(TipoPSU::class, 'gabinete_tipo_psu', 'gabinete_id', 'tipo_psu_id');
     }

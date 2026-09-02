@@ -54,12 +54,19 @@ class GPU extends BaseModel
         return $this->belongsTo(\App\Models\Auxiliares\Arquitectura::class, 'arquitectura_id');
     }
 
-    public function tipoVRAM()
+    // OJO: el método se llama tipoVram() (no tipoVRAM()) a propósito.
+    // Laravel usa Str::snake() sobre el nombre del método para la clave
+    // JSON cuando el modelo se serializa directamente (p.ej. en show()).
+    // Str::snake('tipoVRAM') da "tipo_v_r_a_m" (cada mayúscula suelta se
+    // separa), no "tipo_vram" como cabría esperar. Mismo motivo para
+    // versionPcie() más abajo y para tipoPsu()/tipoNand()/tiposPsu() en
+    // el resto de modelos.
+    public function tipoVram()
     {
         return $this->belongsTo(\App\Models\Auxiliares\TipoVRAM::class, 'tipo_vram_id');
     }
 
-    public function versionPCIe()
+    public function versionPcie()
     {
         return $this->belongsTo(\App\Models\Auxiliares\VersionPCIe::class, 'version_pcie_id');
     }

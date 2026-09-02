@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Configurador;
 
 use App\Http\Controllers\Controller;
 use App\Models\Componentes\Componente;
+use App\Services\Configurador\CompatibilidadService;
 use Illuminate\Http\Request;
 
 /**
@@ -31,18 +32,9 @@ use Illuminate\Http\Request;
  */
 class ConfiguradorController extends Controller
 {
-    // Margen de potencia recomendado sobre el consumo estimado. Por debajo
-    // de esto la PSU "llega" pero sin holgura para picos de carga o para
-    // ampliar el equipo más adelante. Mismo criterio que ya usaba
-    // PSU::scopeSuficienteParaSistema() para no inventar un número nuevo.
-    private const MARGEN_PSU_RECOMENDADO = 1.2;
-
-    // Vatios fijos de "resto del sistema" (placa base, almacenamiento,
-    // ventiladores, RGB...) que no viene desglosado en ninguna tabla.
-    // Mismo valor que ya usa RecomendadorController::recomendar() para el
-    // presupuesto de PSU, así que el consumo estimado no varía según qué
-    // endpoint lo calcule.
-    private const CONSUMO_RESTO_SISTEMA_WATTS = 50;
+    public function __construct(private CompatibilidadService $compatibilidad)
+    {
+    }
 
     public function validar(Request $request)
     {
@@ -84,11 +76,11 @@ class ConfiguradorController extends Controller
         $gpuComponente = $this->cargarComponente($data['gpu_uuid'] ?? null, ['gpu']);
         $gpu = $gpuComponente?->gpu;
 
-        $psuComponente = $this->cargarComponente($data['psu_uuid'] ?? null, ['psu']);
+        $psuComponente = $this->cargarComponente($data['psu_uuid'] ?? null, ['psu.tipoPsu']);
         $psu = $psuComponente?->psu;
 
         $gabineteComponente = $this->cargarComponente($data['gabinete_uuid'] ?? null, [
-            'gabinete.factoresForma',
+            'gabinete.factoresForma', 'gabinete.tiposPsu',
         ]);
         $gabinete = $gabineteComponente?->gabinete;
 
@@ -117,6 +109,7 @@ class ConfiguradorController extends Controller
         $this->validarRefrigeracion($refrig, $refrigTipo, $cpu, $gabinete, $errores, $advertencias);
         $this->validarFactorForma($placa, $gabinete, $errores);
         $this->validarPsu($psu, $gabinete, $cpu, $gpu, $errores, $advertencias, $notas);
+        $this->validarTipoPsuGabinete($psu, $gabinete, $errores);
         $this->anadirNotasInformativas($cpu, $gpu, $refrig, $notas);
 
         $consumoTotal = $this->calcularConsumoTotal($cpu, $gpu);
@@ -326,6 +319,33 @@ class ConfiguradorController extends Controller
         }
     }
 
+    // PSU ↔ gabinete: el factor de forma de la fuente (ATX, SFX, SFX-L...)
+    // tiene que estar entre los que el gabinete admite. Mismo criterio que
+    // validarFactorForma() (placa ↔ gabinete) y misma semántica de "pivote
+    // vacío = sin restricción documentada, no se bloquea". Esta
+    // comprobación no existía: era la última pieza que le faltaba al caso
+    // "gabinete Mini-ITX solo admite fuentes SFX" — el listado ahora ya no
+    // ofrece fuentes ATX para ese gabinete (CompatibilidadService), pero
+    // sin esto, restaurar una configuración guardada antes de este arreglo
+    // (o un build guardado con datos antiguos) no lo habría detectado
+    // igualmente aquí.
+    private function validarTipoPsuGabinete(?object $psu, ?object $gabinete, array &$errores): void
+    {
+        if (!$psu || !$gabinete) {
+            return;
+        }
+
+        $tiposSoportados = $gabinete->tiposPsu->pluck('id');
+
+        if ($tiposSoportados->isNotEmpty() && !$tiposSoportados->contains($psu->tipo_psu_id)) {
+            $errores[] = $this->msg('psu_factor_forma', sprintf(
+                'La fuente es %s y el gabinete solo admite: %s.',
+                $psu->tipoPsu->nombre ?? 'de un factor de forma no admitido',
+                $gabinete->tiposPsu->pluck('nombre')->implode(', '),
+            ));
+        }
+    }
+
     // PSU ↔ consumo estimado del sistema, y PSU ↔ gabinete (longitud
     // física, para fuentes largas en gabinetes compactos).
     private function validarPsu(
@@ -344,7 +364,7 @@ class ConfiguradorController extends Controller
         $consumoTotal = $this->calcularConsumoTotal($cpu, $gpu);
 
         if ($consumoTotal > 0) {
-            $margenRecomendado = (int) ceil($consumoTotal * self::MARGEN_PSU_RECOMENDADO);
+            $margenRecomendado = (int) ceil($consumoTotal * CompatibilidadService::MARGEN_PSU_RECOMENDADO);
 
             if ($psu->vatios < $consumoTotal) {
                 $errores[] = $this->msg('psu_consumo', sprintf(
@@ -357,7 +377,7 @@ class ConfiguradorController extends Controller
                     'La fuente cubre el consumo estimado (%d W) pero con poco margen. Se recomiendan al menos %d W para tener un %d%% de holgura.',
                     $consumoTotal,
                     $margenRecomendado,
-                    (int) round((self::MARGEN_PSU_RECOMENDADO - 1) * 100),
+                    (int) round((CompatibilidadService::MARGEN_PSU_RECOMENDADO - 1) * 100),
                 ));
             } else {
                 $notas[] = $this->msg('psu_margen_ok', sprintf(
@@ -377,23 +397,15 @@ class ConfiguradorController extends Controller
         }
     }
 
-    // Consumo estimado del sistema: TDP de pico de CPU y GPU (el mismo
-    // criterio "peor caso" que en validarRefrigeracion) más un margen fijo
-    // para el resto de componentes que no tienen TDP en su ficha (placa,
-    // almacenamiento, ventiladores...). El +50 W es el mismo valor que ya
-    // usa RecomendadorController::recomendar() al presupuestar la PSU, así
-    // que ambos endpoints coinciden en la misma estimación.
+    // Consumo estimado del sistema: delega en CompatibilidadService para
+    // que este endpoint (el aviso final) y el filtro de vatios de la PSU
+    // en el listado del configurador usen exactamente la misma fórmula.
+    // Antes cada uno tenía su propia copia (y el listado, hasta ahora, ni
+    // siquiera tenía en cuenta el TDP de la CPU — solo el mínimo
+    // recomendado por la GPU), así que podían no coincidir.
     private function calcularConsumoTotal(?object $cpu, ?object $gpu): int
     {
-        if (!$cpu && !$gpu) {
-            return 0;
-        }
-
-        $tdpCpu = $cpu ? ($cpu->tdp_max_watts ?? $cpu->tdp_watts ?? 0) : 0;
-        $tdpGpu = $gpu->tdp_watts ?? 0;
-        $resto  = $cpu ? self::CONSUMO_RESTO_SISTEMA_WATTS : 0;
-
-        return (int) round($tdpCpu + $tdpGpu + $resto);
+        return CompatibilidadService::consumoTotal($cpu, $gpu);
     }
 
     // Notas neutras (no son errores ni advertencias, solo información útil

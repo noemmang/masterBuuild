@@ -843,7 +843,7 @@ class ComponentesSeeder extends Seeder
         ]);
     
         $g->factoresForma()->sync(array_unique($gab['ff']));
-        $g->tiposPSU()->sync(array_unique($gab['psu_tipos']));
+        $g->tiposPsu()->sync(array_unique($gab['psu_tipos']));
     }
  
     protected function seedGabinetes(): void

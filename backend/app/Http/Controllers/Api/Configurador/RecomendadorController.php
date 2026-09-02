@@ -12,6 +12,7 @@ use App\Models\Componentes\PSU;
 use App\Models\Componentes\Gabinete;
 use App\Models\Componentes\RefrigeracionAire;
 use App\Models\Componentes\RefrigeracionLiquida;
+use App\Services\Configurador\CompatibilidadService;
 use Illuminate\Http\Request;
 
 class RecomendadorController extends Controller
@@ -194,7 +195,11 @@ class RecomendadorController extends Controller
         }
 
         // ── PSU ──────────────────────────────────────────
-        $consumoEstimado = ($cpu['tdp_watts'] ?? 65) + ($configuracion['gpu']['tdp_watts'] ?? 0) + 50;
+        // Mismo cálculo que CompatibilidadService::consumoTotal() (usado
+        // por el listado del configurador y por validar()), así que la
+        // cifra de consumo estimado no varía según si el PC se montó a
+        // mano o con este recomendador automático.
+        $consumoEstimado = CompatibilidadService::consumoTotal((object) $cpu, isset($configuracion['gpu']) ? (object) $configuracion['gpu'] : null);
         $presupuestoPsu  = $presupuesto * $distribucion['psu'];
         $psu = $this->mejorPSU($presupuestoPsu, $consumoEstimado);
 
@@ -231,7 +236,9 @@ class RecomendadorController extends Controller
         $gabinete = $this->mejorGabinete(
             $presupuestoGabinete,
             $configuracion['gpu']['longitud_mm'] ?? 0,
-            $configuracion['refrigeracion']['altura_mm'] ?? 0
+            $configuracion['refrigeracion']['altura_mm'] ?? 0,
+            $configuracion['placa_base']['factor_forma_id'] ?? null,
+            $configuracion['psu']['tipo_psu_id'] ?? null,
         );
 
         if ($gabinete) {
@@ -279,6 +286,7 @@ class RecomendadorController extends Controller
             'nucleos'        => $cpu->nucleos,
             'hilos'          => $cpu->hilos,
             'tdp_watts'      => $cpu->tdp_watts,
+            'tdp_max_watts'  => $cpu->tdp_max_watts,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
         ];
@@ -359,6 +367,7 @@ class RecomendadorController extends Controller
             'uuid'           => $placa->componente->uuid,
             'nombre'         => $placa->componente->nombre,
             'chipset'        => $placa->chipset->nombre,
+            'factor_forma_id'=> $placa->factor_forma_id,
             'slots_m2'       => $placa->slots_m2,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
@@ -367,7 +376,11 @@ class RecomendadorController extends Controller
 
     private function mejorPSU(float $presupuesto, int $consumoTotal): ?array
     {
-        $vatiosMinimos = ceil($consumoTotal * 1.3);
+        // Mismo margen que usa CompatibilidadService/ConfiguradorController
+        // para el aviso "poca holgura", así que un build recomendado por
+        // presupuesto nunca cae por debajo de lo que el propio validador
+        // consideraría justo de vatios.
+        $vatiosMinimos = ceil($consumoTotal * CompatibilidadService::MARGEN_PSU_RECOMENDADO);
 
         $psu = PSU::where('vatios', '>=', $vatiosMinimos)
             ->whereHas('componente.preciosActuales', fn($q) =>
@@ -387,6 +400,7 @@ class RecomendadorController extends Controller
             'uuid'           => $psu->componente->uuid,
             'nombre'         => $psu->componente->nombre,
             'vatios'         => $psu->vatios,
+            'tipo_psu_id'    => $psu->tipo_psu_id,
             'certificacion'  => $psu->certificacion->nombre,
             'precio_efectivo'=> $mejorPrecio['precio'],
             'tienda'         => $mejorPrecio['tienda'],
@@ -453,7 +467,7 @@ class RecomendadorController extends Controller
         ];
     }
 
-    private function mejorGabinete(float $presupuesto, int $longitudGpu, int $alturaCooler): ?array
+    private function mejorGabinete(float $presupuesto, int $longitudGpu, int $alturaCooler, ?int $factorFormaId, ?int $tipoPsuId): ?array
     {
         $query = Gabinete::whereHas('componente.preciosActuales', fn($q) =>
             $q->where('en_stock', true)
@@ -461,11 +475,30 @@ class RecomendadorController extends Controller
         );
 
         if ($longitudGpu > 0) {
-            $query->where('longitud_gpu_max_mm', '>=', $longitudGpu);
+            $query->where(fn($q) => $q->whereNull('longitud_gpu_max_mm')->orWhere('longitud_gpu_max_mm', '>=', $longitudGpu));
         }
 
         if ($alturaCooler > 0) {
-            $query->where('altura_cooler_max_mm', '>=', $alturaCooler);
+            $query->where(fn($q) => $q->whereNull('altura_cooler_max_mm')->orWhere('altura_cooler_max_mm', '>=', $alturaCooler));
+        }
+
+        // Mismas reglas que CompatibilidadService: el gabinete tiene que
+        // admitir el factor de forma de la placa y el tipo de fuente ya
+        // elegidos (o no tener restricción documentada). Sin esto, el
+        // recomendador automático podía acabar sugiriendo, por ejemplo,
+        // una placa ATX con un gabinete Mini-ITX solo porque encajaba en
+        // presupuesto — la misma clase de incompatibilidad que se ha
+        // arreglado en el listado interactivo del configurador.
+        if ($factorFormaId) {
+            $query->where(fn($q) => $q
+                ->whereDoesntHave('factoresForma')
+                ->orWhereHas('factoresForma', fn($q2) => $q2->where('factores_forma.id', $factorFormaId)));
+        }
+
+        if ($tipoPsuId) {
+            $query->where(fn($q) => $q
+                ->whereDoesntHave('tiposPsu')
+                ->orWhereHas('tiposPsu', fn($q2) => $q2->where('tipos_psu.id', $tipoPsuId)));
         }
 
         $gabinete = $query->with(['componente.preciosActuales.tienda'])

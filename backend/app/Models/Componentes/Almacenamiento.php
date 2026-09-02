@@ -52,7 +52,9 @@ class Almacenamiento extends BaseModel
         return $this->belongsTo(\App\Models\Auxiliares\FactorFormaAlmacenamiento::class, 'factor_forma_id');
     }
 
-    public function tipoNAND()
+    // Nombre del método a propósito en minúsculas tras la N (tipoNand, no
+    // tipoNAND): ver comentario en GPU::tipoVram().
+    public function tipoNand()
     {
         return $this->belongsTo(\App\Models\Auxiliares\TipoNAND::class, 'tipo_nand_id');
     }

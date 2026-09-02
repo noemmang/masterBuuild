@@ -47,7 +47,9 @@ class PSU extends BaseModel
         return $this->belongsTo(\App\Models\Auxiliares\CertificacionPSU::class, 'certificacion_id');
     }
 
-    public function tipoPSU()
+    // Nombre del método a propósito en minúsculas tras la P (tipoPsu, no
+    // tipoPSU): ver comentario en GPU::tipoVram().
+    public function tipoPsu()
     {
         return $this->belongsTo(\App\Models\Auxiliares\TipoPSU::class, 'tipo_psu_id');
     }

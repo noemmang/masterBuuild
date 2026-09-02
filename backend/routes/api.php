@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Negocio\NotificacionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
+use App\Http\Controllers\Api\Configurador\RecomendadorController;
 
 Route::prefix('v1')->group(function () {
 
@@ -41,7 +42,13 @@ Route::prefix('v1')->group(function () {
 
     // ── Configurador — público ────────────────────────────────
     Route::prefix('configurador')->group(function () {
-        Route::post('validar', [ConfiguradorController::class, 'validar']);
+        Route::post('validar',   [ConfiguradorController::class, 'validar']);
+        // RecomendadorController existía completo (perfiles, presupuestos,
+        // toda la lógica de "constrúyeme un PC") pero no tenía ruta
+        // asignada en ningún sitio: era código muerto, inalcanzable desde
+        // fuera. Se expone aquí ahora que ya comparte las mismas reglas de
+        // compatibilidad placa↔gabinete y psu↔gabinete que el resto.
+        Route::post('recomendar', [RecomendadorController::class, 'recomendar']);
     });
 
     // ── Rutas protegidas ──────────────────────────────────────

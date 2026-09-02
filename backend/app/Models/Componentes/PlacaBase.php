@@ -75,7 +75,9 @@ class PlacaBase extends BaseModel
         return $this->belongsTo(\App\Models\Auxiliares\TipoMemoria::class, 'tipo_memoria_id');
     }
 
-    public function versionPCIe()
+    // Nombre del método a propósito en minúsculas tras la P (versionPcie,
+    // no versionPCIe): ver comentario en GPU::tipoVram().
+    public function versionPcie()
     {
         return $this->belongsTo(\App\Models\Auxiliares\VersionPCIe::class, 'version_pcie_id');
     }

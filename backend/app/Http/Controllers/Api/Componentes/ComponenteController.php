@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Api\Componentes;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ComponenteDetalleResource;
 use App\Http\Resources\ComponenteListadoResource;
 use App\Models\Componentes\Componente;
+use App\Services\Configurador\CompatibilidadService;
 use Illuminate\Http\Request;
 
 class ComponenteController extends Controller
 {
+    public function __construct(private CompatibilidadService $compatibilidad)
+    {
+    }
+
     public function index(Request $request)
     {
         // visible() (y no disponible()) para que los componentes agotados
@@ -89,120 +95,39 @@ class ComponenteController extends Controller
 
         if ($request->filled('mm_radiador')) {
             $valores = explode(',', $request->mm_radiador);
-            $query->whereHas('refrigeracionLiquida', fn($q) => $q->whereIn('mm_radiador', $valores));
+            // La columna real es tam_radiador_mm; "mm_radiador" no existe
+            // en la tabla y esto reventaba con un error SQL en cuanto se
+            // usaba este filtro (categoría refrigeración líquida en el
+            // buscador general, filtro "tamaño de radiador").
+            $query->whereHas('refrigeracionLiquida', fn($q) => $q->whereIn('tam_radiador_mm', $valores));
         }
 
-        // ── Filtros de compatibilidad ────────────────────────────────────────
+        // ── Compatibilidad con la selección actual del configurador ─────────
+        //
+        // El front manda el uuid de lo que el usuario ya tiene elegido en
+        // cada slot (los que estén vacíos simplemente no vienen). No
+        // importa en qué orden los fue eligiendo: aquí siempre se parte de
+        // "esto es lo que hay elegido ahora mismo" y se filtra la
+        // categoría pedida contra TODO lo demás a la vez, así que elegir
+        // primero el gabinete o elegirlo el último da el mismo resultado.
+        //
+        // Toda la lógica de qué combinaciones son compatibles vive en
+        // CompatibilidadService (compartida con ConfiguradorController)
+        // para que no haya una versión distinta del mismo criterio en cada
+        // sitio — eso era justo lo que hacía que arreglar una regla (p.ej.
+        // "el gabinete filtra la placa") no arreglara las demás (p.ej. "el
+        // gabinete filtra la fuente").
+        if ($request->filled('categoria')) {
+            $uuidsSeleccion = $request->only([
+                'cpu_uuid', 'placa_base_uuid', 'ram_uuid', 'gpu_uuid',
+                'psu_uuid', 'gabinete_uuid', 'refrigeracion_uuid',
+                'almacenamiento_uuid', 'ventilador_uuid',
+            ]);
 
-        // CPU y Placa Base: mismo socket
-        if ($request->filled('socket_id')) {
-            $socketId = (int) $request->socket_id;
-            $categoria = $request->get('categoria');
-
-            if ($categoria === 'cpu') {
-                $query->whereHas('cpu', fn($q) =>
-                    $q->where('socket_id', $socketId)
-                );
-            } elseif ($categoria === 'placa_base') {
-                $query->whereHas('placaBase', fn($q) =>
-                    $q->where('socket_id', $socketId)
-                );
-            } elseif (in_array($categoria, ['refrigeracion_aire'])) {
-                // El cooler debe soportar este socket
-                $query->whereHas('refrigeracionAire.socketsCompatibles', fn($q) =>
-                    $q->where('sockets.id', $socketId)
-                );
-            } elseif ($categoria === 'refrigeracion_liquida') {
-                $query->whereHas('refrigeracionLiquida.socketsCompatibles', fn($q) =>
-                    $q->where('sockets.id', $socketId)
-                );
+            if (array_filter($uuidsSeleccion)) {
+                $seleccion = $this->compatibilidad->cargarSeleccion($uuidsSeleccion);
+                $this->compatibilidad->restringir($query, $request->categoria, $seleccion);
             }
-        }
-
-        // CPU, Placa Base y RAM: mismo tipo de memoria
-        if ($request->filled('tipo_memoria_id')) {
-            $tipoMemoriaId = (int) $request->tipo_memoria_id;
-            $categoria = $request->get('categoria');
-
-            if ($categoria === 'cpu') {
-                $query->whereHas('cpu', fn($q) =>
-                    $q->where('tipo_memoria_id', $tipoMemoriaId)
-                );
-            } elseif ($categoria === 'placa_base') {
-                $query->whereHas('placaBase', fn($q) =>
-                    $q->where('tipo_memoria_id', $tipoMemoriaId)
-                );
-            } elseif ($categoria === 'ram') {
-                $query->whereHas('ram', fn($q) =>
-                    $q->where('tipo_memoria_id', $tipoMemoriaId)
-                );
-            }
-        }
-
-        // GPU: debe caber en el gabinete (longitud_mm <= longitud_gpu_max_mm del gabinete)
-        if ($request->filled('longitud_max_mm')) {
-            $query->whereHas('gpu', fn($q) =>
-                $q->where('longitud_mm', '<=', (int) $request->longitud_max_mm)
-            );
-        }
-
-        // Gabinete: debe admitir la GPU seleccionada (longitud_gpu_max_mm >= longitud GPU)
-        if ($request->filled('longitud_gpu_min_mm')) {
-            $query->whereHas('gabinete', fn($q) =>
-                $q->where('longitud_gpu_max_mm', '>=', (int) $request->longitud_gpu_min_mm)
-            );
-        }
-
-        // Gabinete: debe soportar el factor forma de la placa base
-        if ($request->filled('factor_forma_soportado_id')) {
-            $factorFormaId = (int) $request->factor_forma_soportado_id;
-            $query->whereHas('gabinete', fn($q) =>
-                $q->whereHas('factoresForma', fn($q2) =>
-                    $q2->where('factores_forma.id', $factorFormaId)
-                )
-            );
-        }
-
-        // Placa base: su factor de forma debe estar entre los que admite el
-        // gabinete elegido (csv de ids: un gabinete grande admite varios,
-        // ej. "1,2,3" = ATX, Micro-ATX, Mini-ITX). Antes solo existía el
-        // filtro inverso (arriba): elegir una placa filtraba los gabinetes,
-        // pero elegir un gabinete no filtraba las placas — por eso un
-        // gabinete Mini-ITX-only seguía enseñando placas ATX/Micro-ATX.
-        if ($request->filled('factores_forma_permitidos')) {
-            $factorFormaIds = array_map('intval', explode(',', $request->factores_forma_permitidos));
-            $query->whereHas('placaBase', fn($q) =>
-                $q->whereIn('factor_forma_id', $factorFormaIds)
-            );
-        }
-
-        // PSU: potencia mínima requerida por la GPU
-        if ($request->filled('potencia_min')) {
-            $query->whereHas('psu', fn($q) =>
-                $q->where('vatios', '>=', (int) $request->potencia_min)
-            );
-        }
-
-        // Cooler aire: altura máxima que admite el gabinete
-        if ($request->filled('altura_max_mm')) {
-            $query->whereHas('refrigeracionAire', fn($q) =>
-                $q->where('altura_mm', '<=', (int) $request->altura_max_mm)
-            );
-        }
-
-        // Cooler aire: TDP mínimo que debe aguantar
-        if ($request->filled('tdp_min')) {
-            $query->whereHas('refrigeracionAire', fn($q) =>
-                $q->where('tdp_max_watts', '>=', (int) $request->tdp_min)
-            );
-        }
-
-        // AIO: tamaños de radiador admitidos por el gabinete (csv: "240,280,360")
-        if ($request->filled('radiador_mm') && $request->get('categoria') === 'refrigeracion_liquida') {
-            $tamanios = array_map('intval', explode(',', $request->radiador_mm));
-            $query->whereHas('refrigeracionLiquida', fn($q) =>
-                $q->whereIn('tam_radiador_mm', $tamanios)
-            );
         }
 
         // ── Agregados para el listado ──────────────────────────────────────
@@ -231,8 +156,17 @@ class ComponenteController extends Controller
         };
 
         // ── Paginación ───────────────────────────────────────────────────────
-
-        $componentes = $query->with(['marca'])
+        //
+        // Se precargan las relaciones de especificaciones de TODAS las
+        // categorías (no solo la filtrada, porque "categoria" es opcional
+        // — el buscador general lista sin filtrar por categoría) para que
+        // ComponenteListadoResource pueda incluir las specs de cada
+        // tarjeta sin disparar una query por fila (N+1): un componente
+        // solo pertenece a una categoría, así que el resto de relaciones
+        // simplemente no encuentra nada que cargar para esa fila, pero
+        // sigue siendo una única query por relación (WHERE componente_id
+        // IN (...)) para toda la página, no una por componente.
+        $componentes = $query->with($this->relacionesListado())
             ->paginate($request->get('por_pagina', 20));
 
         return response()->json([
@@ -251,18 +185,40 @@ class ComponenteController extends Controller
     // aplicara), lo que hacía lento cualquier sitio que pidiera el detalle
     // de un componente (configurador al seleccionar, comparador de specs al
     // añadir una tarjeta, buscador al abrir una ficha).
+    // NOTA sobre nombres: tipoVRAM/versionPCIe/tipoPSU/tipoNAND/tiposPSU se
+    // renombraron a tipoVram/versionPcie/tipoPsu/tipoNand/tiposPsu en sus
+    // modelos. No es cosmético: Laravel serializa las relaciones cargadas
+    // usando Str::snake() sobre el nombre EXACTO del método, y
+    // Str::snake('tipoVRAM') da "tipo_v_r_a_m" (separa cada mayúscula
+    // suelta), no "tipo_vram". Con el nombre antiguo, cualquier sitio que
+    // serializara el modelo tal cual (como hacía este show() antes de
+    // pasar a ComponenteDetalleResource) mandaba esa clave rota al
+    // frontend y el dato de VRAM/PCIe/tipo de fuente/NAND llegaba
+    // silenciosamente vacío.
+    //
+    // También se han añadido aquí las relaciones auxiliares que faltaban
+    // por cargar (gabinete.tiposPsu, placaBase.versionPcie,
+    // almacenamiento.tipoNand, *.tipoRefrigeracion): existían como tabla y
+    // como relación en el modelo, pero nunca se precargaban, así que la
+    // ficha de un componente no llegaba a mostrar ese dato aunque sí
+    // estuviera en la base de datos.
     private const RELACIONES_POR_CATEGORIA = [
         'cpu'                   => ['cpu.socket', 'cpu.arquitectura', 'cpu.tipoMemoria'],
-        'gpu'                   => ['gpu.arquitectura', 'gpu.tipoVRAM', 'gpu.versionPCIe'],
+        'gpu'                   => ['gpu.arquitectura', 'gpu.tipoVram', 'gpu.versionPcie'],
         'ram'                   => ['ram.tipoMemoria'],
-        'placa_base'            => ['placaBase.socket', 'placaBase.chipset', 'placaBase.factorForma', 'placaBase.tipoMemoria'],
-        'almacenamiento'        => ['almacenamiento.interfaz', 'almacenamiento.factorForma'],
-        'psu'                   => ['psu.certificacion', 'psu.tipoPSU'],
-        'gabinete'              => ['gabinete.tipoGabinete', 'gabinete.estructuraGabinete', 'gabinete.factoresForma'],
-        'refrigeracion_aire'    => ['refrigeracionAire.socketsCompatibles'],
-        'refrigeracion_liquida' => ['refrigeracionLiquida.socketsCompatibles'],
+        'placa_base'            => ['placaBase.socket', 'placaBase.chipset', 'placaBase.factorForma', 'placaBase.tipoMemoria', 'placaBase.versionPcie'],
+        'almacenamiento'        => ['almacenamiento.interfaz', 'almacenamiento.factorForma', 'almacenamiento.tipoNand'],
+        'psu'                   => ['psu.certificacion', 'psu.tipoPsu'],
+        'gabinete'              => ['gabinete.tipoGabinete', 'gabinete.estructuraGabinete', 'gabinete.factoresForma', 'gabinete.tiposPsu'],
+        'refrigeracion_aire'    => ['refrigeracionAire.socketsCompatibles', 'refrigeracionAire.tipoRefrigeracion'],
+        'refrigeracion_liquida' => ['refrigeracionLiquida.socketsCompatibles', 'refrigeracionLiquida.tipoRefrigeracion'],
         'ventilador'            => ['ventilador.tipoVentilador'],
     ];
+
+    private function relacionesListado(): array
+    {
+        return array_merge(['marca'], ...array_values(self::RELACIONES_POR_CATEGORIA));
+    }
 
     public function show(string $uuid)
     {
@@ -285,7 +241,12 @@ class ComponenteController extends Controller
 
         $componente->load($relaciones);
 
-        return response()->json($componente);
+        // Resource en vez de devolver el modelo tal cual: así la forma del
+        // JSON (nombres de campo, tipos numéricos reales en vez de strings
+        // de decimal, claves de relación) la decide explícitamente este
+        // archivo y no queda a merced de cómo Eloquent decida serializar
+        // cada columna o relación.
+        return new ComponenteDetalleResource($componente);
     }
 
     public function porCategoria(string $categoria)

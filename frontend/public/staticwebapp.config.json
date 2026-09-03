@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/assets/*",
+      "/logo-tiendas/*",
+      "*.{png,jpg,jpeg,gif,svg,ico,webp,css,js,json,woff,woff2,ttf,eot,map,txt,webmanifest}"
+    ]
+  },
+
+  "mimeTypes": {
+    ".json": "application/json"
+  },
+
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 200
+    }
+  }
+}

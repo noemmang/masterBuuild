@@ -31,11 +31,11 @@
         />
       </div>
   
-      <div class="auth-error" *ngIf="error">{{ error }}</div>
+      <div class="auth-error" *ngIf="error()">{{ error() }}</div>
   
-      <button class="btn-primary" (click)="submit()" [disabled]="cargando">
-        <span *ngIf="!cargando">Entrar</span>
-        <span *ngIf="cargando" class="spinner"></span>
+      <button class="btn-primary" (click)="submit()" [disabled]="cargando()">
+        <span *ngIf="!cargando()">Entrar</span>
+        <span *ngIf="cargando()" class="spinner"></span>
       </button>
   
       <p class="auth-link">

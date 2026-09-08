@@ -6,11 +6,12 @@ import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';                          // ← AÑADIDO
 import { ComponenteService, Componente } from '../../core/services/componente.service';
+import { Model3dViewerComponent } from '../../shared/components/model-3d-viewer/model-3d-viewer.component'; // ← AÑADIDO
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, FormsModule],                                  // ← FormsModule AÑADIDO
+  imports: [RouterLink, FormsModule, Model3dViewerComponent],          // ← Model3dViewerComponent AÑADIDO
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

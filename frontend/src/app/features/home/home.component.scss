@@ -650,10 +650,15 @@
 
 .comparador-banner-inner {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto minmax(320px, 480px);
+  justify-content: space-between;
   align-items: center;
   gap: 2rem;
   padding: 2.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: auto minmax(240px, 320px);
+  }
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
@@ -706,60 +711,11 @@
 }
 
 .comparador-banner-visual {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  padding-right: 0.5rem;
+  width: 100%;
+  height: 260px;
+  flex-shrink: 0;
 
   @media (max-width: 640px) { display: none; }
-}
-
-.gabinete-mock {
-  border-radius: 8px;
-  background: var(--surface2, rgba(255,255,255,0.07));
-  border: 1px solid var(--border, rgba(255,255,255,0.1));
-  opacity: 0.8;
-  position: relative;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  animation: gabineteFloat 4.5s ease-in-out infinite;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 12px; left: 12px; right: 12px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border, rgba(255,255,255,0.12));
-    transition: background 0.3s ease;
-  }
-
-  .comparador-banner:hover & {
-    opacity: 1;
-    &::before { background: var(--accent); }
-  }
-
-  &-1 {
-    width: 52px; height: 130px;
-    animation-delay: -0.6s;
-    .comparador-banner:hover & { animation-play-state: paused; transform: translateY(-4px); }
-  }
-  &-2 {
-    width: 64px; height: 160px;
-    animation-delay: -2.1s;
-    animation-duration: 5.2s;
-    .comparador-banner:hover & { animation-play-state: paused; transform: translateY(-6px); }
-  }
-  &-3 {
-    width: 44px; height: 110px;
-    animation-delay: -3.4s;
-    animation-duration: 3.8s;
-    .comparador-banner:hover & { animation-play-state: paused; transform: translateY(-3px); }
-  }
-}
-
-@keyframes gabineteFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-5px); }
 }
 
 

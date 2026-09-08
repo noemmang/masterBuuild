@@ -1,0 +1,31 @@
+<div class="model3d-viewer">
+  @if (halo) {
+    <svg class="model3d-viewer__halo" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      @for (celda of celdasHalo; track celda.x + '-' + celda.y) {
+        <rect
+          [attr.x]="celda.x"
+          [attr.y]="celda.y"
+          [attr.width]="celda.tam"
+          [attr.height]="celda.tam"
+          [attr.fill]="colorHalo"
+          [attr.opacity]="celda.opacidad"
+        />
+      }
+    </svg>
+  }
+
+  @if (cargando()) {
+    <div class="model3d-viewer__skeleton" aria-hidden="true"></div>
+  }
+
+  @if (errorCarga()) {
+    <div class="model3d-viewer__fallback" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Z"/>
+        <path d="M3 7l9 5 9-5M12 12v10"/>
+      </svg>
+    </div>
+  }
+
+  <canvas #canvas class="model3d-viewer__canvas" [class.model3d-viewer__canvas--oculto]="errorCarga()"></canvas>
+</div>

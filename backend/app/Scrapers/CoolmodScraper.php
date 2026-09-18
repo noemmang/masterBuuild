@@ -16,7 +16,7 @@ class CoolmodScraper extends AbstractScraper implements ScraperTienda
         $producto = $this->extraerJsonLdProducto($crawler);
 
         if ($producto !== null) {
-            return $this->desdeJsonLd($producto, $url);
+            return $this->desdeJsonLd($producto, $url, $crawler);
         }
 
         // ⚠️ SIN VERIFICAR: no se pudo inspeccionar el HTML real de Coolmod
@@ -38,7 +38,7 @@ class CoolmodScraper extends AbstractScraper implements ScraperTienda
         return $this->desdeHtml($crawler, $url);
     }
 
-    protected function desdeJsonLd(array $producto, string $url): DatoScrapeado
+    protected function desdeJsonLd(array $producto, string $url, Crawler $crawler): DatoScrapeado
     {
         $offer = $this->resolverOffer($producto['offers'] ?? []);
 
@@ -46,15 +46,92 @@ class CoolmodScraper extends AbstractScraper implements ScraperTienda
             throw new ScrapingException("JSON-LD sin precio en {$url}");
         }
 
-        $disponibilidad = strtolower((string) ($offer['availability'] ?? ''));
-
         return new DatoScrapeado(
             precio: (float) $offer['price'],
-            enStock: str_contains($disponibilidad, 'instock'),
+            // ⚠️ OJO: en Coolmod NO usamos $offer['availability'] directamente.
+            // Ver el aviso completo en resolverStockReal(): ese campo del
+            // JSON-LD viene desincronizado del stock real (siempre
+            // "https://schema.org/InStock", agotado o no), así que el precio
+            // se saca bien pero el stock siempre salía disponible. Es el bug
+            // reportado con la Fractal Design Terra: 2 tiendas agotadas,
+            // Coolmod no se marcaba como agotado.
+            enStock: $this->resolverStockReal($crawler, $offer),
             moneda: strtoupper((string) ($offer['priceCurrency'] ?? 'EUR')),
             nombreProducto: $producto['name'] ?? null,
             url: $url,
         );
+    }
+
+    /**
+     * Determina el stock REAL de Coolmod ignorando (o solo como último
+     * recurso) el "offers.availability" del JSON-LD.
+     *
+     * CONFIRMADO con el HTML de una ficha agotada (Fractal Design Terra,
+     * PROD-027107): el JSON-LD de <head> declara
+     *   "availability": "https://schema.org/InStock"
+     * de forma estática pese a que el producto está agotado. Probablemente
+     * se genera una vez al crear la ficha y no se regenera cuando cambia
+     * el stock, así que NO es fiable en Coolmod (a diferencia de Neobyte,
+     * donde este mismo campo sí parece reflejar el stock real).
+     *
+     * La señal fiable que sí varía con el stock real es el input oculto
+     * que Coolmod usa para su propio tracking (Connectif):
+     *   <input id="connectif-prod-info" data-itemavailability="OutOfStock">
+     * (o "InStock" cuando hay unidades). Como red de seguridad, si ese
+     * input no apareciera o no trajera el atributo, comprobamos también
+     * el marcado/texto que Coolmod muestra cuando no hay stock:
+     *   - el botón "No disponible" (id="drawer-without-stock") que
+     *     sustituye al selector de cantidad/añadir al carrito.
+     *   - el texto "Artículo no disponible" del bloque de disponibilidad.
+     *
+     * ⚠️ Verificado solo contra una ficha agotada. Antes de dar esto por
+     * cerrado del todo, sería ideal repetir la comprobación con una ficha
+     * de Coolmod que SÍ tenga stock, para confirmar que
+     * data-itemavailability="InStock" aparece igual (y que no falta el
+     * atributo cuando hay stock, que dispararía el fallback de texto).
+     */
+    protected function resolverStockReal(Crawler $crawler, array $offer): bool
+    {
+        $infoConnectif = $crawler->filter('#connectif-prod-info');
+
+        if ($infoConnectif->count() > 0) {
+            $atributo = $infoConnectif->first()->attr('data-itemavailability');
+
+            if ($atributo !== null && $atributo !== '') {
+                $atributo = strtolower(trim($atributo));
+
+                if (str_contains($atributo, 'outofstock')) {
+                    return false;
+                }
+
+                if (str_contains($atributo, 'instock')) {
+                    return true;
+                }
+            }
+        }
+
+        // Fallback 1: el botón/label que reemplaza al de compra cuando no
+        // hay stock.
+        if ($crawler->filter('#drawer-without-stock')->count() > 0) {
+            return false;
+        }
+
+        // Fallback 2: texto visible del bloque de disponibilidad.
+        $body = $crawler->filter('body');
+        if ($body->count() > 0) {
+            $texto = $body->first()->text();
+            if (str_contains($texto, 'Artículo no disponible')
+                || str_contains($texto, 'No disponible')) {
+                return false;
+            }
+        }
+
+        // Último recurso: lo que diga el JSON-LD. Puede estar
+        // desactualizado en Coolmod, pero es mejor que nada si no se
+        // encontró ninguna señal fiable en el HTML.
+        $disponibilidad = strtolower((string) ($offer['availability'] ?? ''));
+
+        return str_contains($disponibilidad, 'instock');
     }
 
     /**
@@ -84,10 +161,12 @@ class CoolmodScraper extends AbstractScraper implements ScraperTienda
             trim($precioTexto)
         );
 
-        // También sin verificar: ajusta el selector cuando confirmes cómo
-        // marca Coolmod el stock (botón "Añadir al carrito", texto
-        // "Agotado", clase CSS específica, etc.)
-        $enStock = $crawler->filter('.add-to-cart, [data-add-to-cart]')->count() > 0;
+        // El stock NO se saca de un selector "add-to-cart" (ese selector
+        // era una suposición sin verificar y, además, en Coolmod ni
+        // siquiera haría falta: ver resolverStockReal() más abajo, que usa
+        // el input #connectif-prod-info / el texto "No disponible" y es la
+        // misma lógica que ya usamos cuando sí hay JSON-LD.
+        $enStock = $this->resolverStockReal($crawler, []);
 
         return new DatoScrapeado(
             precio: $precio,

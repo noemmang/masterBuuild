@@ -191,7 +191,7 @@ class ComponentesSeeder extends Seeder
             cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 6, 'hilos' => 12, 'frecuencia_base_ghz' => 4.70, 'frecuencia_boost_ghz' => 5.30, 'tdp_watts' => 105, 'tdp_max_watts' => 142, 'frecuencia_memoria_max_mhz' => 5200, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon Graphics (2 CUs)', 'proceso_nm' => 5, 'incluye_cooler' => false, 'overclock' => true]
         );
         $this->crearCPU(
-            comp: ['nombre' => 'AMD Ryzen 5 7600', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 5 7600', 'descripcion' => 'Procesador AMD Ryzen 5 7600, 6 núcleos / 12 hilos, arquitectura Zen 4. Versión no-X con menor TDP y cooler incluido.', 'imagen_url' => 'https://www.ucc.com.bd/image/cache/catalog/processor/amd/ryzen-5-7600/amd-ryzen-5-7600-processor-1-550x550.jpg.webp'],
+            comp: ['nombre' => 'AMD Ryzen 5 7600', 'marca' => 'AMD', 'fabricante' => 'AMD', 'modelo' => 'Ryzen 5 7600', 'descripcion' => 'Procesador AMD Ryzen 5 7600, 6 núcleos / 12 hilos, arquitectura Zen 4. Versión no-X con menor TDP y cooler incluido.', 'imagen_url' => 'https://cdn.ibertronica.es/product/MI100-000001015_00001.jpeg'],
             cpu: ['socket' => 'AM5', 'arquitectura' => 'Zen 4', 'tipo_memoria' => 'DDR5', 'nucleos' => 6, 'hilos' => 12, 'frecuencia_base_ghz' => 3.80, 'frecuencia_boost_ghz' => 5.10, 'tdp_watts' => 65, 'tdp_max_watts' => 88, 'frecuencia_memoria_max_mhz' => 5200, 'memoria_max_gb' => 128, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Radeon Graphics (2 CUs)', 'proceso_nm' => 5, 'incluye_cooler' => true, 'overclock' => true]
         );
         $this->crearCPU(
@@ -299,7 +299,7 @@ class ComponentesSeeder extends Seeder
             cpu: ['socket' => 'LGA1851', 'arquitectura' => 'Arrow Lake', 'tipo_memoria' => 'DDR5', 'nucleos' => 20, 'hilos' => 20, 'frecuencia_base_ghz' => 3.90, 'frecuencia_boost_ghz' => 5.50, 'tdp_watts' => 125, 'tdp_max_watts' => 159, 'frecuencia_memoria_max_mhz' => 6400, 'memoria_max_gb' => 192, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel Arc Graphics (4 Xe-cores)', 'proceso_nm' => 3, 'incluye_cooler' => false, 'overclock' => true]
         );
         $this->crearCPU(
-            comp: ['nombre' => 'Intel Core Ultra 9 285K', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core Ultra 9 285K', 'descripcion' => 'Procesador Intel Core Ultra 9 285K, 24 núcleos (8P+16E) / 24 hilos, arquitectura Arrow Lake. El flagship desktop de Intel en la plataforma LGA1851.', 'imagen_url' => 'https://med.greatecno.com/1301925/intel-core-ultra-9-285k-5-7ghz-socket-1851-boxed.jpg'],
+            comp: ['nombre' => 'Intel Core Ultra 9 285K', 'marca' => 'Intel', 'fabricante' => 'Intel', 'modelo' => 'Core Ultra 9 285K', 'descripcion' => 'Procesador Intel Core Ultra 9 285K, 24 núcleos (8P+16E) / 24 hilos, arquitectura Arrow Lake. El flagship desktop de Intel en la plataforma LGA1851.', 'imagen_url' => 'https://m.media-amazon.com/images/I/518vil08pDL.jpg'],
             cpu: ['socket' => 'LGA1851', 'arquitectura' => 'Arrow Lake', 'tipo_memoria' => 'DDR5', 'nucleos' => 24, 'hilos' => 24, 'frecuencia_base_ghz' => 3.70, 'frecuencia_boost_ghz' => 5.70, 'tdp_watts' => 125, 'tdp_max_watts' => 159, 'frecuencia_memoria_max_mhz' => 6400, 'memoria_max_gb' => 192, 'grafica_integrada' => true, 'nombre_grafica_integrada' => 'Intel Arc Graphics (4 Xe-cores)', 'proceso_nm' => 3, 'incluye_cooler' => false, 'overclock' => true]
         );
         $this->crearCPU(
@@ -363,7 +363,7 @@ class ComponentesSeeder extends Seeder
     protected function seedPBAM4(): void
     {
         $this->crearPlacaBase(
-            comp: ['nombre' => 'ASUS ROG Strix B550-F Gaming', 'marca' => 'ASUS', 'fabricante' => 'ASUS', 'modelo' => 'ROG Strix B550-F Gaming', 'descripcion' => 'Placa base ATX AM4 con chipset B550. Excelente VRM, Wi-Fi 6 integrado, 2.5G LAN y soporte PCIe 4.0 desde CPU. Ideal para Ryzen 5000.', 'imagen_url' => 'https://www.aussar.es/81951-large_default/asus-am4-rog-strix-b550-f-gaming-wifi-ii.jpg'],
+            comp: ['nombre' => 'ASUS ROG Strix B550-F Gaming', 'marca' => 'ASUS', 'fabricante' => 'ASUS', 'modelo' => 'ROG Strix B550-F Gaming', 'descripcion' => 'Placa base ATX AM4 con chipset B550. Excelente VRM, Wi-Fi 6 integrado, 2.5G LAN y soporte PCIe 4.0 desde CPU. Ideal para Ryzen 5000.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/29/299957/1592-asus-rog-strix-b550-f-gaming-opiniones.jpg'],
             pb: ['socket' => 'AM4', 'chipset' => 'B550', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR4', 'version_pcie' => 'PCIe 4.0', 'slots_memoria' => 4, 'memoria_max_gb' => 128, 'frecuencia_memoria_max_mhz' => 4400, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 2, 'slots_m2' => 2, 'puertos_sata' => 6, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x4', 'USB 3.2 Gen2 Type-C x1', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC1220', 'lan_chipset' => 'Intel I225-V', 'lan_velocidad_gbps' => 2.5]
         );
         $this->crearPlacaBase(
@@ -395,7 +395,7 @@ class ComponentesSeeder extends Seeder
     protected function seedPBAM5(): void
     {
         $this->crearPlacaBase(
-            comp: ['nombre' => 'ASUS TUF Gaming B650-Plus WiFi', 'marca' => 'ASUS', 'fabricante' => 'ASUS', 'modelo' => 'TUF Gaming B650-Plus WiFi', 'descripcion' => 'Placa base ATX AM5 B650 con Wi-Fi 6E y 2.5G LAN. VRM de 12+2 fases y DDR5. La entrada equilibrada a la plataforma AM5 con soporte Ryzen 7000/9000.', 'imagen_url' => 'https://centergamingespana.com/wp-content/uploads/2022/10/asus-tuf-gaming-b650-plus-wifi-1.jpg'],
+            comp: ['nombre' => 'ASUS TUF Gaming B650-Plus WiFi', 'marca' => 'ASUS', 'fabricante' => 'ASUS', 'modelo' => 'TUF Gaming B650-Plus WiFi', 'descripcion' => 'Placa base ATX AM5 B650 con Wi-Fi 6E y 2.5G LAN. VRM de 12+2 fases y DDR5. La entrada equilibrada a la plataforma AM5 con soporte Ryzen 7000/9000.', 'imagen_url' => 'https://m.media-amazon.com/images/I/81ogi-krqkL._AC_UF894,1000_QL80_.jpg'],
             pb: ['socket' => 'AM5', 'chipset' => 'B650', 'factor_forma' => 'ATX', 'tipo_memoria' => 'DDR5', 'version_pcie' => 'PCIe 5.0', 'slots_memoria' => 4, 'memoria_max_gb' => 192, 'frecuencia_memoria_max_mhz' => 7200, 'slots_pcie_x16' => 2, 'slots_pcie_x4' => 0, 'slots_pcie_x1' => 1, 'slots_m2' => 3, 'puertos_sata' => 4, 'puertos_usb_traseros' => ['USB 3.2 Gen2 Type-A x4', 'USB 3.2 Gen2 Type-C x1', 'USB 2.0 x2'], 'conector_atx' => '24-pin', 'conector_cpu' => '8+4-pin', 'wifi' => true, 'bluetooth' => true, 'thunderbolt' => false, 'audio_chipset' => 'Realtek ALC897', 'lan_chipset' => 'Realtek RTL8125BG', 'lan_velocidad_gbps' => 2.5]
         );
         $this->crearPlacaBase(
@@ -566,7 +566,7 @@ class ComponentesSeeder extends Seeder
             ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 16, 'modulos' => 2, 'capacidad_total_gb' => 32, 'velocidad_mhz' => 3600, 'latencia_cas' => 'CL16-19-19-39', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 44, 'tiene_rgb' => true, 'ecc' => false, 'xmp' => true, 'expo' => false]
         );
         $this->crearRAM(
-            comp: ['nombre' => 'Kingston Fury Beast 16GB DDR4-3200 CL16', 'marca' => 'Kingston', 'fabricante' => 'Kingston', 'modelo' => 'KF432C16BBK2/16', 'descripcion' => 'Kit 2×8 GB DDR4-3200 CL16 sin RGB. Disipador bajo perfil con acabado negro mate. Buena alternativa económica al Vengeance LPX con XMP 2.0.', 'https://img.pccomponentes.com/articles/43/432664/1392-kingston-fury-beast-ddr4-3200-mhz-16gb-2x8gb-cl16.jpg'],
+            comp: ['nombre' => 'Kingston Fury Beast 16GB DDR4-3200 CL16', 'marca' => 'Kingston', 'fabricante' => 'Kingston', 'modelo' => 'KF432C16BBK2/16', 'descripcion' => 'Kit 2×8 GB DDR4-3200 CL16 sin RGB. Disipador bajo perfil con acabado negro mate. Buena alternativa económica al Vengeance LPX con XMP 2.0.', 'https://img.soluziondigital.com/504968-large_default/kingston-technology-kf432c16bb2a-16-fury-beast-16gb-3200mt-s-ddr4-cl16-dimm-rgb.jpg'],
             ram: ['tipo_memoria' => 'DDR4', 'capacidad_gb' => 8, 'modulos' => 2, 'capacidad_total_gb' => 16, 'velocidad_mhz' => 3200, 'latencia_cas' => 'CL16-18-18-36', 'voltaje' => 1.35, 'factor_forma' => 'DIMM', 'altura_mm' => 34, 'tiene_rgb' => false, 'ecc' => false, 'xmp' => true, 'expo' => false]
         );
         $this->crearRAM(
@@ -680,6 +680,42 @@ class ComponentesSeeder extends Seeder
         $this->crearGPU(
             comp: ['nombre' => 'INNO3D GeForce RTX 5060 TWIN X2 OC 8GB (SFF)', 'marca' => 'INNO3D', 'fabricante' => 'NVIDIA', 'modelo' => 'N50602-08D7X-173305N', 'descripcion' => 'RTX 5060 8 GB GDDR7 Blackwell en formato compacto de 215 mm, 2 slots. TDP de solo 150 W. La opción Blackwell para builds SFF o ITX con PSU de bajo vataje.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/1087/10875101/1572-inno3d-geforce-rtx-5060-ti-twin-x2-oc-8gb-gddr7-reflex-2-rtx-ai-dlss4-8826ee1c-437d-4143-8da6-595cd7ad3e66.jpg'],
             gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 8, 'bus_bits' => 128, 'frecuencia_base_mhz' => 1830, 'frecuencia_boost_mhz' => 2497, 'tdp_watts' => 150, 'slots_pcie' => 2.0, 'longitud_mm' => 215, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 500, 'salidas_video' => ['3x DisplayPort 2.1', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'Inno3D GeForce RTX 5070 TWIN X2', 'marca' => 'INNO3D', 'fabricante' => 'NVIDIA', 'modelo' => 'N50702-12D7-195064N', 'descripcion' => 'RTX 5070 12 GB GDDR7 Blackwell en formato compacto de doble ventilador (250 mm, 2 slots). 6144 CUDA cores, boost 2512 MHz. Buena opción para builds medianos/compactos con DLSS 4.', 'imagen_url' => 'https://img.pccomponentes.com/articles/1087/10872331/131-inno3d-geforce-rtx-5070-twin-x2-12gb-gddr7-reflex-2-rtx-ai-dlss4-especificaciones.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 12, 'bus_bits' => 192, 'frecuencia_base_mhz' => 2325, 'frecuencia_boost_mhz' => 2512, 'tdp_watts' => 250, 'slots_pcie' => 2.0, 'longitud_mm' => 250, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 650, 'salidas_video' => ['3x DisplayPort 2.1', '1x HDMI 2.1'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'Inno3D GeForce RTX 5070 Ti X3 OC', 'marca' => 'INNO3D', 'fabricante' => 'NVIDIA', 'modelo' => 'N507T3-16D7X-176068N', 'descripcion' => 'RTX 5070 Ti 16 GB GDDR7, bus 256-bit. Cooler X3 de triple ventilador (300 mm). 8960 CUDA cores, boost 2482 MHz. Buen equilibrio para 1440p/4K con margen de VRAM para IA local.', 'imagen_url' => 'https://thumb.pccomponentes.com/w-530-530/articles/1087/10870332/1340-inno3d-geforce-rtx-5070-ti-x3-oc-16gb-gddr7-reflex-2-rtx-ai-dlss4-71916c74-59c5-4ed8-a1a3-d368f0d58d04.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 2295, 'frecuencia_boost_mhz' => 2482, 'tdp_watts' => 300, 'slots_pcie' => 2.5, 'longitud_mm' => 300, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 750, 'salidas_video' => ['3x DisplayPort 2.1b', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'INNO3D GeForce RTX 5080 X3', 'marca' => 'INNO3D', 'fabricante' => 'NVIDIA', 'modelo' => 'N50803-16D7-176068N', 'descripcion' => 'RTX 5080 16 GB GDDR7, bus 256-bit. Cooler X3 de triple ventilador (300 mm). 10752 CUDA cores, boost ~2617 MHz. Buque insignia accesible de Blackwell para 4K.', 'imagen_url' => 'https://img.pccomponentes.com/articles/1086/10867535/3185-inno3d-geforce-rtx-5080-x3-16gb-gddr7-reflex-2-rtx-ai-dlss4-c4bc770d-a169-4d4d-88e8-ba87a2c884a6.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 2295, 'frecuencia_boost_mhz' => 2617, 'tdp_watts' => 360, 'slots_pcie' => 2.5, 'longitud_mm' => 300, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 850, 'salidas_video' => ['3x DisplayPort 2.1b', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'Asus GeForce RTX 5090 ROG Astral OC', 'marca' => 'ASUS', 'fabricante' => 'NVIDIA', 'modelo' => 'ROG-ASTRAL-RTX5090-O32G-GAMING', 'descripcion' => 'RTX 5090 32 GB GDDR7, bus 512-bit. El cooler insignia ROG Astral de cuatro ventiladores, cámara de vapor patentada y die-cast frame. 21760 CUDA cores, boost 2610 MHz en perfil OC. El tope de gama absoluto de Blackwell.', 'imagen_url' => 'https://dlcdnwebimgs.asus.com/files/media/2473ffde-c3ac-4533-9dd5-e5896f281998/v1/video/hero.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 32, 'bus_bits' => 512, 'frecuencia_base_mhz' => 2017, 'frecuencia_boost_mhz' => 2610, 'tdp_watts' => 575, 'slots_pcie' => 3.8, 'longitud_mm' => 358, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 1000, 'salidas_video' => ['3x DisplayPort 2.1b', '2x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'INNO3D GeForce RTX 5090 X3', 'marca' => 'INNO3D', 'fabricante' => 'NVIDIA', 'modelo' => 'N50903-32D7-17593928', 'descripcion' => 'RTX 5090 32 GB GDDR7, bus 512-bit. Cooler X3 de triple ventilador de 100 mm y cámara de vapor grande (333 mm). 21760 CUDA cores, boost 2407 MHz. Alternativa más compacta que las triple-slot premium para el mismo chip GB202.', 'imagen_url' => 'https://www.neobyte.es/161348-large_default/inno3d-geforce-rtx-5090-x3-oc-32gb-gddr7-dlss4-tarjeta-grafica.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 32, 'bus_bits' => 512, 'frecuencia_base_mhz' => 2017, 'frecuencia_boost_mhz' => 2407, 'tdp_watts' => 575, 'slots_pcie' => 3.0, 'longitud_mm' => 333, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 1000, 'salidas_video' => ['3x DisplayPort 2.1b', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'ZOTAC GAMING GeForce RTX 5080', 'marca' => 'Zotac', 'fabricante' => 'NVIDIA', 'modelo' => 'ZT-B50800J-10P', 'descripcion' => 'RTX 5080 16 GB GDDR7, bus 256-bit. Cooler IceStorm 3.0 de triple ventilador con cámara de vapor ampliada (330 mm, 3.5 slots). 10752 CUDA cores, boost 2640 MHz. Opción sólida y sin excesos para 4K.', 'imagen_url' => 'https://www.coolmod.com/images/product/large/PROD-038350_1.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 2295, 'frecuencia_boost_mhz' => 2640, 'tdp_watts' => 360, 'slots_pcie' => 3.5, 'longitud_mm' => 330, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 800, 'salidas_video' => ['3x DisplayPort 2.1b', '1x HDMI 2.1b'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'ASUS ProArt GeForce RTX 5070 Ti OC', 'marca' => 'ASUS', 'fabricante' => 'NVIDIA', 'modelo' => 'PROART-RTX5070TI-O16G', 'descripcion' => 'RTX 5070 Ti 16 GB GDDR7 Blackwell, bus 256-bit y 8960 CUDA cores. Cooler de triple ventilador Axial-tech con cámara de vapor y pad de cambio de fase en formato SFF-Ready de 2.5 slots (304 mm). Puerto USB-C con salida de vídeo pensado para creadores y acabado en laminado marrón efecto madera.', 'imagen_url' => 'https://www.coolmod.com/images/product/large/PROD-044858_1.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 2300, 'frecuencia_boost_mhz' => 2610, 'tdp_watts' => 300, 'slots_pcie' => 2.5, 'longitud_mm' => 304, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 850, 'salidas_video' => ['2x DisplayPort 2.1b', '1x HDMI 2.1b', '1x USB Type-C (salida de vídeo)'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'ASUS ProArt GeForce RTX 5080 OC', 'marca' => 'ASUS', 'fabricante' => 'NVIDIA', 'modelo' => 'PROART-RTX5080-O16G', 'descripcion' => 'RTX 5080 16 GB GDDR7 Blackwell, bus 256-bit y 10752 CUDA cores. Cooler de triple ventilador Axial-tech con cámara de vapor y pad de cambio de fase en formato SFF-Ready de 2.5 slots (304 mm). Puerto USB-C con salida de vídeo, DLSS 4 y acabado sobrio efecto madera para builds de creación de contenido en 4K.', 'imagen_url' => 'https://dlcdnwebimgs.asus.com/files/media/2960fc28-7434-43c6-b052-c08554748f17/v1/img/software/aurasync.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 16, 'bus_bits' => 256, 'frecuencia_base_mhz' => 2295, 'frecuencia_boost_mhz' => 2730, 'tdp_watts' => 360, 'slots_pcie' => 2.5, 'longitud_mm' => 304, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 850, 'salidas_video' => ['2x DisplayPort 2.1b', '1x HDMI 2.1b', '1x USB Type-C (salida de vídeo)'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
+        );
+        $this->crearGPU(
+            comp: ['nombre' => 'ASUS ProArt GeForce RTX 5090 OC', 'marca' => 'ASUS', 'fabricante' => 'NVIDIA', 'modelo' => 'PROART-RTX5090-O32G', 'descripcion' => 'RTX 5090 32 GB GDDR7 Blackwell, bus 512-bit y 21760 CUDA cores. Diseño flow-through de doble ventilador Axial-tech inspirado en la Founders Edition, con cámara de vapor y metal líquido sobre la GPU, en solo 2.5 slots (304 mm) y compatible SFF. Añade puerto USB-C con salida de vídeo.', 'imagen_url' => 'https://www.techpowerup.com/img/QKdEIflpgjv6CJmK.jpg'],
+            gpu: ['arquitectura' => 'Blackwell', 'tipo_vram' => 'GDDR7', 'version_pcie' => 'PCIe 5.0', 'vram_gb' => 32, 'bus_bits' => 512, 'frecuencia_base_mhz' => 2017, 'frecuencia_boost_mhz' => 2512, 'tdp_watts' => 575, 'slots_pcie' => 2.5, 'longitud_mm' => 304, 'conectores_alimentacion' => ['1x 16-pin (12V-2x6)'], 'psu_minima_watts' => 1000, 'salidas_video' => ['2x DisplayPort 2.1b', '1x HDMI 2.1b', '1x USB Type-C (salida de vídeo)'], 'ray_tracing' => true, 'dlss' => true, 'fsr' => true]
         );
         // ── AMD GPU ──────────────────────────────────────────────
         $this->crearGPU(
@@ -911,7 +947,7 @@ class ComponentesSeeder extends Seeder
             gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX, $pSFX, $pSFXL], 'gpu_max' => 363, 'cooler_max' => 164, 'psu_max' => 150, 'bahias35' => 0, 'bahias25' => 1, 'vent_front' => 0, 'vent_sup' => 2, 'vent_tras' => 0, 'vent_incl' => 0, 'tam_front' => 0, 'tam_sup' => 120, 'tam_tras' => 0, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Aluminio + Tempered Glass', 'ancho' => 186, 'alto' => 295, 'prof' => 370]
         );
         $this->crearGabinete(
-            comp: ['nombre' => 'Fractal Design Pop Mini', 'marca' => 'Fractal Design', 'modelo' => 'FD-C-POM1A-01', 'descripcion' => 'Mini Tower mATX con frontal de acero texturizado, panel lateral TG y dos ventiladores de 120 mm incluidos. Relación calidad/precio destacada en el segmento mATX económico.', 'imagen_url' => 'https://www.fractal-design.com/app/uploads/2022/06/PopMiniAirVis_KV4_2560.jpg'],
+            comp: ['nombre' => 'Fractal Design Pop Mini', 'marca' => 'Fractal Design', 'modelo' => 'FD-C-POM1A-01', 'descripcion' => 'Mini Tower mATX con frontal de acero texturizado, panel lateral TG y dos ventiladores de 120 mm incluidos. Relación calidad/precio destacada en el segmento mATX económico.', 'imagen_url' => 'https://www.coolmod.com/images/product/large/PROD-021275_1.jpg'],
             gab: ['tipo_id' => $mini->id, 'estructura_id' => $conv->id, 'ff' => [$matx, $itx], 'psu_tipos' => [$pATX], 'gpu_max' => 365, 'cooler_max' => 170, 'psu_max' => 150, 'bahias35' => 2, 'bahias25' => 2, 'vent_front' => 2, 'vent_sup' => 1, 'vent_tras' => 1, 'vent_incl' => 2, 'tam_front' => 120, 'tam_sup' => 120, 'tam_tras' => 120, 'sop_rad' => [120, 240], 'usb_front' => ['2xUSB3', '1xUSB-C'], 'vert_pcie' => false, 'panel' => 'Tempered Glass', 'ancho' => 215, 'alto' => 393, 'prof' => 432]
         );
         $this->crearGabinete(
@@ -1053,9 +1089,9 @@ class ComponentesSeeder extends Seeder
             'disipador_dual_torre'  => $aire['disipador_dual_torre'] ?? false,
         ]);
         // Sockets compatibles
-        foreach ($sockets as $sockNombre) {
+         foreach ($sockets as $sockNombre) {
             $sid = $this->sockets[$sockNombre] ?? null;
-            if ($sid) $ra->socketsCompatibles()->attach($sid);
+            if ($sid) $ra->socketsCompatibles()->syncWithoutDetaching($sid);
         }
     }
     
@@ -1097,7 +1133,7 @@ class ComponentesSeeder extends Seeder
         ]);
         foreach ($sockets as $sockNombre) {
             $sid = $this->sockets[$sockNombre] ?? null;
-            if ($sid) $rl->socketsCompatibles()->attach($sid);
+            if ($sid) $rl->socketsCompatibles()->syncWithoutDetaching($sid);
         }
     }
 
@@ -1150,7 +1186,7 @@ class ComponentesSeeder extends Seeder
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851']
         );
         $this->crearRefrigeracionAire(
-            comp: ['nombre' => 'Thermalright Peerless Assassin 120 SE', 'marca' => 'Thermalright', 'modelo' => 'PA120-SE', 'descripcion' => 'Disipador dual torre 260W TDP. 6 heatpipes. Dos ventiladores TL-C12 Pro de 120 mm. Altura 155 mm. La opción más barata en su categoría de rendimiento. Referencia en relación calidad-precio.', 'imagen_url' => 'https://computerlounge.co.nz/cdn/shop/files/e86d644396599307dbd670e3c8dfeec197682e07_68133_1.jpg?v=1737004259&width=1200'],
+            comp: ['nombre' => 'Thermalright Peerless Assassin 120 SE', 'marca' => 'Thermalright', 'modelo' => 'PA120-SE', 'descripcion' => 'Disipador dual torre 260W TDP. 6 heatpipes. Dos ventiladores TL-C12 Pro de 120 mm. Altura 155 mm. La opción más barata en su categoría de rendimiento. Referencia en relación calidad-precio.', 'imagen_url' => 'https://m.media-amazon.com/images/I/710VXsCvLYL._AC_UF894,1000_QL80_.jpg'],
             aire: ['tdp_max_watts' => 260, 'altura_mm' => 155, 'ancho_mm' => 123, 'profundidad_mm' => 104, 'num_ventiladores' => 2, 'tam_ventilador_mm' => 120, 'rpm_min' => 300, 'rpm_max' => 1550, 'ruido_db_min' => 15.0, 'ruido_db_max' => 26.0, 'num_heatpipes' => 6, 'incluye_pasta_termica' => true, 'tiene_rgb' => false, 'disipador_dual_torre' => true],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851']
         );
@@ -1255,7 +1291,7 @@ class ComponentesSeeder extends Seeder
             vent: ['tipo' => 'Normal', 'rpm_min' => 500, 'rpm_max' => 1550, 'ruido_db_min' => 15.1, 'ruido_db_max' => 26.3, 'flujo_aire_cfm' => 66.17, 'static_pressure_mmh2o' => 2.08, 'num_ventiladores' => 3, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 120]
         );
         $this->crearVentilador(
-            comp: ['nombre' => 'DeepCool FL12R ARGB (x3)', 'marca' => 'DeepCool', 'modelo' => 'FL12R', 'descripcion' => 'Pack de 3 ventiladores 120 mm con anillo ARGB exterior de alta densidad. Sistema daisy-chain para reducir cableado. Compatible con control ARGB de placa base. Buen equilibrio entre presión estática y caudal.', 'https://assets.kogan.com/images/crazydealsaus/CDA-CFD-FL12R-3P-WH/1-e704f853b0-cfd-fl12r-3p-wh.jpg?auto=webp&bg-color=fff&canvas=1200%2C800&dpr=1&enable=upscale&fit=bounds&height=800&quality=90&width=1200'],
+            comp: ['nombre' => 'DeepCool FL12R ARGB (x3)', 'marca' => 'DeepCool', 'modelo' => 'FL12R', 'descripcion' => 'Pack de 3 ventiladores 120 mm con anillo ARGB exterior de alta densidad. Sistema daisy-chain para reducir cableado. Compatible con control ARGB de placa base. Buen equilibrio entre presión estática y caudal.', 'https://cdn.deepcool.com/public/ProductFile/DEEPCOOL/Cooling/Fans/FL12_3IN1/Gallery/608X760/01.jpg?auto=format,compress'],
             vent: ['tipo' => 'Normal', 'rpm_min' => 500, 'rpm_max' => 1850, 'ruido_db_min' => 17.6, 'ruido_db_max' => 29.8, 'flujo_aire_cfm' => 68.99, 'static_pressure_mmh2o' => 2.19, 'num_ventiladores' => 3, 'tiene_rgb' => true, 'pwm' => true, 'tam_mm' => 120]
         );
         $this->crearVentilador(

@@ -484,9 +484,45 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/inno3d-geforce-rtx-5060-twin-x2-oc-v2-8gb-gddr7-dlss4',
                 'Neobyte' => 'https://www.neobyte.es/inno3d-geforce-rtx-5060-twin-x2-oc-8gb-gddr7-dlss4-tarjeta-grafica-37501.html',
             ],
+            'Inno3D GeForce RTX 5070 TWIN X2' => [
+                'Coolmod' => 'https://www.coolmod.com/inno3d-geforce-rtx-5070-twin-x2-12gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/inno3d-geforce-rtx-5070-twin-x2-oc-white-12gb-gddr7-dlss4-tarjeta-grafica-28222.html',
+            ],
+            'Inno3D GeForce RTX 5070 Ti X3 OC' => [
+                'Coolmod' => 'https://www.coolmod.com/inno3d-geforce-rtx-5070-ti-x3-oc-16gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/inno3d-geforce-rtx-5070-ti-x3-oc-16gb-gddr7-dlss4-tarjeta-grafica-28216.html',
+            ],
+            'INNO3D GeForce RTX 5080 X3' => [
+                'Coolmod' => 'https://www.coolmod.com/inno3d-geforce-rtx-5080-x3-16gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/inno3d-nvidia-geforce-rtx-5080-x3-16gb-gddr7-dlss4-tarjeta-grafica-27407.html',
+            ],
+            'Asus GeForce RTX 5090 ROG Astral OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-astral-geforce-rtx-5090-oc-gaming-32gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-astral-geforce-rtx-5090-32gb-gddr7-oc-edition-dlss4-tarjeta-grafica-26785.html',
+            ],
+            'INNO3D GeForce RTX 5090 X3' => [
+                'Coolmod' => 'https://www.coolmod.com/inno3d-geforce-rtx-5090-x3-32gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/inno3d-geforce-rtx-5090-x3-oc-32gb-gddr7-dlss4-tarjeta-grafica-28381.html',
+            ],
+            'ZOTAC GAMING GeForce RTX 5080' => [
+                'Coolmod' => 'https://www.coolmod.com/zotac-gaming-geforce-rtx-5080-solid-core-oc-16gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/zotac-gaming-geforce-rtx-5080-solid-core-oc-16gb-gddr7-dlss4-tarjeta-grafica-27925.html',
+            ],
+            'ASUS ProArt GeForce RTX 5070 Ti OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-rtx-5070-ti-oc-edition-16gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-rtx-5070-ti-oc-edition-16gb-gddr7-dlss4-tarjeta-grafica-30993.html',
+            ],
+            'ASUS ProArt GeForce RTX 5080 OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-geforce-rtx-5080-oc-edition-16gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-rtx-5080-oc-edition-16gb-gddr7-dlss4-tarjeta-grafica-30991.html',
+            ],
+            'ASUS ProArt GeForce RTX 5090 OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-geforce-rtx-5090-oc-edition-32gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-rtx-5090-oc-edition-32gb-gddr7-dlss4-tarjeta-grafica-37137.html',
+            ],
             'Sapphire Pulse Radeon RX 7600 8GB' => [
-                'Coolmod' => 'https://www.coolmod.com/sapphire-pulse-radeon-rx-7600-gaming-oc-8gb-gddr6',
-                'Neobyte' => '',
+                'Coolmod' => 'https://www.coolmod.com/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6-tarjeta-grafica-18448.html',
             ],
             'PowerColor Red Devil Radeon RX 7800 XT 16GB' => [
                 'Coolmod' => '',

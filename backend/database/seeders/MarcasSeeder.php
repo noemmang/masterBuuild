@@ -450,6 +450,27 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'US',
             ],
+                        [
+                'nombre'      => 'Nox',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.nox-xtreme.com',
+                'logo_url'    => null,
+                'pais_origen' => 'ES',
+            ],
+            [
+                'nombre'      => 'Mars Gaming',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.marsgaming.eu',
+                'logo_url'    => null,
+                'pais_origen' => 'ES',
+            ],
+            [
+                'nombre'      => 'Sharkoon',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://www.sharkoon.com',
+                'logo_url'    => null,
+                'pais_origen' => 'DE',
+            ],
         ];
 
         foreach ($marcas as $marca) {

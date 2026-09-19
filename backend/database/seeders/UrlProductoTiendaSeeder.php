@@ -725,9 +725,45 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/deepcool-ch160-negro',
                 'Neobyte' => 'https://www.neobyte.es/deepcool-ch160-caja-mini-atx-23661.html',
             ],
-            '' => [
+            'Jonsbo D41' => [
                 'Coolmod' => 'https://www.coolmod.com/jonsbo-d41-screen-mesh-blanco',
                 'Neobyte' => '',
+            ],
+            'Jonsbo T6' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/jonsbo-t6-caja-mini-itx-37378.html',
+            ],
+            'Jonsbo T9' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/jonsbo-t9-caja-mini-itx-40748.html',
+            ],
+            'Jonsbo TK-0' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/jonsbo-tk-0-caja-mini-itx-37384.html',
+            ],
+            'Nox Hummer Vault' => [
+                'Coolmod' => 'https://www.coolmod.com/nox-hummer-vault-negro',
+                'Neobyte' => 'https://www.neobyte.es/nox-hummer-vault-caja-microatx-9851.html',
+            ],
+            'Mars Gaming MCZ' => [
+                'Coolmod' => 'https://www.coolmod.com/mars-gaming-mcz-premium-caja-torre',
+                'Neobyte' => 'https://www.neobyte.es/mars-gaming-mcz-caja-microatx-25982.html',
+            ],
+            'DeepCool CH170 Digital' => [
+                'Coolmod' => 'https://www.coolmod.com/deepcool-ch170-digital-negro',
+                'Neobyte' => 'https://www.neobyte.es/deepcool-ch170-digital-caja-mini-itx-25261.html',
+            ],
+            'Lian Li Lancool 217 Infinity' => [
+                'Coolmod' => 'https://www.coolmod.com/lian-li-lancool-217-infinity-negra',
+                'Neobyte' => 'https://www.neobyte.es/lian-li-lancool-217-inf-caja-atx-32263.html',
+            ],
+            'Fractal Design Era 2' => [
+                'Coolmod' => 'https://www.coolmod.com/fractal-design-era-2-gris',
+                'Neobyte' => 'https://www.neobyte.es/fractal-era-2-gris-carbon-caja-mini-itx-23979.html',
+            ],
+            'Thermaltake The Tower 200' => [
+                'Coolmod' => 'https://www.coolmod.com/thermaltake-the-tower-200-blanco',
+                'Neobyte' => 'https://www.neobyte.es/thermaltake-the-tower-200-snow-caja-mini-itx-22241.html',
             ],
 
             // ---------- Fuentes de alimentación (PSU) ----------
@@ -779,6 +815,27 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/seasonic-focus-spx-80-plus-platinum-650w-modular',
                 'Neobyte' => '',
             ],
+            'Corsair SF1000 80 Plus Platinum SFX' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-sf1000-2024-80-plus-platinum-sfx-1000w-atx-3-1-pcie-5-1-modular',
+                'Neobyte' => '',
+            ],
+            'Corsair SF750 80 Plus Platinum SFX' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-sf750-2024-80-plus-platinum-sfx-750w-atx-3-1-pcie-5-1-modular',
+                'Neobyte' => '',
+            ],
+            'Sharkoon SilentStorm SFX 80Plus Gold 500W Modular' => [
+                'Coolmod' => 'https://www.coolmod.com/sharkoon-silentstorm-sfx-80plus-gold-500w-modular-fuente-psu',
+                'Neobyte' => 'https://www.neobyte.es/sharkoon-silentstorm-sfx-gold-500w-fuente-de-aliemntacion-8968.html',
+            ],
+            'Silverston SX1000 Platinum 80 Plus Platinum' => [
+                'Coolmod' => 'https://www.coolmod.com/silverston-sx1000-platinum-80-plus-platinum-1000w-modular',
+                'Neobyte' => '',
+            ],
+            'Seasonic Focus SGX 80 Plus Gold 650W Modular' => [
+                'Coolmod' => 'https://www.coolmod.com/seasonic-focus-sgx-80-plus-gold-650w-modular',
+                'Neobyte' => 'https://www.neobyte.es/seasonic-focus-sgx650-sfx-fuente-de-alimentacion-650w-24411.html',
+            ],
+
 
             // ---------- Refrigeración por aire ----------
             'DeepCool Assassin IV' => [
@@ -824,6 +881,18 @@ class UrlProductoTiendaSeeder extends Seeder
             'Noctua NH-L9i-17xx' => [
                 'Coolmod' => 'https://www.coolmod.com/noctua-nh-l9i-17xx',
                 'Neobyte' => 'https://www.neobyte.es/noctua-nhl9i17xx-refrigeracion-cpu-12241.html',
+            ],
+            'ThermalRight AXP-120 X67' => [
+                'Coolmod' => 'https://www.coolmod.com/thermalright-axp-120-x67-argb-blanco',
+                'Neobyte' => '',
+            ],
+            'be quiet! Dark Rock Pro 6' => [
+                'Coolmod' => 'https://www.coolmod.com/be-quiet-dark-rock-pro-6-negro',
+                'Neobyte' => 'https://www.neobyte.es/be-quiet-dark-rock-pro-6-refrigeracion-cpu-43022.html',
+            ],
+            'DeepCool AG620 V2 ARGB' => [
+                'Coolmod' => 'https://www.coolmod.com/deepcool-ag620-v2-argb-12cm-negro',
+                'Neobyte' => 'https://www.neobyte.es/deepcool-ag620-bk-argb-v2-disipador-cpu-31299.html',
             ],
 
             // ---------- Refrigeración líquida ----------
@@ -875,6 +944,14 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/deepcool-ls720s-zero-dark',
                 'Neobyte' => 'https://www.neobyte.es/deepcool-ls720s-zero-dark-refrigeracion-liquida-360mm-23804.html',
             ],
+            'Corsair iCUE LINK TITAN II 360 RX LCD' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-icue-link-titan-ii-360-rx-lcd-rgb-negro',
+                'Neobyte' => 'https://www.neobyte.es/corsair-icue-link-titan-ii-360-rx-lcd-refrigeracion-liquida-360mm-41015.html',
+            ],
+            'Asus ROG Strix SLC IV 360 ARGB LCD' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-slc-iv-360-argb-lcd-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-slc-iv-360-argb-lcd-refrigeracion-liquida-360mm-37769.html',
+            ],
 
             // ---------- Ventiladores ----------
             'Noctua NF-F12 PWM' => [
@@ -924,6 +1001,26 @@ class UrlProductoTiendaSeeder extends Seeder
             'Phanteks D30 140mm DRGB (x3)' => [
                 'Coolmod' => 'https://www.coolmod.com/phanteks-d30-pack-3u-pwm-drgb-reverse-120mm-negro',
                 'Neobyte' => '',
+            ],
+            'Lian Li Uni Fan SL-INF Wireless ARGB Reverse Blade 120mm Triple Pack' => [
+                'Coolmod' => 'https://www.coolmod.com/lian-li-uni-fan-sl-inf-wireless-argb-reverse-blade-120mm-triple-pack-blanco',
+                'Neobyte' => 'https://www.neobyte.es/lian-li-uni-fan-sl120-infinity-wireless-rgb-reverse-blade-pwm-pack-de-3-ventilador-120mm-37295.html',
+            ],
+            'Corsair RS120 PWM 120mm Triple Pack' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-rs120-pwm-120mm-triple-pack-negro',
+                'Neobyte' => 'https://www.neobyte.es/corsair-rs120-pack-de-3-ventilador-120mm-22278.html',
+            ],
+            'be quiet! Pure Wings 3 120mm Reverse Triple Pack' => [
+                'Coolmod' => 'https://www.coolmod.com/be-quiet-pure-wings-3-120mm-reverse-triple-pack-negro',
+                'Neobyte' => 'https://www.neobyte.es/be-quiet-pure-wings-3-pack-de-3-ventilador-inverso-120mm-42957.html',
+            ],
+            'Lian Li UNI FAN SL-INF 120 ARGB 120mm' => [
+                'Coolmod' => 'https://www.coolmod.com/lian-li-uni-fan-sl-inf-120-argb-12cm-negro',
+                'Neobyte' => 'https://www.neobyte.es/lian-li-uni-fan-sl-inf-120-rgb-ventilador-inverso-120mm-31748.html',
+            ],
+            'Corsair RS120 ARGB PWM 120mm' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-rs120-argb-pwm-120mm-negro',
+                'Neobyte' => 'https://www.neobyte.es/corsair-rs120-argb-ventilador-120mm-22267.html',
             ],
         ];
 

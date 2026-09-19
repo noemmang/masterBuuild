@@ -139,7 +139,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte' => 'https://www.neobyte.es/intel-core-i9-12900k-procesador-1700-11132.html',
             ],
             'Intel Core i5-13400F' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/intel-core-i5-13400f-4-6ghz-socket-1700-boxed',
                 'Neobyte' => 'https://www.neobyte.es/intel-core-i5-13400f-procesador-1700-16547.html',
             ],
             'Intel Core i9-13900KS' => [
@@ -164,7 +164,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Intel Core i9-14900KS' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-i9-14900ks-6-2ghz-socket-1700-boxed',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/intel-core-i9-14900ks-procesador-1700-24723.html',
             ],
             'Intel Core Ultra 5 245K' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-ultra-5-245k-5-2ghz-socket-1851-boxed',
@@ -188,14 +188,14 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Intel Core i7-13700F' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-i7-13700f-5-2ghz-socket-1700-boxed',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/intel-core-i7-13700f-procesador-1700-16544.html',
             ],
             'Intel Core i5-14600KF' => [
                 'Coolmod' => 'https://www.coolmod.com/intel-core-i5-14600kf-5-3ghz-socket-1700-boxed',
                 'Neobyte' => 'https://www.neobyte.es/intel-core-i5-14600kf-procesador-1700-19506.html',
             ],
             'Intel Core i7-14700F' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.neobyte.es/intel-core-i7-14700f-procesador-1700-20223.html',
                 'Neobyte' => 'https://www.neobyte.es/intel-core-i7-14700f-procesador-1700-20223.html',
             ],
             'Intel Core Ultra 5 245KF' => [
@@ -209,7 +209,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte' => 'https://www.neobyte.es/placa-base-asus-rog-strix-b550-f-gaming-6609.html',
             ],
             'Gigabyte X570 Aorus Master' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-x570-aorus-master-socket-am4-placa-base',
                 'Neobyte' => 'https://www.neobyte.es/placa-base-gigabyte-x570-aorus-master-am4-4349.html',
             ],
             'MSI B550M Pro-VDH WiFi' => [
@@ -232,60 +232,64 @@ class UrlProductoTiendaSeeder extends Seeder
             // ---------- Placas base AM5 ----------
             'ASUS TUF Gaming B650-Plus WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-b650-plus-wifi-socket-am5',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-b650-plus-wifi-placa-base-am5-atx-15615.html',
             ],
             'Gigabyte B650 Aorus Elite AX' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-b650-aorus-elite-ax-ice-socket-am5',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-b650-aorus-elite-ax-placa-base-am5-atx-15632.html',
             ],
             'ASUS ROG Crosshair X670E Hero' => [
                 'Coolmod' => '',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-crosshair-x670e-hero-placa-base-amd-am5-15303.html',
             ],
             'MSI MEG X670E Ace' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-x670e-gaming-plus-wifi-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/msi-meg-x670e-ace-placa-base-am5-e-atx-18693.html',
             ],
             'Gigabyte X670E Aorus Master' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-x670e-aorus-master-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-x670e-aorus-master-placa-base-am5-e-atx-15340.html',
             ],
             'MSI PRO B650M-A WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-pro-b650m-a-wifi-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/msi-pro-b650m-a-wifi-placa-base-am5-micro-atx-15379.html',
             ],
             'Gigabyte B650M Aorus Elite AX' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-b650m-aorus-elite-ax-ice-socket-am5',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-b650m-aorus-elite-ax-placa-base-am5-micro-atx-15634.html',
             ],
             'ASUS ROG Strix B650E-I Gaming WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-b650e-i-gaming-wifi-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-b650e-i-gaming-wifi-placa-base-am5-mini-itx-15607.html',
             ],
             'ASUS ProArt X670E-Creator WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-x670e-creator-wifi-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/asus-proart-x670e-creator-wi-fi-placa-base-amd-15313.html',
             ],
             'MSI MAG X870 Tomahawk WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-mag-x870-tomahawk-wifi-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/msi-mag-x870-tomahawk-wifi-placa-base-atx-am5-23975.html',
             ],
             'Gigabyte X870E Aorus Master' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-x870e-aorus-master-x3d-ice-socket-am5',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-x870e-aorus-elite-x3d-placa-base-am5-atx-32163.html',
             ],
+            'ASRock Phantom Gaming B850I Lightning WiFi' => [
+                'Coolmod' => 'https://www.coolmod.com/asrock-phantom-gaming-b850i-lightning-wifi-socket-am5',
+                'Neobyte' => '',
+            ],
 
             // ---------- Placas base LGA1700 ----------
             'ASUS ROG Maximus Z690 Hero' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-maximus-z690-hero-socket-1700-placa-base',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-maximus-z690-hero-placa-base-1700-atx-11085.html',
             ],
             'Gigabyte Z690 Aorus Pro DDR4' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-z690-aorus-pro-ddr4-socket-1700',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-z690-aorus-pro-placa-base-1700-atx-wifi-11105.html',
             ],
             'ASUS ROG Strix Z790-E Gaming WiFi II' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-z790-e-gaming-wifi-ii-socket-1700',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-z790e-gaming-wifi-ii-placa-base-atx-19541.html',
             ],
             'MSI MAG Z790 Tomahawk WiFi DDR4' => [
@@ -294,23 +298,23 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Gigabyte Z790 Aorus Elite AX' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-z790-aorus-elite-ax-socket-1700',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-z790-aorus-elite-ax-placa-base-1700-atx-16246.html',
             ],
             'ASRock B760M Pro RS' => [
                 'Coolmod' => 'https://www.coolmod.com/asrock-b760m-pro-rs-socket-1700',
                 'Neobyte' => 'https://www.neobyte.es/asrock-b760m-pro-rs-placa-base-1700-microatx-27209.html',
             ],
             'ASUS ROG Strix Z690-I Gaming WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-z690-i-gaming-wifi-socket-1700-placa-base',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-z690-i-gaming-wifi-placa-base-1700-mini-itx-11140.html',
             ],
             'MSI MPG Z790I Edge WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-mpg-z790i-edge-wifi-socket-1700',
                 'Neobyte' => 'https://www.neobyte.es/msi-z790i-edge-wifi-placa-base-1700-mini-itx-23628.html',
             ],
             'ASUS TUF Gaming Z790-Plus WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-z790-plus-wifi-socket-1700',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-z790-plus-wifi-placa-base-1700-atx-16620.html',
             ],
 
             // ---------- Placas base LGA1851 ----------
@@ -320,7 +324,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'MSI MEG Z890 Ace' => [
                 'Coolmod' => 'https://www.coolmod.com/msi-meg-z890-ace-wifi-socket-1851',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/msi-meg-z890-ace-placa-base-1851-atx-25395.html',
             ],
             'Gigabyte Z890 Aorus Master' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-z890-aorus-master-wifi7-socket-1851',
@@ -336,27 +340,31 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'ASRock Z890 Taichi' => [
                 'Coolmod' => 'https://www.coolmod.com/asrock-z890-taichi-socket-1851',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/asrock-z890-taichi-placa-base-1851-atx-40134.html',
             ],
             'MSI PRO B860M-A WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-pro-b860m-a-wifi-socket-1851',
                 'Neobyte' => 'https://www.neobyte.es/msi-pro-b860m-a-wifi-placa-base-1851-micro-atx-26643.html',
             ],
             'Gigabyte B860M Aorus Elite WiFi' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-b860m-aorus-elite-wifi6e-socket-1851',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-b860m-aorus-elite-wifi6e-placa-base-1851-micro-atx-26487.html',
             ],
             'ASRock B860M Pro RS WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/asrock-b860m-pro-rs-wifi-socket-1851',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/asrock-b860m-pro-rs-wifi-placa-base-1851-micro-atx-40105.html',
             ],
             'MSI MPG Z890I Edge WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/msi-mpg-z890i-edge-ti-wifi-socket-1851',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/msi-mpg-z890i-edge-ti-wifi-placa-base-1851-mini-itx-25477.html',
             ],
             'Gigabyte Z890I Aorus Ultra WiFi7' => [
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-z890i-aorus-ultra-socket-1851',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-z890i-aorus-ultra-placa-base-1851-mini-itx-24424.html',
+            ],
+            'ASUS ROG Strix B860-I Gaming WiFi' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-b860-i-gaming-wifi-socket-1851',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-b860-i-gaming-wifi-placa-base-1851-mini-itx-26397.html',
             ],
 
             // ---------- RAM DDR4 ----------
@@ -365,12 +373,12 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Neobyte' => 'https://www.neobyte.es/memoria-corsair-16gb-ddr4-3200-vengeance-lpx-4647.html',
             ],
             'Corsair Vengeance LPX 128GB DDR4-3200 CL16' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/corsair-vengeance-lpx-128gb-4x32gb-3200mhz-cl16-xmp-negro',
                 'Neobyte' => 'https://www.neobyte.es/corsair-vengeance-lpx-128gb-4x32gb-ddr4-3200mhz-cl16-memoria-ram-28809.html',
             ],
             'G.Skill Trident Z RGB 16GB DDR4-3600 CL16' => [
                 'Coolmod' => 'https://www.coolmod.com/gskill-trident-z-neo-16gb-2x8gb-3600mhz-pc4-28800-cl16-memoria-ddr4',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gskill-trident-z-neo-16gb-2x8gb-ddr4-3600mhz-cl16-memoria-ram-43221.html',
             ],
             'G.Skill Trident Z RGB 32GB DDR4-3600 CL16' => [
                 'Coolmod' => 'https://www.coolmod.com/gskill-trident-z-rgb-32gb-2x16gb-3200-mhz-pc4-25600-cl16-led-rgb-memoria-ddr4',
@@ -392,11 +400,11 @@ class UrlProductoTiendaSeeder extends Seeder
             // ---------- RAM DDR5 ----------
             'G.Skill Trident Z5 RGB 32GB DDR5-6000 CL30' => [
                 'Coolmod' => 'https://www.coolmod.com/g-skill-trident-z5-rgb-32gb-2x16gb-6000mhz-cl30',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gskill-trident-z5-neo-rgb-32gb-2x16gb-ddr5-6000mhz-cl30-memoria-ram-17181.html',
             ],
             'G.Skill Trident Z5 RGB 64GB DDR5-6000 CL30' => [
                 'Coolmod' => 'https://www.coolmod.com/g-skill-trident-z5-neo-rgb-64gb-2x32gb-6000mhz-cl30-expo',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gskill-trident-z5-neo-rgb-64gb-2x32gb-ddr5-6000mhz-cl30-memoria-ram-43196.html',
             ],
             'Kingston Fury Beast DDR5 32GB 5200 CL40' => [
                 'Coolmod' => 'https://www.coolmod.com/kingston-fury-2x16gb-5200-mhz-pc5-41600-cl40-memoria-ddr5',
@@ -404,7 +412,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'Crucial Pro DDR5 64GB 5600 CL46' => [
                 'Coolmod' => 'https://www.coolmod.com/crucial-pro-64gb-2x32gb-5600mhz-cl46-expo-xmp-negro',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/crucial-pro-64gb-2x32gb-ddr5-5600mhz-cl46-memoria-ram-21894.html',
             ],
             'TeamGroup T-Force Delta RGB DDR5 32GB 6000 CL30' => [
                 'Coolmod' => 'https://www.coolmod.com/team-group-delta-rgb-32gb-2x16gb-6000mhz-cl30-xmp',
@@ -416,28 +424,36 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'G.Skill Trident Z5 Neo RGB 32GB DDR5-6000 CL30' => [
                 'Coolmod' => 'https://www.coolmod.com/g-skill-trident-z5-neo-rgb-1x32gb-6000mhz-cl30-expo',
-                'Neobyte' => '',
+                'Neobyte' => 'https://www.neobyte.es/gskill-trident-z5-neo-rgb-32gb-2x16gb-ddr5-6000mhz-cl30-memoria-ram-17181.html',
             ],
             'Kingston Fury Beast DDR5 64GB 5200 CL40' => [
                 'Coolmod' => 'https://www.coolmod.com/kingston-fury-beast-64gb-2x32gb-5200mhz-cl40-xmp-3-0',
+                'Neobyte' => 'https://www.neobyte.es/kingston-fury-beast-64gb-2x32gb-ddr5-5200mhz-cl40-expo-memoria-ram-30949.html',
+            ],
+            'Corsair Vengeance 16GB DDR5-5600 CL40' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-vengeance-16gb-2x8gb-5600mhz-cl40-expo-xmp',
+                'Neobyte' => 'https://www.neobyte.es/corsair-vengeance-16gb-2x8gb-ddr5-5600mhz-cl40-dual-profile-memoria-ram-33328.html',
+            ],
+            'Kingston Fury Beast DDR5 128GB 5600 CL40 Negro' => [
+                'Coolmod' => 'https://www.coolmod.com/kingston-fury-beast-128gb-4x32gb-5600mhz-cl40-xmp-negro',
                 'Neobyte' => '',
             ],
 
             // ---------- GPU ----------
             'MSI GeForce RTX 3060 VENTUS 2X 12GB OC' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/msi-geforce-rtx-3060-ventus-2x-oc-12gb-gddr6-tarjeta-grafica',
                 'Neobyte' => 'https://www.neobyte.es/msi-rtx-3060-ventus-oc-12gb-lhr-tarjeta-grafica-13252.html',
             ],
             'ASUS Dual GeForce RTX 3060 Ti OC 8GB' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/asus-dual-geforce-rtx-3060-ti-oc-8gb-gddr6x',
                 'Neobyte' => 'https://www.neobyte.es/asus-dual-rtx-3060-ti-oc-edition-8gb-gddr6x-tarjeta-grafica-16514.html',
             ],
             'Gigabyte GeForce RTX 3070 EAGLE OC 8GB' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-geforce-rtx-3070-eagle-oc-8gb-gddr6-vga',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-rtx-3070-eagle-oc-8gb-tarjeta-grafica-10348.html',
             ],
             'Zotac Gaming GeForce RTX 3060 Twin Edge OC (SFF)' => [
-                'Coolmod' => '',
+                'Coolmod' => 'https://www.coolmod.com/zotac-geforce-rtx-3060-twin-edge-oc-12gb-gddr6-tarjeta-grafica',
                 'Neobyte' => 'https://www.neobyte.es/zotac-gaming-geforce-rtx-3060-twin-edge-12gb-gddr6-tarjeta-grafica-38389.html',
             ],
             'MSI GeForce RTX 4060 VENTUS 2X BLACK OC 8GB' => [
@@ -520,6 +536,15 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/asus-proart-geforce-rtx-5090-oc-edition-32gb-gddr7-dlss4',
                 'Neobyte' => 'https://www.neobyte.es/asus-proart-rtx-5090-oc-edition-32gb-gddr7-dlss4-tarjeta-grafica-37137.html',
             ],
+            'Asus Prime GeForce RTX 5070 Ti OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-prime-geforce-rtx-5070-ti-oc-16gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/asus-prime-geforce-rtx-5070-ti-16gb-gddr7-oc-edition-dlss4-tarjeta-grafica-26806.html',
+            ],
+            'Gigabyte AORUS RTX 5090 Master' => [
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-aorus-geforce-rtx-5090-master-32gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-aorus-rtx-5090-master-32gb-gddr7-dlss4-tarjeta-grafica-26501.html',
+            ],
+
             'Sapphire Pulse Radeon RX 7600 8GB' => [
                 'Coolmod' => 'https://www.coolmod.com/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6',
                 'Neobyte' => 'https://www.neobyte.es/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6-tarjeta-grafica-18448.html',
@@ -536,6 +561,20 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/powercolor-red-devil-amd-radeon-rx-9070-xt-oc-16gb-gddr6',
                 'Neobyte' => '',
             ],
+            'Gigabyte Radeon RX 9060 XT Gaming OC' => [
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-amd-radeon-rx-9060-xt-gaming-oc-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-radeon-rx-9060-xt-gaming-oc-8gb-gddr6-tarjeta-grafica-28832.html',
+            ],
+            'Asus Prime Radeon RX 9070 XT OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-prime-amd-radeon-rx-9070-xt-oc-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/asus-prime-radeon-rx-9070-xt-oc-edition-16gb-gddr6-tarjeta-grafica-27739.html',
+            ],
+            'Gigabyte AMD Radeon RX 9070 GRE Gaming OC' => [
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6-tarjeta-grafica-37435.html',
+            ],
+
+            // ---------- Almacenamiento ----------
             'Samsung 990 Pro 2TB NVMe PCIe 4.0' => [
                 'Coolmod' => 'https://www.coolmod.com/samsung-990-pro-2tb-pcie-x4-nvme',
                 'Neobyte' => 'https://www.neobyte.es/samsung-990-pro-2tb-ssd-m2-pci-express-40-16306.html',
@@ -583,6 +622,14 @@ class UrlProductoTiendaSeeder extends Seeder
             'Western Digital Red Plus 8TB HDD 3.5"' => [
                 'Coolmod' => 'https://www.coolmod.com/western-digital-nas-plus-wd80efpx-8tb-3-5-sata3',
                 'Neobyte' => 'https://www.neobyte.es/western-digital-red-pro-8tb-disco-duro-35-sata-22569.html',
+            ],
+            'Crucial T500 1TB NVMe PCIe 4.0' => [
+                'Coolmod' => 'https://www.coolmod.com/crucial-t500-1tb-pcie-gen4-x4-nvme-ssd',
+                'Neobyte' => 'https://www.neobyte.es/crucial-t500-1tb-pcie-40-unidad-ssd-m2-21887.html',
+            ],
+            'Corsair MP600 ELITE 1TB NVMe PCIe 4.0' => [
+                'Coolmod' => 'https://www.coolmod.com/corsair-mp600-elite-1tb-pcie-gen4-x4-nvme-1-4-ssd',
+                'Neobyte' => 'https://www.neobyte.es/corsair-mp600-elite-1tb-con-disipador-unidad-ssd-m2-para-ps5-20336.html',
             ],
 
             // ---------- Gabinetes ----------
@@ -661,6 +708,26 @@ class UrlProductoTiendaSeeder extends Seeder
             'Lian Li A4-H2O' => [
                 'Coolmod' => 'https://www.coolmod.com/lian-li-a4-h2o-pcie-5-0-negro',
                 'Neobyte' => 'https://www.neobyte.es/lian-li-a4h2o-caja-mini-atx-17765.html',
+            ],
+            'Jonsbo D32 Pro' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/jonsbo-d32-pro-caja-micro-atx-37226.html',
+            ],
+            'Fractal Design Define 7' => [
+                'Coolmod' => 'https://www.coolmod.com/fractal-design-define-7-compact-black-tg-dark-cristal-templado-caja-torre',
+                'Neobyte' => 'https://www.neobyte.es/fractal-design-define-7-compact-tg-dark-tint-caja-atx-18836.html',
+            ],
+            'Hyte Y40' => [
+                'Coolmod' => 'https://www.coolmod.com/hyte-y40-blanco',
+                'Neobyte' => 'https://www.neobyte.es/hyte-y40-blanca-negra-caja-atx-16895.html',
+            ],
+            'DeepCool CH160' => [
+                'Coolmod' => 'https://www.coolmod.com/deepcool-ch160-negro',
+                'Neobyte' => 'https://www.neobyte.es/deepcool-ch160-caja-mini-atx-23661.html',
+            ],
+            '' => [
+                'Coolmod' => 'https://www.coolmod.com/jonsbo-d41-screen-mesh-blanco',
+                'Neobyte' => '',
             ],
 
             // ---------- Fuentes de alimentación (PSU) ----------
@@ -795,6 +862,18 @@ class UrlProductoTiendaSeeder extends Seeder
             'NZXT Kraken Elite 420' => [
                 'Coolmod' => 'https://www.coolmod.com/nzxt-kraken-elite-420-rgb-lcd-display-negro',
                 'Neobyte' => 'https://www.neobyte.es/nzxt-kraken-elite-420-rgb-refrigeracion-liquida-420mm-29130.html',
+            ],
+            'DeepCool LE240 V2 240mm ARGB' => [
+                'Coolmod' => 'https://www.coolmod.com/deepcool-le240-v2-negro',
+                'Neobyte' => 'https://www.neobyte.es/deepcool-le240-v2-refrigeracion-liquida-240mm-31304.html',
+            ],
+            'Be quiet! Pure Loop 3 280mm' => [
+                'Coolmod' => 'https://www.coolmod.com/be-quiet-pure-loop-3-280mm-negro',
+                'Neobyte' => 'https://www.neobyte.es/be-quiet-pure-loop-3-refrigeracion-liquida-280mm-34497.html',
+            ],
+            'DeepCool LS720S Zero Dark' => [
+                'Coolmod' => 'https://www.coolmod.com/deepcool-ls720s-zero-dark',
+                'Neobyte' => 'https://www.neobyte.es/deepcool-ls720s-zero-dark-refrigeracion-liquida-360mm-23804.html',
             ],
 
             // ---------- Ventiladores ----------

@@ -443,6 +443,13 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'TW',
             ],
+            [
+                'nombre'      => 'Hyte',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://hyte.com',
+                'logo_url'    => null,
+                'pais_origen' => 'US',
+            ],
         ];
 
         foreach ($marcas as $marca) {

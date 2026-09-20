@@ -40,6 +40,12 @@ class Tienda extends BaseModel
         return $this->hasMany(PrecioActual::class, 'tienda_id');
     }
 
+    // Promociones de regalo que esta tienda ha publicado (ver PromocionRegalo).
+    public function promocionesRegalo()
+    {
+        return $this->hasMany(PromocionRegalo::class, 'tienda_id');
+    }
+
     public function scopeActiva($query)
     {
         return $query->where('activo', true);

@@ -130,6 +130,47 @@ class Componente extends BaseModel
         return $this->hasMany(\App\Models\Negocio\UrlProductoTienda::class, 'componente_id');
     }
 
+    // Todas las promociones de regalo que este componente ha tenido en
+    // alguna tienda, activas o no (columna "activa" en el pivot). Es la
+    // relación "cruda", pensada para depurar. Para lo que debe ENSEÑAR el
+    // front usa promocionesRegaloVisibles().
+    public function promocionesRegalo()
+    {
+        return $this->belongsToMany(
+            \App\Models\Negocio\PromocionRegalo::class,
+            'componente_promocion_regalo',
+            'componente_id',
+            'promocion_regalo_id'
+        )->withPivot('activa')->withTimestamps();
+    }
+
+    // Regalos que se pueden ENSEÑAR ahora mismo. Es la ÚNICA definición de
+    // "regalo visible": la usan el listado (withExists → tiene_regalo, el
+    // icono de la tarjeta) y el panel de tiendas (PrecioController). Un
+    // regalo solo cuenta si se cumplen las tres a la vez:
+    //   1. El último scrape de esa ficha de producto seguía viéndolo
+    //      (pivot.activa).
+    //   2. Está dentro de su vigencia (PromocionRegalo::scopeVigentes).
+    //   3. La tienda a la que pertenece la promoción tiene este componente
+    //      EN STOCK ahora mismo. Si esa tienda se agota, su regalo
+    //      desaparece, aunque otra tienda siga teniendo stock: el regalo
+    //      es de esa tienda, no del componente.
+    // Como (3) mira precios_actuales por tienda_id de la propia promoción,
+    // el regalo de una tienda nunca aparece asociado a otra.
+    public function promocionesRegaloVisibles()
+    {
+        return $this->promocionesRegalo()
+            ->wherePivot('activa', true)
+            ->vigentes()
+            ->whereExists(function ($sub) {
+                $sub->selectRaw('1')
+                    ->from('precios_actuales')
+                    ->whereColumn('precios_actuales.componente_id', 'componente_promocion_regalo.componente_id')
+                    ->whereColumn('precios_actuales.tienda_id', 'promociones_regalo.tienda_id')
+                    ->where('precios_actuales.en_stock', true);
+            });
+    }
+
     public function guardadoPor()
     {
         return $this->belongsToMany(

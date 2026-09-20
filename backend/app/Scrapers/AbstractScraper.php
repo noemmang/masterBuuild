@@ -58,6 +58,45 @@ abstract class AbstractScraper
     }
 
     /**
+     * Convierte una ruta o URL leída del HTML en una URL absoluta usando el
+     * host de la ficha del producto. Devuelve null si no se puede resolver.
+     * Sirve para enlaces (/promocion/x, /content/x) y para imágenes
+     * (/modules/.../banner.jpg, //cdn.tienda.com/x.jpg).
+     */
+    protected function urlAbsoluta(string $ruta, string $urlProducto): ?string
+    {
+        $ruta = trim($ruta);
+
+        if ($ruta === '') {
+            return null;
+        }
+
+        if (preg_match('#^https?://#i', $ruta)) {
+            return $ruta;
+        }
+
+        if (str_starts_with($ruta, '//')) {
+            return 'https:'.$ruta;
+        }
+
+        $partes = parse_url($urlProducto);
+        if (empty($partes['scheme']) || empty($partes['host']) || !str_starts_with($ruta, '/')) {
+            return null;
+        }
+
+        return $partes['scheme'].'://'.$partes['host'].$ruta;
+    }
+
+    /** Colapsa espacios (incluido el &nbsp;) y recorta. */
+    protected function normalizarTexto(string $texto): string
+    {
+        // \xC2\xA0 = espacio duro (&nbsp;), muy habitual en HTML de tiendas.
+        $texto = str_replace("\xC2\xA0", ' ', $texto);
+
+        return trim((string) preg_replace('/\s+/u', ' ', $texto));
+    }
+
+    /**
      * La mayoría de tiendas online incrustan un bloque
      * <script type="application/ld+json"> con datos schema.org/Product
      * (nombre, precio, disponibilidad...) pensado para Google Shopping.

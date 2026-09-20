@@ -8,6 +8,7 @@ use App\Models\Negocio\UrlProductoTienda;
 use App\Scrapers\Contracts\ScraperTienda;
 use App\Scrapers\DTO\DatoScrapeado;
 use App\Scrapers\Exceptions\ScrapingException;
+use App\Services\Promociones\PromocionRegaloService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -20,7 +21,7 @@ class ScrapePrecios extends Command
         {--pausa-max=5 : Segundos máximos de espera entre peticiones}
         {--umbral-fallos=5 : Fallos consecutivos a partir de los cuales se marca la URL como no_disponible}';
 
-    protected $description = 'Descarga precios reales desde las tiendas configuradas y actualiza precios_actuales / historial_precios';
+    protected $description = 'Descarga precios reales desde las tiendas configuradas y actualiza precios_actuales / historial_precios (y los regalos activos de cada ficha)';
 
     public function handle(): int
     {
@@ -43,6 +44,9 @@ class ScrapePrecios extends Command
 
         $this->info("Scrapeando {$urls->count()} productos...");
 
+        $regalos = app(PromocionRegaloService::class);
+        $regalosNuevos = 0;
+        $regalosRetirados = 0;
         $ok = 0;
         $fallos = 0;
         $marcadosNoDisponible = 0;
@@ -85,9 +89,30 @@ class ScrapePrecios extends Command
                     'ultimo_error' => null,
                 ]);
 
+                // Regalos: se revisan en CADA scrape (el diario), no solo cuando
+                // cambia el precio. Un fallo aquí no cuenta como fallo de
+                // scraping: el precio ya se guardó bien.
+                $marcadorRegalos = '';
+                if ($dato->promociones !== null) {
+                    try {
+                        $r = $regalos->sincronizar($registro->componente_id, $tienda->id, $dato->promociones);
+                        $regalosNuevos += $r['nuevas'] + $r['reactivadas'];
+                        $regalosRetirados += $r['desactivadas'];
+
+                        if ($r['vistas'] > 0) {
+                            $marcadorRegalos .= " · {$r['vistas']} regalo(s)";
+                        }
+                        if ($r['desactivadas'] > 0) {
+                            $marcadorRegalos .= " · {$r['desactivadas']} regalo(s) retirado(s)";
+                        }
+                    } catch (Throwable $e) {
+                        $this->warn("  ! [{$tienda->nombre}] {$nombre}: no se pudieron sincronizar los regalos: {$e->getMessage()}");
+                    }
+                }
+
                 $estado = $dato->enStock ? '' : ' (agotado)';
                 $marcadorCambio = $huboCambio ? '' : ' (sin cambios)';
-                $this->line("  ✓ [{$tienda->nombre}] {$nombre}: {$dato->precio} {$dato->moneda}{$estado}{$marcadorCambio}");
+                $this->line("  ✓ [{$tienda->nombre}] {$nombre}: {$dato->precio} {$dato->moneda}{$estado}{$marcadorCambio}{$marcadorRegalos}");
                 $ok++;
             } catch (ScrapingException|Throwable $e) {
                 $fallosPrevios = $registro->fallos_consecutivos ?? 0;
@@ -100,6 +125,18 @@ class ScrapePrecios extends Command
                     'no_disponible' => $fallosNuevos >= $umbralFallos,
                     'ultimo_error' => substr($e->getMessage(), 0, 255),
                 ]);
+
+                // Si la ficha ya se considera no disponible no podemos
+                // confirmar que su regalo siga ahí: se retira del front.
+                // (Si el scraping se recupera, el siguiente sincronizar() lo
+                // reactiva.) Va en su propio try para no romper este catch.
+                if ($fallosNuevos >= $umbralFallos) {
+                    try {
+                        $regalosRetirados += $regalos->desactivarTodas($registro->componente_id, $tienda->id);
+                    } catch (Throwable) {
+                        // no crítico: se reintentará en el próximo scrape fallido
+                    }
+                }
 
                 $marcador = $pasaAoNoDisponible ? ' → marcada no_disponible, se oculta en el front' : '';
                 $this->error("  ✗ [{$tienda->nombre}] {$nombre}: {$e->getMessage()} (fallo {$fallosNuevos}/{$umbralFallos}){$marcador}");
@@ -116,6 +153,7 @@ class ScrapePrecios extends Command
 
         $this->newLine();
         $this->info("Hecho. OK: {$ok} ({$sinCambios} sin cambios, {$conCambios} con cambio de precio/stock), fallos: {$fallos}, nuevas no_disponible: {$marcadosNoDisponible}");
+        $this->info("Regalos: {$regalosNuevos} nuevos/reactivados, {$regalosRetirados} retirados.");
 
         return self::SUCCESS;
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Negocio;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PromocionRegaloResource;
 use App\Models\Componentes\Componente;
 use App\Models\Negocio\PrecioActual;
 use App\Models\Negocio\Tienda;
@@ -25,6 +26,17 @@ class PrecioController extends Controller
         $urlsConfiguradasPorTienda = UrlProductoTienda::where('componente_id', $componente->id)
             ->pluck('url', 'tienda_id');
 
+        // Regalos visibles de este componente, agrupados por la tienda a la
+        // que pertenece cada promoción. "Visible" ya implica: activa en el
+        // último scrape, vigente por fechas y esa tienda con stock (ver
+        // Componente::promocionesRegaloVisibles). Una sola query para todas
+        // las tiendas, no una por fila.
+        $regalosPorTienda = $componente->promocionesRegaloVisibles()
+            ->orderBy('promociones_regalo.fecha_fin')
+            ->orderBy('promociones_regalo.titulo')
+            ->get()
+            ->groupBy('tienda_id');
+
         // precios_actuales ya tiene, como mucho, una fila por tienda: nada
         // de subquery para calcular "el más reciente", es una lectura directa.
         $precios = PrecioActual::where('componente_id', $componente->id)
@@ -39,6 +51,9 @@ class PrecioController extends Controller
                 'en_stock'    => $p->en_stock,
                 'url'         => $p->url ?: ($urlsConfiguradasPorTienda[$p->tienda_id] ?? null),
                 'actualizado' => $p->updated_at?->diffForHumans(),
+                // Solo los regalos de ESTA tienda. Vacío si no tiene o si
+                // está agotada (el filtro de stock ya lo aplica la relación).
+                'regalos'     => PromocionRegaloResource::collection($regalosPorTienda->get($p->tienda_id, collect()))->resolve(),
             ]);
 
         return response()->json([

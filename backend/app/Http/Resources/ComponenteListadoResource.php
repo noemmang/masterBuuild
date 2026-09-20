@@ -50,6 +50,10 @@ class ComponenteListadoResource extends JsonResource
             // ese caso (no hay dato, no es que esté agotado); distínguelo
             // con num_tiendas > 0.
             'en_stock'     => (bool) $this->en_stock,
+            // true si hay al menos un regalo visible ahora mismo (viene de
+            // withExists en el controller). El detalle por tienda se pide
+            // aparte, en /componentes/{uuid}/precios.
+            'tiene_regalo' => (bool) ($this->tiene_regalo ?? false),
             'specs'        => $this->specs(),
         ];
     }

@@ -144,6 +144,11 @@ class ComponenteController extends Controller
             ->withMax('preciosActuales as precio_max', 'precio')
             ->withCount('preciosActuales as num_tiendas')
             ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
+            // Icono de regalo de la tarjeta. Misma definición de "regalo
+            // visible" que el panel de tiendas (activo, vigente y con la
+            // tienda de esa promoción EN STOCK), no un simple "existe": si
+            // solo queda la tienda del regalo agotada, no hay icono.
+            ->withExists('promocionesRegaloVisibles as tiene_regalo')
             ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio');
 
         // ── Ordenación ───────────────────────────────────────────────────────

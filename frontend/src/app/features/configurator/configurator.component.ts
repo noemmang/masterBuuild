@@ -7,6 +7,8 @@ import { ComponenteService, Componente } from '../../core/services/componente.se
 import { GuardadoService, SlotGuardado, ConfiguracionGuardada } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
+import { RegalosTiendaComponent } from '../../shared/components/regalos-tienda/regalos-tienda.component';
+import { BadgeRegaloComponent } from '../../shared/components/badge-regalo/badge-regalo.component';
 import { debounceTime, distinctUntilChanged, forkJoin, Subject } from 'rxjs';
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 import { environment } from '../../../environments/environment';
@@ -62,7 +64,7 @@ interface BorradorConfigurador {
 @Component({
   selector: 'app-configurator',
   standalone: true,
-  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent],
+  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent, RegalosTiendaComponent, BadgeRegaloComponent],
   templateUrl: './configurator.component.html',
   styleUrl: './configurator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

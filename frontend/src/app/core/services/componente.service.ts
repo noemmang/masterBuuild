@@ -13,6 +13,9 @@ export interface Componente {
   precio_max: number | null;
   num_tiendas: number;
   tiene_cupon: boolean;
+  /** Hay al menos un regalo visible ahora mismo (activo, vigente y con la
+   *  tienda de esa promoción en stock). Es lo que enciende el icono de la
+   *  tarjeta; el detalle por tienda va en getPrecios(). */
   tiene_regalo: boolean;
   bajada_precio: boolean;
   en_stock: boolean;
@@ -228,18 +231,28 @@ export interface EntradaPrecio {
   en_stock: boolean;
   tienda: { nombre: string; website: string | null };
   cupon: { codigo: string; descuento: number; tipo: string } | null;
-  regalo: Regalo | null;
+  /** Regalos de ESTA tienda para este producto (GET /componentes/{uuid}/precios).
+   *  Vacío si no tiene o si la tienda está agotada: el backend ya filtra. */
+  regalos: Regalo[];
 }
 
 // ── Regalos ───────────────────────────────────────────────────────────────────
 
+/** Promoción de regalo de una tienda (ver PromocionRegaloResource en el
+ *  backend). Antes esta interfaz tenía campos de un diseño antiguo
+ *  (nombre, descripcion, valor_estimado) que el backend nunca envió. */
 export interface Regalo {
   uuid: string;
-  nombre: string;
-  tipo: string;
+  titulo: string;
+  /** "Regalo Directo"... tal como lo llama la tienda. */
+  tipo: string | null;
+  /** Página de la promoción en la tienda. */
+  url: string | null;
+  /** Banner de la promoción. */
   imagen_url: string | null;
-  descripcion: string | null;
-  valor_estimado: number;
+  /** "YYYY-MM-DD" o null si la tienda no indica fecha. */
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
 }
 
 // ── Historial de precios ──────────────────────────────────────────────────────

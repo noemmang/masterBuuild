@@ -6,6 +6,8 @@ import { ComponenteService, Componente } from '../../core/services/componente.se
 import { GuardadoService } from '../../core/services/guardado.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PriceHistoryComponent } from '../../shared/components/price-history/price-history.component';
+import { RegalosTiendaComponent } from '../../shared/components/regalos-tienda/regalos-tienda.component';
+import { BadgeRegaloComponent } from '../../shared/components/badge-regalo/badge-regalo.component';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { TooltipDirective } from '../../shared/directives/tooltip.directive';
 
@@ -115,7 +117,7 @@ const FILTROS_POR_CATEGORIA: Record<string, GrupoFiltro[]> = {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent],
+  imports: [CommonModule, FormsModule, TooltipDirective, PriceHistoryComponent, RegalosTiendaComponent, BadgeRegaloComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })

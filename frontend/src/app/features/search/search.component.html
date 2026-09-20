@@ -122,10 +122,13 @@
                         </span>
                       }
                     </div>
-                    <!-- Derecha: agotado -->
+                    <!-- Derecha: agotado / regalo (excluyentes: el regalo solo cuenta con stock) -->
                     <div class="card-icons-right">
                       @if (comp.num_tiendas > 0 && !comp.en_stock) {
                         <span class="badge-agotado">Agotado</span>
+                      }
+                      @if (comp.tiene_regalo) {
+                        <app-badge-regalo />
                       }
                     </div>
                   </div>
@@ -266,6 +269,9 @@
               </div>
               <span class="precio-valor" [class.accent]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0">{{ formatPrecio(p.precio) }}</span>
             </div>
+
+              <!-- Regalos de ESTA tienda (el backend solo los manda si tiene stock) -->
+              <app-regalos-tienda [regalos]="p.regalos" />
 
             </div><!-- /precio-card -->
 

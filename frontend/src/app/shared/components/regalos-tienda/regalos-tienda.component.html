@@ -1,0 +1,53 @@
+@if (regalos?.length) {
+  <!-- El panel de precios reacciona al clic de la fila (seleccionar tienda);
+       clicar en el regalo no debe seleccionarla ni cerrar nada. -->
+  <div class="regalos" (click)="$event.stopPropagation()">
+    @for (r of regalos; track r.uuid) {
+      <div class="regalo">
+        @if (r.imagen_url) {
+          <!-- El banner también lleva a la promoción (mismo destino que el botón);
+               tabindex -1 para no duplicar la parada de teclado. -->
+          @if (r.url) {
+            <a class="regalo-banner" [attr.href]="r.url" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
+              <img [src]="r.imagen_url" [alt]="r.titulo" loading="lazy" referrerpolicy="no-referrer"
+                   (error)="ocultarImagen($event)">
+            </a>
+          } @else {
+            <span class="regalo-banner">
+              <img [src]="r.imagen_url" [alt]="r.titulo" loading="lazy" referrerpolicy="no-referrer"
+                   (error)="ocultarImagen($event)">
+            </span>
+          }
+        }
+
+        <span class="regalo-etiqueta">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="8" width="18" height="4" rx="1"/>
+            <path d="M12 8v13"/>
+            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+          </svg>
+          {{ r.tipo || 'Regalo' }}
+        </span>
+
+        <span class="regalo-titulo">{{ r.titulo }}</span>
+
+        @if (r.fecha_fin) {
+          <span class="regalo-fecha">Hasta el {{ r.fecha_fin | date: 'dd/MM/yyyy' }}</span>
+        }
+
+        @if (r.url) {
+          <a class="regalo-btn" [attr.href]="r.url" target="_blank" rel="noopener noreferrer">
+            Ver promoción
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7"/>
+              <path d="M8 7h9v9"/>
+            </svg>
+          </a>
+        }
+      </div>
+    }
+  </div>
+}

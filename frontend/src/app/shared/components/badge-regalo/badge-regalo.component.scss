@@ -1,0 +1,21 @@
+:host {
+  display: contents;
+}
+
+// Mismo formato que .badge de las tarjetas (22×22, esquinas 6px). Color propio
+// para no confundirlo con guardado (accent), alerta (naranja) o agotado (rojo).
+.badge-regalo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--regalo, #8b5cf6);
+  color: #fff;
+  // Los contenedores de iconos son pointer-events:none; el badge sí necesita
+  // el puntero para que funcione el tooltip (title).
+  pointer-events: auto;
+
+  svg { display: block; }
+}

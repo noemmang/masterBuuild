@@ -573,6 +573,26 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6-tarjeta-grafica-37435.html',
             ],
+            'ASUS Dual GeForce RTX 5060 Ti OC' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-dual-geforce-rtx-5060-ti-oc-8gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/asus-dual-rtx-5060-ti-oc-8gb-gddr7-dlss4-tarjeta-grafica-28548.html',
+            ],
+            'MSI GeForce RTX 5070 Ventus 2X OC' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-geforce-rtx-5070-ventus-2x-oc-12gb-gddr7-dlss4',
+                'Neobyte' => 'https://www.neobyte.es/msi-geforce-rtx-5070-ventus-2x-oc-12gb-gddr7-dlss4-tarjeta-grafica-27809.html',
+            ],
+            'PNY GeForce RTX 5070 Ti EPIC-X RGB OC' => [
+                'Coolmod' => 'https://www.coolmod.com/pny-geforce-rtx-5070-ti-epic-x-rgb-oc-16gb-gddr7',
+                'Neobyte' => 'https://www.neobyte.es/pny-geforce-rtx-5070-ti-epic-x-rgb-oc-16gb-gddr7-dlss4-tarjeta-grafica-26555.html',
+            ],
+            'ASRock Intel Arc B580 Challenger OC' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/asrock-intel-arc-b580-challenger-12gb-gddr6-tarjeta-grafica-27056.html',
+            ],
+            'ASRock Intel Arc B570 Challenger OC' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/asrock-intel-arc-b570-challenger-oc-10gb-gddr6-tarjeta-grafica-40129.html',
+            ],
 
             // ---------- Almacenamiento ----------
             'Samsung 990 Pro 2TB NVMe PCIe 4.0' => [
@@ -630,6 +650,10 @@ class UrlProductoTiendaSeeder extends Seeder
             'Corsair MP600 ELITE 1TB NVMe PCIe 4.0' => [
                 'Coolmod' => 'https://www.coolmod.com/corsair-mp600-elite-1tb-pcie-gen4-x4-nvme-1-4-ssd',
                 'Neobyte' => 'https://www.neobyte.es/corsair-mp600-elite-1tb-con-disipador-unidad-ssd-m2-para-ps5-20336.html',
+            ],
+            'Lexar NM790 1TB NVMe PCIe 4.0' => [
+                'Coolmod' => 'https://www.coolmod.com/lexar-nm790-1tb-pcie-gen4-x4-nvme-ssd',
+                'Neobyte' => 'https://www.neobyte.es/lexar-nm790-1tb-pcie-4-0-nvme-unidad-m-2-25869.html',
             ],
 
             // ---------- Gabinetes ----------
@@ -764,6 +788,18 @@ class UrlProductoTiendaSeeder extends Seeder
             'Thermaltake The Tower 200' => [
                 'Coolmod' => 'https://www.coolmod.com/thermaltake-the-tower-200-blanco',
                 'Neobyte' => 'https://www.neobyte.es/thermaltake-the-tower-200-snow-caja-mini-itx-22241.html',
+            ],
+            'Abysm Arian Frame A400' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/abysm-arian-frame-a400-caja-atx-30577.html',
+            ],
+            'Jonsbo D200' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/jonsbo-d200-caja-micro-atx-37209.html',
+            ],
+            'Cooler Master Elite 502' => [
+                'Coolmod' => '',
+                'Neobyte' => 'https://www.neobyte.es/cooler-master-elite-502-caja-e-atx-30394.html',
             ],
 
             // ---------- Fuentes de alimentación (PSU) ----------

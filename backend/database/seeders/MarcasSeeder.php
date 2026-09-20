@@ -471,6 +471,13 @@ class MarcasSeeder extends Seeder
                 'logo_url'    => null,
                 'pais_origen' => 'DE',
             ],
+            [
+                'nombre'      => 'Abysm',
+                'tipo'        => ['assembler'],
+                'website'     => 'https://abysmgaming.com',
+                'logo_url'    => null,
+                'pais_origen' => 'ES',
+            ],
         ];
 
         foreach ($marcas as $marca) {

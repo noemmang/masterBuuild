@@ -1470,7 +1470,7 @@ class ComponentesSeeder extends Seeder
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851']
         );
         $this->crearRefrigeracionLiquida(
-            comp: ['nombre' => 'ROG Ryuo IV SLC 360 ARGB', 'marca' => 'ASUS', 'modelo' => '90RC0151-B0EAY0', 'descripcion' => 'AIO 360 mm con pantalla AMOLED curva de 6.67" que muestra contenido 3D, información del sistema o animaciones personalizadas. Tubing centrado de 200 mm. Tres ventiladores MF-12C ARGB con daisy-chain. Compatible con AMD Ryzen 9000 e Intel Core Ultra.', 'imagen_url' => 'https://rog.asus.com/media/1767587231960.jpg'],
+            comp: ['nombre' => 'ROG Ryuo IV SLC 360 ARGB', 'marca' => 'ASUS', 'modelo' => '90RC0151-B0EAY0', 'descripcion' => 'AIO 360 mm con pantalla AMOLED curva de 6.67" que muestra contenido 3D, información del sistema o animaciones personalizadas. Tubing centrado de 200 mm. Tres ventiladores MF-12C ARGB con daisy-chain. Compatible con AMD Ryzen 9000 e Intel Core Ultra.', 'imagen_url' => 'https://dlcdnwebimgs.asus.com/files/media/d3b46fd8-035f-41c1-a995-2dca5a228e9b/v1/img/gallery/2.jpg'],
             liq: ['tdp_max_watts' => 350, 'tam_radiador_mm' => 360, 'ancho_radiador_mm' => 140, 'alto_radiador_mm' => 394, 'grosor_radiador_mm' => 32, 'altura_bomba_mm' => 123, 'ancho_bomba_mm' => 105, 'profundidad_bomba_mm' => 133, 'pantalla_cabezal' => true, 'num_ventiladores' => 3, 'tam_ventilador_mm' => 120, 'rpm_min' => 800, 'rpm_max' => 2650, 'ruido_db_min' => 20.0, 'ruido_db_max' => 39.6, 'flujo_personalizable' => false, 'incluye_pasta_termica' => true, 'tiene_rgb' => true],
             sockets: ['AM4', 'AM5', 'LGA1700', 'LGA1851']
         );

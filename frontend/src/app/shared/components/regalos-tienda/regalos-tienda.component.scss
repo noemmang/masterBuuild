@@ -47,13 +47,19 @@
   }
 }
 
+// La imagen de la promoción es, junto al nombre de la tienda, de los pocos
+// sitios de la card donde el cursor debe mostrarse como "mano": es un
+// enlace real (ya no hay botón "Ver promoción" aparte).
 a.regalo-banner {
+  cursor: pointer;
   transition: opacity 0.15s;
 
   &:hover { opacity: 0.88; }
 }
 
-.regalo-etiqueta {
+// Encabezado único para el bloque de regalos de esta tienda (sustituye a la
+// etiqueta "Regalo"/"Regalo directo" repetida en cada uno).
+.regalos-titulo {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -80,30 +86,4 @@ a.regalo-banner {
 .regalo-fecha {
   font-size: 0.68rem;
   color: var(--text-muted);
-}
-
-// Botón hacia la página de la tienda con la descripción extensa de la promoción.
-.regalo-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: 100%;
-  margin-top: 4px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--regalo, #8b5cf6);
-  background: transparent;
-  color: var(--regalo, #8b5cf6);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--regalo, #8b5cf6);
-    color: #fff;
-  }
 }

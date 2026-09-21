@@ -1,0 +1,88 @@
+<div
+  class="comp-card-tooltip-wrap"
+  [attr.data-uuid]="comp.uuid"
+  [attr.data-tooltip]="comp.descripcion || null"
+  [appTooltip]="comp.descripcion || ''">
+
+  <div
+    class="comp-card"
+    [class.selected]="seleccionado"
+    [class.agotado]="agotado"
+    (click)="seleccionar.emit(comp)">
+
+    <div class="comp-card-img">
+      @if (comp.imagen_url) {
+        <img [src]="comp.imagen_url" [alt]="comp.nombre" />
+      } @else {
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      }
+
+      <!-- ── Iconos de estado: mismo patrón izq/der en toda la app ── -->
+      <div class="comp-card-estado-icons">
+        <!-- Izquierda: bajada de precio, guardado y alerta -->
+        <div class="comp-card-icons-left">
+          @if (mostrarBajadaPrecio && comp.bajada_precio) {
+            <span class="comp-card-badge verde">↓</span>
+          }
+          @if (logueado && guardado) {
+            <span class="comp-card-badge badge-guardado" title="Guardado">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </span>
+          }
+          @if (logueado && tieneAlerta) {
+            <span class="comp-card-badge badge-alerta" title="Alerta de precio activa">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </span>
+          }
+        </div>
+        <!-- Derecha: agotado / regalo (excluyentes: el regalo solo cuenta con stock) -->
+        <div class="comp-card-icons-right">
+          @if (agotado) {
+            <span class="badge-agotado">Agotado</span>
+          }
+          @if (comp.tiene_regalo) {
+            <app-badge-regalo />
+          }
+        </div>
+      </div>
+
+      @if (apilable && cantidad > 0) {
+        <div class="comp-card-qty-badge">×{{ cantidad }}</div>
+      }
+    </div>
+
+    <div class="comp-card-body">
+      <span class="comp-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
+
+      <!-- Reserva altura de 2 líneas SIEMPRE (aunque el nombre solo ocupe 1),
+           así toda la fila de abajo (marca, precio, tiendas) cae siempre a la
+           misma altura en todas las tarjetas. -->
+      <h3 class="comp-card-nombre">{{ comp.nombre }}</h3>
+
+      <!-- Se pinta siempre, aunque no haya marca: si el span desaparece del
+           todo con @if, esa línea de alto se pierde y el footer sube,
+           volviendo a descuadrar la tarjeta con las que sí tienen marca. -->
+      <span class="comp-card-marca">{{ comp.marca?.nombre || '\u00A0' }}</span>
+
+      <div class="comp-card-footer">
+        <span class="comp-card-precio">{{ formatPrecio(comp.precio_min) || 'Sin precio' }}</span>
+        <span class="comp-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
+      </div>
+
+      @if (apilable && seleccionado) {
+        <div class="comp-card-qty-controls" (click)="$event.stopPropagation()">
+          <button class="qty-btn" (click)="decrementar.emit()">−</button>
+          <span class="qty-val">{{ cantidad }}</span>
+          <button class="qty-btn" (click)="incrementar.emit()">+</button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

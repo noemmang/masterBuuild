@@ -1,0 +1,309 @@
+// El propio componente no debe convertirse en el grid item: el layout de
+// Buscador/Configurador coloca el panel como columna del grid según su
+// posición en el DOM (grid-template-columns: ... $panel-w). Con
+// "display: contents" el <aside> de dentro pasa a ser el hijo directo real
+// del grid y todo sigue funcionando exactamente igual que antes.
+:host {
+  display: contents;
+}
+
+.panel-precios-tienda {
+  position: sticky;
+  z-index: 1000;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+// ── Cabecera ─────────────────────────────────────────────────────────────
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+
+.panel-cat {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.panel-nombre {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.panel-tiendas { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+.panel-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+  &:hover { color: var(--text); }
+}
+
+// ── Acciones (guardar / alerta) ──────────────────────────────────────────
+.panel-acciones {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px 10px;
+}
+
+.btn-accion {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  &:disabled { opacity: 0.6; cursor: default; }
+
+  &.guardado {
+    border-color: var(--success);
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 8%, transparent);
+    &:hover:not(:disabled) {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 8%, transparent);
+    }
+  }
+
+  &.alerta-activa {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: color-mix(in srgb, var(--orange) 8%, transparent);
+    &:hover:not(:disabled) {
+      border-color: var(--error);
+      color: var(--error);
+      background: color-mix(in srgb, var(--error) 8%, transparent);
+    }
+  }
+}
+
+// ── Formulario alerta inline ─────────────────────────────────────────────
+.alerta-form {
+  margin: 8px 14px 0;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  animation: fadeInDown 0.15s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.alerta-form-label { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+
+.alerta-input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0 10px;
+  &:focus-within { border-color: var(--accent); }
+}
+
+.alerta-input {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-size: 0.9rem; font-weight: 600; color: var(--text); padding: 7px 0;
+}
+
+.alerta-euro { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+.btn-alerta-guardar {
+  width: 100%; padding: 7px; border-radius: 7px; border: none;
+  background: var(--accent); color: #fff; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: opacity 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+// ── Cuerpo scrollable ─────────────────────────────────────────────────────
+.panel-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+// app-price-history vive fuera de panel-body; evitamos que encoja el cuerpo scrollable
+app-price-history {
+  flex-shrink: 0;
+  display: block;
+}
+
+.panel-cargando { display: flex; justify-content: center; padding: 2rem; }
+.panel-empty { text-align: center; padding: 2rem; font-size: 0.875rem; color: var(--text-muted); }
+
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--text-muted);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  &.accent { border-top-color: var(--accent); }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.mini-spinner-sm {
+  width: 12px; height: 12px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// ── Card de tienda (agrupa fila de precio + regalos) ─────────────────────
+// Ya NO lleva cursor: pointer en el contenedor. El contenedor sigue siendo
+// clicable (selecciona esta tienda para el total del configurador / detalle
+// del buscador), pero visualmente el cursor de "mano" solo aparece sobre el
+// nombre de la tienda (.tienda-link) y sobre la imagen de la promoción
+// (dentro de app-regalos-tienda), que son los enlaces reales a la tienda.
+.precio-card {
+  border-radius: 10px;
+  background: var(--bg);
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover { border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+  &.mejor { background: color-mix(in srgb, var(--text) 6%, transparent); }
+  &.mejor .mejor-badge { color: var(--accent); }
+  &.seleccionado {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  &.mejor.seleccionado {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  // Esta tienda concreta no tiene stock ahora mismo (aunque el componente en
+  // general sí lo tenga en otra tienda): mismo tratamiento visual que
+  // .cfg-card.agotado, para que sea coherente en toda la app.
+  &.agotado {
+    opacity: 0.65;
+    .precio-tienda, .precio-valor { color: var(--text-muted); }
+  }
+}
+
+.precio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem;
+  gap: 0.5rem;
+}
+
+.precio-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+
+.mejor-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--accent);
+}
+
+.precio-tienda {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// El nombre de la tienda es un enlace real: es de los pocos sitios de la
+// card donde el cursor debe mostrarse como "mano".
+a.tienda-link {
+  cursor: pointer;
+  text-decoration: none;
+  &:hover { text-decoration: underline; color: var(--accent); }
+}
+
+.precio-valor {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+  &.accent { color: var(--accent); }
+}
+
+.precio-row-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.1rem;
+  flex-wrap: wrap;
+}
+
+.badge-agotado {
+  background: var(--error);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  pointer-events: none;
+}

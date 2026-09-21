@@ -80,71 +80,15 @@
       } @else {
         <div class="grid">
           @for (comp of componentes(); track comp.uuid) {
-            <div
-              class="card-tooltip-wrap"
-              [attr.data-uuid]="comp.uuid"
-              [attr.data-tooltip]="comp.descripcion || null"
-              [appTooltip]="comp.descripcion || ''">
-
-              <div
-                class="card"
-                [class.selected]="componenteSeleccionado()?.uuid === comp.uuid"
-                [class.agotado]="comp.num_tiendas > 0 && !comp.en_stock"
-                (click)="seleccionarComponente(comp)">
-                <div class="card-img">
-                  @if (comp.imagen_url) {
-                    <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                  } @else {
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                      <rect x="2" y="3" width="20" height="14" rx="2"/>
-                      <path d="M8 21h8M12 17v4"/>
-                    </svg>
-                  }
-
-                  <div class="card-estado-icons">
-                    <!-- Izquierda: guardado y alerta -->
-                    <div class="card-icons-left">
-                      @if (comp.bajada_precio) {
-                        <span class="badge verde">↓</span>
-                      }
-                      @if (logueado && estaGuardado(comp.uuid)) {
-                        <span class="badge badge-guardado" title="Guardado">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                          </svg>
-                        </span>
-                      }
-                      @if (logueado && tieneAlerta(comp.uuid)) {
-                        <span class="badge badge-alerta" title="Alerta de precio activa">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                          </svg>
-                        </span>
-                      }
-                    </div>
-                    <!-- Derecha: agotado / regalo (excluyentes: el regalo solo cuenta con stock) -->
-                    <div class="card-icons-right">
-                      @if (comp.num_tiendas > 0 && !comp.en_stock) {
-                        <span class="badge-agotado">Agotado</span>
-                      }
-                      @if (comp.tiene_regalo) {
-                        <app-badge-regalo />
-                      }
-                    </div>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <span class="card-cat" style="font-size:0.62rem">{{ comp.categoria.replace('_', ' ') }}</span>
-                  <h3 class="card-nombre">{{ comp.nombre }}</h3>
-                  @if (comp.marca) { <span class="card-marca">{{ comp.marca.nombre }}</span> }
-                  <div class="card-footer">
-                    <span class="card-precio"> {{ formatPrecio(comp.precio_min) }}</span>
-                    <span class="card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                  </div>
-                </div>
-              </div>
-
-            </div><!-- /card-tooltip-wrap -->
+            <app-componente-card
+              [comp]="comp"
+              [seleccionado]="componenteSeleccionado()?.uuid === comp.uuid"
+              [guardado]="estaGuardado(comp.uuid)"
+              [tieneAlerta]="tieneAlerta(comp.uuid)"
+              [logueado]="logueado"
+              [mostrarBajadaPrecio]="true"
+              (seleccionar)="seleccionarComponente(comp)">
+            </app-componente-card>
           }
         </div>
         @if (hayMas()) {
@@ -161,132 +105,29 @@
 
   <!-- PANEL PRECIOS -->
   @if (componenteSeleccionado()) {
-    <aside class="panel-precios">
-      <div class="panel-head">
-        <div>
-          <p class="panel-cat">{{ nombreCategoria(componenteSeleccionado()!.categoria) }}</p>
-          <h3 class="panel-nombre">{{ componenteSeleccionado()!.nombre }}</h3>
-          @if (componenteSeleccionado()!.num_tiendas) {
-            <p class="panel-tiendas">{{ componenteSeleccionado()!.num_tiendas }} tiendas</p>
-          }
-        </div>
-        <button class="panel-close" (click)="cerrarPanel()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 6 6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-
-        <div class="panel-acciones">
-          @if (estaGuardado(componenteSeleccionado()!.uuid)) {
-            <button class="btn-accion guardado" [disabled]="eliminando()" (click)="eliminarGuardado()">
-              @if (eliminando()) { <span class="mini-spinner-sm"></span> }
-              @else {
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
-                Guardado
-              }
-            </button>
-          } @else {
-            <button class="btn-accion" [disabled]="guardando()" (click)="guardarComponente()">
-              @if (guardando()) { <span class="mini-spinner-sm"></span> }
-              @else {
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-                </svg>
-                Guardar
-              }
-            </button>
-          }
-          @if (tieneAlerta(componenteSeleccionado()!.uuid)) {
-            <button class="btn-accion alerta-activa" (click)="eliminarAlerta()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              Alerta activa
-            </button>
-          } @else {
-            <button class="btn-accion" (click)="toggleFormAlerta()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              Alerta precio
-            </button>
-          }
-        </div>
-
-        @if (mostrarAlerta() && !tieneAlerta(componenteSeleccionado()!.uuid)) {
-          <div class="alerta-form">
-            <p class="alerta-form-label">Avísame cuando baje de</p>
-            <div class="alerta-input-wrap">
-              <input
-                type="number"
-                class="alerta-input"
-                [value]="precioObjetivo()"
-                (input)="setPrecioObjetivo($any($event.target).value)"
-                placeholder="Precio objetivo"
-              />
-              <span class="alerta-euro">€</span>
-            </div>
-            <button class="btn-alerta-guardar" [disabled]="!precioObjetivo() || guardandoAlerta()" (click)="guardarAlerta()">
-              @if (guardandoAlerta()) { <span class="mini-spinner-sm"></span> }
-              @else { Crear alerta }
-            </button>
-          </div>
-        }
-
-      <div class="panel-scroll">
-      <div class="panel-body">
-        @if (cargandoPrecios()) {
-          <div class="panel-cargando"><div class="mini-spinner accent"></div></div>
-        } @else if (precios().length === 0) {
-          <p class="panel-empty">Sin precios disponibles</p>
-        } @else {
-          @for (p of precios(); track p.uuid; let i = $index) {
-
-            <!-- Card de tienda: agrupa fila + extras -->
-            <div class="precio-card"
-                 [class.mejor]="i === 0"
-                 [class.agotado]="!p.en_stock"
-                 [class.seleccionado]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0"
-                 (click)="seleccionarPrecio(p)">
-
-              <!-- Fila principal de tienda -->
-              <div class="precio-row">
-              <div class="precio-info">
-                @if (i === 0 && p.en_stock) { <span class="mejor-badge">Mejor precio</span> }
-                @if (i !== 0 && precioSeleccionado()?.uuid === p.uuid) { <span class="mejor-badge" style="color:var(--text-muted)">Seleccionado</span> }
-                @if (p.url) {
-                  <a [href]="p.url" target="_blank" rel="noopener" class="precio-tienda tienda-link" (click)="$event.stopPropagation()">{{ p.tienda?.nombre || 'Tienda' }}</a>
-                } @else {
-                  <span class="precio-tienda">{{ p.tienda?.nombre || 'Tienda' }}</span>
-                }
-                <div class="precio-row-tags">
-                  @if (!p.en_stock) { <span class="badge-agotado">Agotado</span> }
-                  @if (p.url) { <a [href]="p.url" target="_blank" class="ver-oferta" (click)="$event.stopPropagation()">ver oferta</a> }
-                </div>
-              </div>
-              <span class="precio-valor" [class.accent]="precioSeleccionado() ? precioSeleccionado()?.uuid === p.uuid : i === 0">{{ formatPrecio(p.precio) }}</span>
-            </div>
-
-              <!-- Regalos de ESTA tienda (el backend solo los manda si tiene stock) -->
-              <app-regalos-tienda [regalos]="p.regalos" />
-
-            </div><!-- /precio-card -->
-
-          }
-        }
-      </div>
-
-      </div><!-- /panel-scroll -->
-
-      <!-- ── Historial de precios — footer del panel ── -->
-      <app-price-history
-        [componenteUuid]="componenteSeleccionado()!.uuid"
-        [componenteNombre]="componenteSeleccionado()!.nombre">
-      </app-price-history>
-
-    </aside>
+    <app-panel-precios-tienda
+      [categoriaLabel]="nombreCategoria(componenteSeleccionado()!.categoria)"
+      [nombreComponente]="componenteSeleccionado()!.nombre"
+      [numTiendas]="componenteSeleccionado()!.num_tiendas"
+      [componenteUuid]="componenteSeleccionado()!.uuid"
+      [guardado]="estaGuardado(componenteSeleccionado()!.uuid)"
+      [guardando]="guardando()"
+      [eliminandoGuardado]="eliminando()"
+      [tieneAlerta]="tieneAlerta(componenteSeleccionado()!.uuid)"
+      [mostrarAlerta]="mostrarAlerta()"
+      [precioObjetivo]="precioObjetivo()"
+      [guardandoAlerta]="guardandoAlerta()"
+      [cargandoPrecios]="cargandoPrecios()"
+      [precios]="precios()"
+      [precioSeleccionado]="precioSeleccionado()"
+      (cerrar)="cerrarPanel()"
+      (guardar)="guardarComponente()"
+      (quitarGuardado)="eliminarGuardado()"
+      (toggleAlerta)="toggleFormAlerta()"
+      (guardarAlerta)="guardarAlerta()"
+      (quitarAlerta)="eliminarAlerta()"
+      (precioObjetivoChange)="setPrecioObjetivo($event)"
+      (seleccionarPrecio)="seleccionarPrecio($event)">
+    </app-panel-precios-tienda>
   }
 </div>

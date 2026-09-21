@@ -19,7 +19,7 @@ export class RegalosTiendaComponent {
 
   /**
    * Si el banner no carga (hotlinking bloqueado, URL rota…) se oculta junto a
-   * su marco, sin dejar un hueco roto. El nombre y el botón siguen ahí.
+   * su marco, sin dejar un hueco roto. El título y la fecha siguen ahí.
    */
   ocultarImagen(ev: Event): void {
     const img = ev.target as HTMLImageElement;

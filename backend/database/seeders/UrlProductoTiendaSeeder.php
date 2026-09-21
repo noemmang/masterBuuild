@@ -573,7 +573,7 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-amd-radeon-rx-9070-gre-gaming-oc-12gb-gddr6-tarjeta-grafica-37435.html',
             ],
-            'ASUS Dual GeForce RTX 5060 Ti OC' => [
+            'ASUS Dual GeForce RTX 5060 Ti OC 8GB' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-dual-geforce-rtx-5060-ti-oc-8gb-gddr7-dlss4',
                 'Neobyte' => 'https://www.neobyte.es/asus-dual-rtx-5060-ti-oc-8gb-gddr7-dlss4-tarjeta-grafica-28548.html',
             ],
@@ -801,6 +801,18 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => '',
                 'Neobyte' => 'https://www.neobyte.es/cooler-master-elite-502-caja-e-atx-30394.html',
             ],
+            'ASUS TUF Gaming GT502 PLUS' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-gt502-plus-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-gt502-plus-caja-atx-20749.html',
+            ],
+            'ASUS ProArt PA401 Wood Edition' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-pa401-wood-tg-edition-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-pa401-wood-edition-tg-caja-atx-26674.html',
+            ],
+            'ASUS ProArt PA602' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-pa602-wood-edition-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-pa602-wood-edition-tg-caja-e-atx-24482.html',
+            ],
 
             // ---------- Fuentes de alimentación (PSU) ----------
             'DeepCool PQ650M' => [
@@ -870,6 +882,22 @@ class UrlProductoTiendaSeeder extends Seeder
             'Seasonic Focus SGX 80 Plus Gold 650W Modular' => [
                 'Coolmod' => 'https://www.coolmod.com/seasonic-focus-sgx-80-plus-gold-650w-modular',
                 'Neobyte' => 'https://www.neobyte.es/seasonic-focus-sgx650-sfx-fuente-de-alimentacion-650w-24411.html',
+            ],
+            'ASUS TUF Gaming 1200W Gold' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-80-plus-gold-1200w-atx-3-0-pcie-5-0-modular',
+                'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-1200g-atx-31-pcie-51-fuente-de-alimentacion-1200w-18199.html',
+            ],
+            'ASUS ROG Thor 1000W Platinum III' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-thor-1000w-platinum-iii-80-plus-platinum-1000w-atx-3-1-pcie-5-0-modular',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-thor-1000w-platinum-iii-atx-31-pcie-50-fuente-de-alimentacion-1000w-27242.html',
+            ],
+            'ASUS Prime 850W Gold' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-prime-850w-gold-black-edition-80-plus-gold-850w-atx-3-1-pcie-5-1-modular',
+                'Neobyte' => 'https://www.neobyte.es/asus-prime-850g-gold-fuente-de-alimentacion-850w-33249.html',
+            ],
+            'ASUS TUF Gaming 750W Gold EVO' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-750w-gold-evo-cybenetics-platinum-gold-750w-atx-3-1-pcie-5-1-modular-negra',
+                'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-750w-gold-evo-atx-31-pcie-51-fuente-de-alimentacion-750w-33708.html',
             ],
 
 
@@ -988,6 +1016,14 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-slc-iv-360-argb-lcd-negro',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-slc-iv-360-argb-lcd-refrigeracion-liquida-360mm-37769.html',
             ],
+            'ROG Ryuo IV SLC 360 ARGB' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-slc-iv-360-argb-lcd-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-slc-iv-360-argb-lcd-refrigeracion-liquida-360mm-37769.html',
+            ],
+            'ROG Ryujin III 240' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-ryujin-iii-240-argb-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-rog-ryujin-iii-argb-refrigeracion-liquida-240mm-17900.html',
+            ],
 
             // ---------- Ventiladores ----------
             'Noctua NF-F12 PWM' => [
@@ -1057,6 +1093,14 @@ class UrlProductoTiendaSeeder extends Seeder
             'Corsair RS120 ARGB PWM 120mm' => [
                 'Coolmod' => 'https://www.coolmod.com/corsair-rs120-argb-pwm-120mm-negro',
                 'Neobyte' => 'https://www.neobyte.es/corsair-rs120-argb-ventilador-120mm-22267.html',
+            ],
+            'ASUS ProArt PF120 Fan Triple Pack' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-pf120-pwm-120mm-triple-pack-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-pf120-fan-pack-de-3-ventilador-120mm-34896.html',
+            ],
+            'ASUS ProArt PF120 Fan' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-proart-pf120-pwm-120mm-negro',
+                'Neobyte' => 'https://www.neobyte.es/asus-proart-pf120-fan-ventilador-120mm-34897.html',
             ],
         ];
 

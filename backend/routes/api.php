@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Negocio\GuardadoController;
 use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
 use App\Http\Controllers\Api\Negocio\NotificacionController;
+use App\Http\Controllers\Api\Negocio\InteraccionController;
 use App\Http\Controllers\Api\Auxiliares\AuxiliaresController;
 use App\Http\Controllers\Api\Configurador\ConfiguradorController;
 use App\Http\Controllers\Api\Configurador\RecomendadorController;
@@ -30,9 +31,33 @@ Route::prefix('v1')->group(function () {
     // ── Catálogos auxiliares — públicos ───────────────────────
     Route::get('auxiliares', [AuxiliaresController::class, 'index']);
 
+    // ── Señales de relevancia — públicas, limitadas por throttle:interacciones ──
+    //
+    // Ver InteraccionController: alimentan metricas_relevancia, que se
+    // recalcula a diario (relevancia:recalcular, encadenado en
+    // scrape:diario) y decide el orden "Relevancia" del buscador/
+    // configurador y qué sale en "Componentes destacados" del home.
+    Route::prefix('interacciones')->middleware('throttle:interacciones')->group(function () {
+        Route::post('busqueda', [InteraccionController::class, 'registrarBusqueda']);
+        Route::post('seleccion', [InteraccionController::class, 'registrarSeleccion']);
+    });
+
     // ── Componentes — lectura pública ─────────────────────────
     Route::prefix('componentes')->group(function () {
         Route::get('/',                        [ComponenteController::class, 'index']);
+
+        // Las tres secciones dinámicas del home (destacados / bajadas de
+        // precio / promociones, ver ComponenteController): son listados
+        // de Componente igual que index(), así que viven en el mismo
+        // controlador y bajo el mismo prefijo /componentes — no un
+        // dominio "home" aparte. IMPORTANTE: van antes de '{uuid}', que
+        // también es un único segmento y las capturaría a las tres si se
+        // registrara primero (Laravel resuelve rutas de un segmento por
+        // orden de registro, no por especificidad).
+        Route::get('destacados',               [ComponenteController::class, 'destacados']);
+        Route::get('bajadas-precio',           [ComponenteController::class, 'bajadasPrecio']);
+        Route::get('promociones',              [ComponenteController::class, 'promociones']);
+
         Route::get('{uuid}',                   [ComponenteController::class, 'show']);
         Route::get('categoria/{categoria}',    [ComponenteController::class, 'porCategoria']);
         Route::get('{uuid}/precios',           [PrecioController::class, 'actuales']);

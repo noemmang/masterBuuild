@@ -22,6 +22,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Los campos precio_min, precio_max, num_tiendas, en_stock y
  * precio_min_stock vienen ya calculados desde el controller con
  * withMin/withMax/withCount/withExists, así que aquí solo se formatean.
+ *
+ * bajada_precio y precio_antes son distintos: no se calculan en TODOS los
+ * listados (sería una consulta cara de más para el buscador/configurador,
+ * que no la necesitan), solo los rellena HomeController::bajadasPrecio()
+ * asignándolos "a mano" al modelo antes de envolverlo en este resource
+ * (ver BajadaPrecioService). Si no vienen, el fallback es false/null: en
+ * cualquier otro listado (buscador, configurador, categoría) simplemente
+ * no se muestra el badge de bajada, en vez de fallar.
  */
 class ComponenteListadoResource extends JsonResource
 {
@@ -54,6 +62,10 @@ class ComponenteListadoResource extends JsonResource
             // withExists en el controller). El detalle por tienda se pide
             // aparte, en /componentes/{uuid}/precios.
             'tiene_regalo' => (bool) ($this->tiene_regalo ?? false),
+            // Ver la nota de clase: solo viene relleno desde el carrusel
+            // "Bajadas de precio" del home.
+            'bajada_precio' => (bool) ($this->bajada_precio ?? false),
+            'precio_antes'  => isset($this->precio_antes) ? (float) $this->precio_antes : null,
             'specs'        => $this->specs(),
         ];
     }

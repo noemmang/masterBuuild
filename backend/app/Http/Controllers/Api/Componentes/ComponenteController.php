@@ -6,13 +6,40 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ComponenteDetalleResource;
 use App\Http\Resources\ComponenteListadoResource;
 use App\Models\Componentes\Componente;
+use App\Models\Negocio\PromocionRegalo;
+use App\Services\Componentes\BajadaPrecioService;
+use App\Services\Componentes\RelevanciaService;
 use App\Services\Configurador\CompatibilidadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ComponenteController extends Controller
 {
-    public function __construct(private CompatibilidadService $compatibilidad)
-    {
+    // Tope real de componentes que calculan y cachean destacados(),
+    // bajadasPrecio() y promociones(); el ?limit= de esas tres nunca
+    // puede pedir más que esto (solo recorta lo ya cacheado). 16 porque
+    // es de sobra para llenar el carrusel más ancho del home sin que dé
+    // la vuelta enseguida, sin dejar que ?limit= fuerce a recorrer o
+    // calcular de más.
+    private const LIMITE_LISTADOS_HOME = 16;
+
+    // Un día: destacados()/bajadasPrecio()/promociones() son consultas
+    // algo más pesadas que el listado normal (ROW_NUMBER, JOIN con
+    // metricas_relevancia) y su dato de fondo (scraping, interacciones)
+    // solo cambia una vez al día, así que no hace falta recalcularlas en
+    // cada visita al home. relevancia:recalcular (encadenado al final de
+    // scrape:diario) invalida estas tres claves justo después del scrape
+    // nocturno — deben coincidir EXACTAMENTE con las que usa ese comando.
+    private const CACHE_DESTACADOS = 'componentes:destacados';
+    private const CACHE_BAJADAS_PRECIO = 'componentes:bajadas_precio';
+    private const CACHE_PROMOCIONES = 'componentes:promociones';
+    private const CACHE_TTL_HORAS = 24;
+
+    public function __construct(
+        private CompatibilidadService $compatibilidad,
+        private RelevanciaService $relevancia,
+        private BajadaPrecioService $bajadaPrecio,
+    ) {
     }
 
     public function index(Request $request)
@@ -152,12 +179,24 @@ class ComponenteController extends Controller
             ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio');
 
         // ── Ordenación ───────────────────────────────────────────────────────
-
-        $ordenar = $request->get('ordenar', 'nombre');
-        match($ordenar) {
+        //
+        // "Relevancia" es la opción por defecto tanto en el buscador como
+        // en el configurador. Antes no existía de verdad: el front mandaba
+        // ordenar='' (vacío), el helper de query params del servicio se lo
+        // saltaba por estar vacío, y aquí el default() del match() acababa
+        // ordenando por nombre — es decir, "Relevancia" en el desplegable
+        // en realidad era "Nombre A-Z" disfrazado. Ahora es real: usa la
+        // puntuación de metricas_relevancia (búsquedas + selecciones de los
+        // últimos 30 días, ver RelevanciaService), con nombre como
+        // desempate y como único criterio si un componente todavía no
+        // tiene ninguna interacción registrada.
+        $ordenar = $request->get('ordenar', 'relevancia');
+        match ($ordenar) {
             'precio_asc'  => $query->orderBy('precio_min', 'asc'),
             'precio_desc' => $query->orderBy('precio_min', 'desc'),
-            default       => $query->orderBy('nombre', 'asc'),
+            'nombre_asc'  => $query->orderBy('nombre', 'asc'),
+            'relevancia'  => $this->relevancia->ordenarPorRelevancia($query),
+            default       => $this->relevancia->ordenarPorRelevancia($query),
         };
 
         // ── Paginación ───────────────────────────────────────────────────────
@@ -183,13 +222,182 @@ class ComponenteController extends Controller
         ]);
     }
 
+    /**
+     * Los componentes más buscados o seleccionados recientemente (ver
+     * RelevanciaService). Si todavía no hay ninguna interacción registrada
+     * (instalación nueva), cae en un orden por fecha de alta descendente:
+     * mejor mostrar algo con sentido que una sección vacía el primer día.
+     * La usa el carrusel "Componentes destacados" del home.
+     */
+    public function destacados(Request $request)
+    {
+        $limite = $this->limiteListadoHome($request, 12);
+
+        $data = Cache::remember(self::CACHE_DESTACADOS, now()->addHours(self::CACHE_TTL_HORAS), function () {
+            $componentes = Componente::query()->activo()->visible()
+                ->leftJoin('metricas_relevancia', 'metricas_relevancia.componente_id', '=', 'componentes.id')
+                ->withMin('preciosActuales as precio_min', 'precio')
+                ->withMax('preciosActuales as precio_max', 'precio')
+                ->withCount('preciosActuales as num_tiendas')
+                ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
+                ->withExists('promocionesRegaloVisibles as tiene_regalo')
+                ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio')
+                ->with($this->relacionesListado())
+                // NULLS LAST explícito: en Postgres, DESC pone los NULL
+                // primero por defecto, así que sin esto los componentes
+                // TODAVÍA sin puntuación taparían a los que sí la tienen.
+                ->orderByRaw('metricas_relevancia.puntuacion DESC NULLS LAST')
+                ->orderByDesc('componentes.id')
+                ->limit(self::LIMITE_LISTADOS_HOME)
+                ->get();
+
+            return ComponenteListadoResource::collection($componentes)->resolve();
+        });
+
+        return response()->json(['data' => array_slice($data, 0, $limite)]);
+    }
+
+    /**
+     * Componentes con una bajada de precio real y reciente en alguna
+     * tienda donde siguen en stock (ver BajadaPrecioService para qué
+     * cuenta como "real": ni altas nuevas ni reposiciones de stock sin
+     * cambio de precio, y nunca componentes agotados en todas sus
+     * tiendas). Si no hay ninguna, se devuelve una lista vacía: el front
+     * oculta la sección entera en ese caso, no muestra un mensaje.
+     */
+    public function bajadasPrecio(Request $request)
+    {
+        $limite = $this->limiteListadoHome($request, 10);
+
+        $data = Cache::remember(self::CACHE_BAJADAS_PRECIO, now()->addHours(self::CACHE_TTL_HORAS), function () {
+            $bajadas = $this->bajadaPrecio->idsConBajada();
+            if ($bajadas->isEmpty()) {
+                return [];
+            }
+
+            // Mayor caída porcentual primero: es lo más "vendible" para un
+            // carrusel de ofertas.
+            $idsOrdenados = $bajadas
+                ->map(fn ($fila, $componenteId) => [
+                    'id'  => $componenteId,
+                    'pct' => 1 - ((float) $fila->precio_actual / (float) $fila->precio_anterior),
+                ])
+                ->sortByDesc('pct')
+                ->take(self::LIMITE_LISTADOS_HOME)
+                ->pluck('id')
+                ->all();
+
+            $componentes = Componente::query()->activo()->visible()
+                ->whereIn('componentes.id', $idsOrdenados)
+                ->withMin('preciosActuales as precio_min', 'precio')
+                ->withMax('preciosActuales as precio_max', 'precio')
+                ->withCount('preciosActuales as num_tiendas')
+                ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
+                ->withExists('promocionesRegaloVisibles as tiene_regalo')
+                ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio')
+                ->with($this->relacionesListado())
+                ->get()
+                ->keyBy('id');
+
+            $ordenados = collect($idsOrdenados)
+                ->map(function ($id) use ($componentes, $bajadas) {
+                    $componente = $componentes->get($id);
+                    if (!$componente) {
+                        return null;
+                    }
+
+                    // Atributos "extra" que ComponenteListadoResource ya
+                    // sabe leer (con fallback a false/null cuando no
+                    // vienen, para no romper el listado general): aquí sí
+                    // los rellenamos porque de eso trata esta sección.
+                    $componente->bajada_precio = true;
+                    $componente->precio_antes = (float) $bajadas[$id]->precio_anterior;
+
+                    return $componente;
+                })
+                ->filter()
+                ->values();
+
+            return ComponenteListadoResource::collection($ordenados)->resolve();
+        });
+
+        return response()->json(['data' => array_slice($data, 0, $limite)]);
+    }
+
+    /**
+     * Componentes con una promoción de regalo activa y vigente en alguna
+     * tienda donde siguen en stock (Componente::promocionesRegaloVisibles,
+     * la misma definición de "regalo visible" que el icono de la tarjeta
+     * y el panel de precios). Igual que bajadasPrecio(): lista vacía si
+     * no hay ninguna, el front oculta la sección entera.
+     */
+    public function promociones(Request $request)
+    {
+        $limite = $this->limiteListadoHome($request, 10);
+
+        $data = Cache::remember(self::CACHE_PROMOCIONES, now()->addHours(self::CACHE_TTL_HORAS), function () {
+            $hoy = now(PromocionRegalo::ZONA_HORARIA)->toDateString();
+
+            $componentes = Componente::query()->activo()->visible()->disponible()
+                ->whereHas('promocionesRegaloVisibles')
+                ->withMin('preciosActuales as precio_min', 'precio')
+                ->withMax('preciosActuales as precio_max', 'precio')
+                ->withCount('preciosActuales as num_tiendas')
+                ->withExists(['preciosActuales as en_stock' => fn ($q) => $q->where('en_stock', true)])
+                ->withExists('promocionesRegaloVisibles as tiene_regalo')
+                ->withMin(['preciosActuales as precio_min_stock' => fn ($q) => $q->where('en_stock', true)], 'precio')
+                // La promoción visible que antes acaba, para ordenar por
+                // ella: crea sensación de urgencia y evita que una promo
+                // sin fecha de fin tape a las que sí caducan pronto.
+                ->addSelect(['proxima_fecha_fin' => PromocionRegalo::query()
+                    ->selectRaw('promociones_regalo.fecha_fin')
+                    ->join('componente_promocion_regalo as cpr', 'cpr.promocion_regalo_id', '=', 'promociones_regalo.id')
+                    ->whereColumn('cpr.componente_id', 'componentes.id')
+                    ->where('cpr.activa', true)
+                    ->where(fn ($q) => $q->whereNull('promociones_regalo.fecha_inicio')
+                        ->orWhere('promociones_regalo.fecha_inicio', '<=', $hoy))
+                    ->where(fn ($q) => $q->whereNull('promociones_regalo.fecha_fin')
+                        ->orWhere('promociones_regalo.fecha_fin', '>=', $hoy))
+                    ->orderByRaw('promociones_regalo.fecha_fin IS NULL, promociones_regalo.fecha_fin ASC')
+                    ->limit(1),
+                ])
+                ->with($this->relacionesListado())
+                ->limit(self::LIMITE_LISTADOS_HOME * 4) // margen antes de reordenar en PHP por fecha de fin
+                ->get();
+
+            // El alias "proxima_fecha_fin" del addSelect de arriba solo se
+            // puede usar en ORDER BY como columna suelta, no dentro de una
+            // expresión compuesta como "alias IS NULL" (Postgres lo
+            // interpreta como una columna real de "componentes" y falla
+            // con "column does not exist"): se ordena aquí, en PHP, con el
+            // valor ya calculado por esa subconsulta.
+            $componentes = $componentes
+                ->sortBy(fn ($c) => $c->proxima_fecha_fin ?? '9999-12-31')
+                ->take(self::LIMITE_LISTADOS_HOME)
+                ->values();
+
+            return ComponenteListadoResource::collection($componentes)->resolve();
+        });
+
+        return response()->json(['data' => array_slice($data, 0, $limite)]);
+    }
+
+    private function limiteListadoHome(Request $request, int $porDefecto): int
+    {
+        return max(1, min((int) $request->get('limit', $porDefecto), self::LIMITE_LISTADOS_HOME));
+    }
+
     // Relaciones específicas por categoría — un componente solo pertenece a
     // UNA categoría, así que solo hace falta precargar las relaciones de esa
     // categoría. Antes se cargaban las ~25-30 relaciones de TODAS las
     // categorías en cada petición (una query por relación aunque no
     // aplicara), lo que hacía lento cualquier sitio que pidiera el detalle
     // de un componente (configurador al seleccionar, comparador de specs al
-    // añadir una tarjeta, buscador al abrir una ficha).
+    // añadir una tarjeta, buscador al abrir una ficha). La usan index(),
+    // destacados(), bajadasPrecio() y promociones(): las tres secciones del
+    // home son, en el fondo, listados de Componente con distintos filtros
+    // y orden, así que comparten exactamente la misma precarga que el
+    // listado general en vez de mantener una copia aparte.
     // NOTA sobre nombres: tipoVRAM/versionPCIe/tipoPSU/tipoNAND/tiposPSU se
     // renombraron a tipoVram/versionPcie/tipoPsu/tipoNand/tiposPsu en sus
     // modelos. No es cosmético: Laravel serializa las relaciones cargadas

@@ -171,6 +171,15 @@ class Componente extends BaseModel
             });
     }
 
+    // Puntuación de relevancia (búsquedas + selecciones de los últimos
+    // 30 días), recalculada cada noche por RelevanciaService. Puede no
+    // existir fila (componente sin interacciones recientes): tratar como
+    // puntuación 0, no como null, al leerla.
+    public function metricaRelevancia()
+    {
+        return $this->hasOne(\App\Models\Negocio\MetricaRelevancia::class, 'componente_id');
+    }
+
     public function guardadoPor()
     {
         return $this->belongsToMany(

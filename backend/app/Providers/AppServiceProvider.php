@@ -30,5 +30,16 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth', function ($request) {
             return Limit::perMinute(10)->by($request->ip());
         });
+
+        // Señales de relevancia (POST /interacciones/*, ver
+        // InteraccionController): son públicas y de escritura, así que sin
+        // límite serían un vector fácil para inflar la puntuación de un
+        // componente a base de peticiones repetidas. 120/min por IP deja
+        // margen de sobra para el uso real (una llamada por búsqueda con
+        // texto tecleada + una por cada tarjeta abierta) sin permitir un
+        // bombardeo automatizado.
+        RateLimiter::for('interacciones', function ($request) {
+            return Limit::perMinute(120)->by($request->ip());
+        });
     }
 }

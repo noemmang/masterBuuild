@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Artisan;
  * notificaciones:verificar SIEMPRE se ejecuta después de scrape:precios,
  * nunca antes: la pregunta "¿algo cambió?" solo tiene sentido una vez
  * que los precios de esta noche ya están guardados en precios_actuales.
+ *
+ * relevancia:recalcular va el último: además de recalcular
+ * metricas_relevancia, invalida la caché de "Componentes destacados",
+ * "Bajadas de precio" y "Promociones" del home (ver HomeCache), que
+ * también dependen de lo que scrape:precios acaba de guardar (precios,
+ * stock, promociones). Así todo el home queda al día una vez por noche
+ * con el mismo disparador, sin necesitar un segundo Job programado.
  */
 class ScrapeDiario extends Command
 {
@@ -25,11 +32,11 @@ class ScrapeDiario extends Command
         {--pausa-max=5 : Segundos máximos de espera entre peticiones}
         {--umbral-fallos=5 : Fallos consecutivos a partir de los cuales se marca la URL como no_disponible}';
 
-    protected $description = 'Ejecuta scrape:precios y, justo después, notificaciones:verificar. Es el único comando que debe configurarse en el Job programado.';
+    protected $description = 'Ejecuta scrape:precios, notificaciones:verificar y relevancia:recalcular en cadena. Es el único comando que debe configurarse en el Job programado.';
 
     public function handle(): int
     {
-        $this->info('== 1/2 · scrape:precios ==');
+        $this->info('== 1/3 · scrape:precios ==');
 
         $codigoScrape = Artisan::call('scrape:precios', [
             'tienda'           => $this->argument('tienda'),
@@ -39,7 +46,7 @@ class ScrapeDiario extends Command
         ], $this->output);
 
         $this->newLine();
-        $this->info('== 2/2 · notificaciones:verificar ==');
+        $this->info('== 2/3 · notificaciones:verificar ==');
 
         // Se ejecuta siempre, incluso si scrape:precios ha tenido fallos:
         // los precios que SÍ se guardaron esta noche merecen comprobarse
@@ -47,6 +54,16 @@ class ScrapeDiario extends Command
         // silencie las notificaciones del resto.
         $codigoNotificaciones = Artisan::call('notificaciones:verificar', [], $this->output);
 
-        return $codigoScrape === self::SUCCESS ? $codigoNotificaciones : $codigoScrape;
+        $this->newLine();
+        $this->info('== 3/3 · relevancia:recalcular ==');
+
+        // Mismo motivo: se ejecuta pase lo que pase con los dos pasos
+        // anteriores, para que el home refleje los datos que sí se
+        // guardaron esta noche en vez de quedarse con la caché de ayer.
+        $codigoRelevancia = Artisan::call('relevancia:recalcular', [], $this->output);
+
+        $codigos = [$codigoScrape, $codigoNotificaciones, $codigoRelevancia];
+
+        return in_array(self::FAILURE, $codigos, true) ? self::FAILURE : self::SUCCESS;
     }
 }

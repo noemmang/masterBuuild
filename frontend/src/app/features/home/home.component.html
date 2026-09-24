@@ -180,7 +180,7 @@
     <div class="section-header">
       <div>
         <h2 class="section-title">Componentes destacados</h2>
-        <p class="section-sub">Los más buscados esta semana</p>
+        <p class="section-sub">Los más buscados y seleccionados</p>
       </div>
       <a routerLink="/buscar" class="ver-todos">Ver todos →</a>
     </div>
@@ -192,70 +192,24 @@
             <div class="card-skeleton carrusel-card-skeleton"></div>
           }
         </div>
-      } @else {
+      } @else if (destacados().length > 0) {
         <div class="carrusel-track" #carruselDestacados>
-          <!-- Original -->
-          <!-- CAMBIO: irAComponente(comp) en lugar de irABuscar(comp.categoria) -->
+          <!-- Misma tarjeta que el buscador y el configurador
+               (app-componente-card): mismo look, mismos badges
+               (agotado/regalo/bajada de precio) sin duplicar HTML/CSS. -->
           @for (comp of destacados(); track comp.uuid + '_orig') {
-            <div class="comp-card" (click)="irAComponente(comp)">
-              <span class="comp-card-pin comp-card-pin--tl"></span>
-              <span class="comp-card-pin comp-card-pin--tr"></span>
-              <span class="comp-card-pin comp-card-pin--bl"></span>
-              <span class="comp-card-pin comp-card-pin--br"></span>
-              <div class="comp-card-img">
-                @if (comp.imagen_url) {
-                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                } @else {
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
-                  </svg>
-                }
-                <div class="comp-card-badges">
-                  @if (comp.bajada_precio) { <span class="badge verde">↓</span> }
-                </div>
-              </div>
-              <div class="comp-card-body">
-                <span class="comp-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
-                <h3 class="comp-card-nombre">{{ comp.nombre }}</h3>
-                @if (comp.marca) { <span class="comp-card-marca">{{ comp.marca.nombre }}</span> }
-                <div class="comp-card-footer">
-                  <span class="comp-card-precio">{{ formatPrecio(comp.precio_min) }}</span>
-                  <span class="comp-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                </div>
-              </div>
-            </div>
+            <app-componente-card
+              [comp]="comp"
+              [mostrarBajadaPrecio]="true"
+              (seleccionar)="irAComponente(comp)" />
           }
-          <!-- Clon -->
+          <!-- Clon (mismos datos) para el scroll infinito -->
           @for (comp of destacados(); track comp.uuid + '_clon') {
-            <div class="comp-card comp-card-clone" (click)="irAComponente(comp)" aria-hidden="true">
-              <span class="comp-card-pin comp-card-pin--tl"></span>
-              <span class="comp-card-pin comp-card-pin--tr"></span>
-              <span class="comp-card-pin comp-card-pin--bl"></span>
-              <span class="comp-card-pin comp-card-pin--br"></span>
-              <div class="comp-card-img">
-                @if (comp.imagen_url) {
-                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                } @else {
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
-                  </svg>
-                }
-                <div class="comp-card-badges">
-                  @if (comp.bajada_precio) { <span class="badge verde">↓</span> }
-                </div>
-              </div>
-              <div class="comp-card-body">
-                <span class="comp-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
-                <h3 class="comp-card-nombre">{{ comp.nombre }}</h3>
-                @if (comp.marca) { <span class="comp-card-marca">{{ comp.marca.nombre }}</span> }
-                <div class="comp-card-footer">
-                  <span class="comp-card-precio">{{ formatPrecio(comp.precio_min) }}</span>
-                  <span class="comp-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                </div>
-              </div>
-            </div>
+            <app-componente-card
+              aria-hidden="true"
+              [comp]="comp"
+              [mostrarBajadaPrecio]="true"
+              (seleccionar)="irAComponente(comp)" />
           }
         </div>
       }
@@ -272,107 +226,114 @@
   </section>
 
   <!-- ═══════════════ BAJADAS DE PRECIO ═══════════════ -->
-  <section class="ofertas">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title">
-          <span class="badge-live">
-            <span class="badge-live-dot"></span>
-            Bajadas de precio
-          </span>
-        </h2>
-        <p class="section-sub">Componentes con precio más bajo en las últimas 24h</p>
+  <!-- Solo se pinta si hay alguna bajada real que enseñar (ver
+       HomeController::bajadasPrecio en el backend): ni mientras carga
+       queda vacía la página ni, si no hay ninguna, se muestra una
+       sección con un mensaje — directamente no existe. -->
+  @if (cargandoOfertas() || ofertas().length > 0) {
+    <section class="ofertas">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span class="badge-live">
+              <span class="badge-live-dot"></span>
+              Bajadas de precio
+            </span>
+          </h2>
+          <p class="section-sub">Componentes con una bajada de precio reciente</p>
+        </div>
+        <a routerLink="/buscar" class="ver-todos">Ver todas →</a>
       </div>
-      <a routerLink="/buscar" class="ver-todos">Ver todas →</a>
-    </div>
 
-    <div class="carrusel-wrapper">
-      @if (cargandoOfertas()) {
-        <div class="carrusel-scroll-static">
-          @for (s of [1,2,3,4,5]; track s) {
-            <div class="card-skeleton carrusel-card-skeleton"></div>
-          }
-        </div>
-      } @else if (ofertas().length === 0) {
-        <p class="carrusel-empty">No hay bajadas de precio recientes</p>
-      } @else {
-        <div class="carrusel-track" #carruselOfertas>
-          <!-- Original -->
-          <!-- CAMBIO: irAComponente(comp) en lugar de irABuscar(comp.categoria) -->
-          @for (comp of ofertas(); track comp.uuid + '_orig') {
-            <div class="comp-card" (click)="irAComponente(comp)">
-              <span class="comp-card-pin comp-card-pin--tl"></span>
-              <span class="comp-card-pin comp-card-pin--tr"></span>
-              <span class="comp-card-pin comp-card-pin--bl"></span>
-              <span class="comp-card-pin comp-card-pin--br"></span>
-              <div class="comp-card-img">
-                @if (comp.imagen_url) {
-                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                } @else {
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
-                  </svg>
-                }
-                <div class="comp-card-badges">
-                  <span class="badge verde">↓ Bajada</span>
-                </div>
-              </div>
-              <div class="comp-card-body">
-                <span class="comp-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
-                <h3 class="comp-card-nombre">{{ comp.nombre }}</h3>
-                @if (comp.marca) { <span class="comp-card-marca">{{ comp.marca.nombre }}</span> }
-                <div class="comp-card-footer">
-                  <span class="comp-card-precio accent">{{ formatPrecio(comp.precio_min) }}</span>
-                  <span class="comp-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                </div>
-              </div>
-            </div>
-          }
-          <!-- Clon -->
-          @for (comp of ofertas(); track comp.uuid + '_clon') {
-            <div class="comp-card comp-card-clone" (click)="irAComponente(comp)" aria-hidden="true">
-              <span class="comp-card-pin comp-card-pin--tl"></span>
-              <span class="comp-card-pin comp-card-pin--tr"></span>
-              <span class="comp-card-pin comp-card-pin--bl"></span>
-              <span class="comp-card-pin comp-card-pin--br"></span>
-              <div class="comp-card-img">
-                @if (comp.imagen_url) {
-                  <img [src]="comp.imagen_url" [alt]="comp.nombre" />
-                } @else {
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/>
-                    <path d="M8 21h8M12 17v4"/>
-                  </svg>
-                }
-                <div class="comp-card-badges">
-                  <span class="badge verde">↓ Bajada</span>
-                </div>
-              </div>
-              <div class="comp-card-body">
-                <span class="comp-card-cat">{{ comp.categoria.replace('_', ' ') }}</span>
-                <h3 class="comp-card-nombre">{{ comp.nombre }}</h3>
-                @if (comp.marca) { <span class="comp-card-marca">{{ comp.marca.nombre }}</span> }
-                <div class="comp-card-footer">
-                  <span class="comp-card-precio accent">{{ formatPrecio(comp.precio_min) }}</span>
-                  <span class="comp-card-tiendas">{{ comp.num_tiendas }} tiendas</span>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      }
-      <div class="carrusel-dots">
-        @for (dot of getOfertasDots(); track $index) {
-          <button
-            class="carrusel-dot"
-            [class.active]="paginaOfertas() === $index"
-            (click)="irAPaginaOfertas($index)">
-          </button>
+      <div class="carrusel-wrapper">
+        @if (cargandoOfertas()) {
+          <div class="carrusel-scroll-static">
+            @for (s of [1,2,3,4,5]; track s) {
+              <div class="card-skeleton carrusel-card-skeleton"></div>
+            }
+          </div>
+        } @else {
+          <div class="carrusel-track" #carruselOfertas>
+            @for (comp of ofertas(); track comp.uuid + '_orig') {
+              <app-componente-card
+                [comp]="comp"
+                [mostrarBajadaPrecio]="true"
+                (seleccionar)="irAComponente(comp)" />
+            }
+            @for (comp of ofertas(); track comp.uuid + '_clon') {
+              <app-componente-card
+                aria-hidden="true"
+                [comp]="comp"
+                [mostrarBajadaPrecio]="true"
+                (seleccionar)="irAComponente(comp)" />
+            }
+          </div>
         }
+        <div class="carrusel-dots">
+          @for (dot of getOfertasDots(); track $index) {
+            <button
+              class="carrusel-dot"
+              [class.active]="paginaOfertas() === $index"
+              (click)="irAPaginaOfertas($index)">
+            </button>
+          }
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  }
+
+  <!-- ═══════════════ PROMOCIONES ═══════════════ -->
+  <!-- Igual que Bajadas de precio: invisible si no hay ninguna promoción
+       vigente que enseñar (ver HomeController::promociones). -->
+  @if (cargandoPromos() || promos().length > 0) {
+    <section class="ofertas promos">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">
+            <span class="badge-live">
+              <span class="badge-live-dot"></span>
+              Promociones
+            </span>
+          </h2>
+          <p class="section-sub">Componentes con un regalo activo, en stock ahora mismo</p>
+        </div>
+        <a routerLink="/buscar" class="ver-todos">Ver todas →</a>
+      </div>
+
+      <div class="carrusel-wrapper">
+        @if (cargandoPromos()) {
+          <div class="carrusel-scroll-static">
+            @for (s of [1,2,3,4,5]; track s) {
+              <div class="card-skeleton carrusel-card-skeleton"></div>
+            }
+          </div>
+        } @else {
+          <div class="carrusel-track" #carruselPromos>
+            @for (comp of promos(); track comp.uuid + '_orig') {
+              <app-componente-card
+                [comp]="comp"
+                (seleccionar)="irAComponente(comp)" />
+            }
+            @for (comp of promos(); track comp.uuid + '_clon') {
+              <app-componente-card
+                aria-hidden="true"
+                [comp]="comp"
+                (seleccionar)="irAComponente(comp)" />
+            }
+          </div>
+        }
+        <div class="carrusel-dots">
+          @for (dot of getPromosDots(); track $index) {
+            <button
+              class="carrusel-dot"
+              [class.active]="paginaPromos() === $index"
+              (click)="irAPaginaPromos($index)">
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+  }
 
   <!-- ═══════════════ COMPARADOR BANNER ═══════════════ -->
   <section class="comparador-banner">

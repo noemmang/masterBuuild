@@ -6,12 +6,13 @@ import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';                          // ← AÑADIDO
 import { ComponenteService, Componente } from '../../core/services/componente.service';
+import { ComponenteCardComponent } from '../../shared/components/componente-card/componente-card.component';
 import { Model3dViewerComponent } from '../../shared/components/model-3d-viewer/model-3d-viewer.component'; // ← AÑADIDO
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, FormsModule, Model3dViewerComponent],          // ← Model3dViewerComponent AÑADIDO
+  imports: [RouterLink, FormsModule, Model3dViewerComponent, ComponenteCardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -19,6 +20,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('carruselDestacados') carruselDestacadosRef!: ElementRef<HTMLElement>;
   @ViewChild('carruselOfertas')    carruselOfertasRef!: ElementRef<HTMLElement>;
+  @ViewChild('carruselPromos')     carruselPromosRef!: ElementRef<HTMLElement>;
 
   constructor(
     private componenteService: ComponenteService,
@@ -118,12 +120,26 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   busquedaHome = '';
 
   // ── Señales de datos dinámicos ───────────────────────────
+  //
+  // Las tres secciones vienen ahora de endpoints dedicados del backend
+  // (GET /home/destacados, /home/bajadas-precio, /home/promociones — ver
+  // HomeController) en vez de reutilizar /componentes con un `orden`
+  // cualquiera y filtrar en el cliente: antes "destacados" era en
+  // realidad el listado por defecto sin ningún criterio de relevancia
+  // real, y "bajadas de precio" filtraba por bajada_precio, un campo que
+  // el backend nunca llegó a rellenar (siempre false) — así que en la
+  // práctica ambas secciones mostraban, sin más, "lo más barato primero".
 
   destacados         = signal<Componente[]>([]);
   cargandoDestacados = signal(true);
 
   ofertas           = signal<Componente[]>([]);
   cargandoOfertas   = signal(true);
+
+  /** Promociones activas (regalo) — sección nueva. Solo componentes en
+   *  stock (ver HomeController::promociones). */
+  promos           = signal<Componente[]>([]);
+  cargandoPromos   = signal(true);
 
   // ── Carrusel infinito ────────────────────────────────────
 
@@ -135,18 +151,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   paginaDestacados = signal(0);
   paginaOfertas    = signal(0);
+  paginaPromos     = signal(0);
 
   private idxDestacados = 0;
   private idxOfertas    = 0;
+  private idxPromos     = 0;
 
   private timerDestacados?: ReturnType<typeof setInterval>;
   private timerOfertas?:    ReturnType<typeof setInterval>;
+  private timerPromos?:     ReturnType<typeof setInterval>;
 
   // ── Lifecycle ────────────────────────────────────────────
 
   ngOnInit(): void {
     this.cargarDestacados();
     this.cargarOfertas();
+    this.cargarPromos();
   }
 
   ngAfterViewInit(): void {}
@@ -154,14 +174,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     clearInterval(this.timerDestacados);
     clearInterval(this.timerOfertas);
+    clearInterval(this.timerPromos);
   }
 
   // ── Carga ────────────────────────────────────────────────
 
   private cargarDestacados(): void {
-    this.componenteService.buscar({ page: 1, orden: '' }).subscribe({
-      next: (res) => {
-        this.destacados.set(res.data.slice(0, 12));
+    this.componenteService.getDestacados(12).subscribe({
+      next: (data) => {
+        this.destacados.set(data);
         this.cargandoDestacados.set(false);
         setTimeout(() => this.iniciarAutoplay('destacados'), 200);
       },
@@ -170,33 +191,63 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private cargarOfertas(): void {
-    this.componenteService.buscar({ page: 1, orden: 'precio_asc' }).subscribe({
-      next: (res) => {
-        const conBajada = res.data.filter(c => c.bajada_precio);
-        this.ofertas.set(conBajada.length >= 4 ? conBajada.slice(0, 10) : res.data.slice(0, 10));
+    this.componenteService.getBajadasPrecio(10).subscribe({
+      next: (data) => {
+        this.ofertas.set(data);
         this.cargandoOfertas.set(false);
-        setTimeout(() => this.iniciarAutoplay('ofertas'), 200);
+        if (data.length > 0) setTimeout(() => this.iniciarAutoplay('ofertas'), 200);
       },
       error: () => this.cargandoOfertas.set(false),
     });
   }
 
+  private cargarPromos(): void {
+    this.componenteService.getPromociones(10).subscribe({
+      next: (data) => {
+        this.promos.set(data);
+        this.cargandoPromos.set(false);
+        if (data.length > 0) setTimeout(() => this.iniciarAutoplay('promos'), 200);
+      },
+      error: () => this.cargandoPromos.set(false),
+    });
+  }
+
   // ── Autoplay infinito ─────────────────────────────────────
 
-  private iniciarAutoplay(which: 'destacados' | 'ofertas'): void {
-    const isD    = which === 'destacados';
-    const getEl  = () => isD
-      ? this.carruselDestacadosRef?.nativeElement
-      : this.carruselOfertasRef?.nativeElement;
-    const total  = () => isD ? this.destacados().length : this.ofertas().length;
-    const getIdx = () => isD ? this.idxDestacados : this.idxOfertas;
-    const setIdx = (v: number) => { if (isD) this.idxDestacados = v; else this.idxOfertas = v; };
-    const setPag = (v: number) => isD
-      ? this.paginaDestacados.set(v)
-      : this.paginaOfertas.set(v);
+  private iniciarAutoplay(which: 'destacados' | 'ofertas' | 'promos'): void {
+    const getEl  = () => {
+      if (which === 'destacados') return this.carruselDestacadosRef?.nativeElement;
+      if (which === 'ofertas')    return this.carruselOfertasRef?.nativeElement;
+      return this.carruselPromosRef?.nativeElement;
+    };
+    const total  = () => {
+      if (which === 'destacados') return this.destacados().length;
+      if (which === 'ofertas')    return this.ofertas().length;
+      return this.promos().length;
+    };
+    const getIdx = () => {
+      if (which === 'destacados') return this.idxDestacados;
+      if (which === 'ofertas')    return this.idxOfertas;
+      return this.idxPromos;
+    };
+    const setIdx = (v: number) => {
+      if (which === 'destacados') this.idxDestacados = v;
+      else if (which === 'ofertas') this.idxOfertas = v;
+      else this.idxPromos = v;
+    };
+    const setPag = (v: number) => {
+      if (which === 'destacados') this.paginaDestacados.set(v);
+      else if (which === 'ofertas') this.paginaOfertas.set(v);
+      else this.paginaPromos.set(v);
+    };
+    const getTimer = () => which === 'destacados' ? this.timerDestacados : which === 'ofertas' ? this.timerOfertas : this.timerPromos;
+    const setTimer = (t: ReturnType<typeof setInterval>) => {
+      if (which === 'destacados') this.timerDestacados = t;
+      else if (which === 'ofertas') this.timerOfertas = t;
+      else this.timerPromos = t;
+    };
 
-    if (isD) clearInterval(this.timerDestacados);
-    else     clearInterval(this.timerOfertas);
+    clearInterval(getTimer());
 
     this.ngZone.runOutsideAngular(() => {
       const timer = setInterval(() => {
@@ -225,8 +276,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, this.STEP_MS);
 
-      if (isD) this.timerDestacados = timer;
-      else     this.timerOfertas    = timer;
+      setTimer(timer);
     });
   }
 
@@ -234,25 +284,27 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getDestacadosDots(): number[] { return Array.from({ length: this.destacados().length }); }
   getOfertasDots():    number[] { return Array.from({ length: this.ofertas().length }); }
+  getPromosDots():     number[] { return Array.from({ length: this.promos().length }); }
 
   irAPaginaDestacados(pagina: number): void { this.saltarA('destacados', pagina); }
   irAPaginaOfertas(pagina: number):    void { this.saltarA('ofertas', pagina); }
+  irAPaginaPromos(pagina: number):     void { this.saltarA('promos', pagina); }
 
-  private saltarA(which: 'destacados' | 'ofertas', pagina: number): void {
-    const isD = which === 'destacados';
-    const el  = isD
-      ? this.carruselDestacadosRef?.nativeElement
-      : this.carruselOfertasRef?.nativeElement;
+  private saltarA(which: 'destacados' | 'ofertas' | 'promos', pagina: number): void {
+    const el = which === 'destacados' ? this.carruselDestacadosRef?.nativeElement
+             : which === 'ofertas'    ? this.carruselOfertasRef?.nativeElement
+             : this.carruselPromosRef?.nativeElement;
     if (!el) return;
 
     const cardPx = this.CARD_W + this.CARD_GAP;
     el.style.transition = `transform ${this.TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
     el.style.transform  = `translateX(-${this.HALF_CARD + pagina * cardPx}px)`;
 
-    if (isD) { this.idxDestacados = pagina; this.paginaDestacados.set(pagina); }
-    else     { this.idxOfertas    = pagina; this.paginaOfertas.set(pagina);    }
+    if (which === 'destacados')    { this.idxDestacados = pagina; this.paginaDestacados.set(pagina); }
+    else if (which === 'ofertas')  { this.idxOfertas    = pagina; this.paginaOfertas.set(pagina);    }
+    else                            { this.idxPromos     = pagina; this.paginaPromos.set(pagina);     }
 
-    clearInterval(isD ? this.timerDestacados : this.timerOfertas);
+    clearInterval(which === 'destacados' ? this.timerDestacados : which === 'ofertas' ? this.timerOfertas : this.timerPromos);
     this.iniciarAutoplay(which);
   }
 
@@ -272,6 +324,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** NUEVO — Cards de los carruseles → selecciona el componente directamente */
   irAComponente(comp: Componente): void {
+    // Señal de relevancia: elegir una tarjeta del home cuenta como
+    // "seleccionado", igual que en el buscador y el configurador (ver
+    // RelevanciaService en el backend).
+    this.componenteService.registrarSeleccion(comp.uuid);
     this.router.navigate(['/buscar'], {
       queryParams: { uuid: comp.uuid, categoria: comp.categoria }
     });

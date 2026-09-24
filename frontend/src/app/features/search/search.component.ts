@@ -141,7 +141,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   ];
 
   ordenes = [
-    { label: 'Relevancia',            value: '' },
+    { label: 'Relevancia',            value: 'relevancia' },
     { label: 'Precio: menor a mayor', value: 'precio_asc' },
     { label: 'Precio: mayor a menor', value: 'precio_desc' },
     { label: 'Nombre A-Z',            value: 'nombre_asc' },
@@ -157,7 +157,12 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   categoriaActiva = signal('');
   busqueda        = '';
-  ordenActivo     = '';
+  // 'relevancia' (no '' vacío): antes, al estar vacío, el helper `set()`
+  // del servicio se lo saltaba por completo al construir los query params
+  // y el backend acababa ordenando por nombre — "Relevancia" en el
+  // desplegable en realidad era "Nombre A-Z" disfrazado. Ver
+  // ComponenteController::index en el backend.
+  ordenActivo     = 'relevancia';
   precioMin: number | null = null;
   precioMax: number | null = null;
   /** Filtro "ver agotados": por defecto se incluyen (con su último precio conocido) */
@@ -375,6 +380,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.cargando.set(false);
         this.cargandoMas.set(false);
 
+        // Señal de relevancia: solo cuenta como "apareció en una
+        // búsqueda" cuando hay texto tecleado (no un simple listado por
+        // categoría) y solo la primera página de cada búsqueda nueva, no
+        // cada "cargar más" — así no se infla la puntuación por página.
+        if (!acumular && this.busqueda.trim()) {
+          this.componenteService.registrarBusqueda(res.data.map((c: Componente) => c.uuid));
+        }
+
         if (autoSelectUuid) {
           const encontrado = res.data.find((c: Componente) => c.uuid === autoSelectUuid);
           if (encontrado) {
@@ -463,6 +476,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   seleccionarComponente(comp: Componente) {
     if (this.componenteSeleccionado()?.uuid === comp.uuid) { this.cerrarPanel(); return; }
+    this.componenteService.registrarSeleccion(comp.uuid);
     this.componenteSeleccionado.set(comp);
     this.mostrarAlerta.set(false);
     this.precioObjetivo.set(null);

@@ -17,7 +17,17 @@ export interface Componente {
    *  tienda de esa promoción en stock). Es lo que enciende el icono de la
    *  tarjeta; el detalle por tienda va en getPrecios(). */
   tiene_regalo: boolean;
+  /** true si esta tarjeta viene del carrusel "Bajadas de precio" del home
+   *  (o de cualquier listado que lo calcule): hubo una bajada de precio
+   *  real y reciente en alguna tienda donde el componente sigue en stock.
+   *  En el resto de listados (buscador, configurador) el backend no lo
+   *  calcula y llega en false — no es que el componente no tenga bajada,
+   *  es que ese listado no lo comprueba (sería una consulta cara de más
+   *  para cada búsqueda). */
   bajada_precio: boolean;
+  /** Precio anterior a la bajada (ver bajada_precio). Solo viene relleno
+   *  junto con bajada_precio=true. */
+  precio_antes?: number | null;
   en_stock: boolean;
   descripcion?: string | null;
   /** Specs resumidas de la categoría (ver ComponenteListadoResource en el
@@ -431,9 +441,81 @@ export class ComponenteService {
       tiene_cupon:   !!c.tiene_cupon,
       tiene_regalo:  !!c.tiene_regalo,
       en_stock:      !!c.en_stock,
-      bajada_precio: false,
+      // Antes venía hardcodeado a `false` aquí, así que ningún componente
+      // podía mostrar nunca el badge de bajada de precio ni entrar por esa
+      // vía en el carrusel de ofertas del home, viniera lo que viniera del
+      // backend. Ahora se lee del campo real (ver ComponenteListadoResource
+      // y HomeController::bajadasPrecio en el backend).
+      bajada_precio: !!c.bajada_precio,
+      precio_antes:  c.precio_antes ?? null,
       descripcion:   c.descripcion ?? null,
       specs:         c.specs ?? null,
     };
+  }
+
+  // ── Home: secciones dinámicas ────────────────────────────────────────
+  //
+  // Mismo shape de respuesta que /componentes ({ data: [...] }) y mismo
+  // ComponenteListadoResource en el backend, así que se reutiliza
+  // mapearComponente(): el home puede pintar estas listas con
+  // exactamente la misma tarjeta (<app-componente-card>) que el buscador
+  // y el configurador.
+
+  /** Los componentes más buscados o seleccionados recientemente (ver
+   *  RelevanciaService en el backend). Cae a un orden por fecha de alta
+   *  si todavía no hay ninguna interacción registrada, así que en la
+   *  práctica esta lista rara vez está vacía. */
+  getDestacados(limit = 12): Observable<Componente[]> {
+    const params = new HttpParams().set('limit', String(limit));
+    return this.http.get<{ data: any[] }>(`${this.API}/componentes/destacados`, { params }).pipe(
+      map(res => (res.data ?? []).map((c: any) => this.mapearComponente(c))),
+    );
+  }
+
+  /** Componentes con una bajada de precio real y reciente en alguna
+   *  tienda donde siguen en stock (nunca altas nuevas ni componentes
+   *  agotados en todas sus tiendas). Puede venir vacía: el home debe
+   *  ocultar la sección entera en ese caso, no mostrar un mensaje. */
+  getBajadasPrecio(limit = 10): Observable<Componente[]> {
+    const params = new HttpParams().set('limit', String(limit));
+    return this.http.get<{ data: any[] }>(`${this.API}/componentes/bajadas-precio`, { params }).pipe(
+      map(res => (res.data ?? []).map((c: any) => this.mapearComponente(c))),
+    );
+  }
+
+  /** Componentes con una promoción de regalo activa y vigente en alguna
+   *  tienda donde siguen en stock. Igual que getBajadasPrecio(): puede
+   *  venir vacía y el home debe ocultar la sección entera. */
+  getPromociones(limit = 10): Observable<Componente[]> {
+    const params = new HttpParams().set('limit', String(limit));
+    return this.http.get<{ data: any[] }>(`${this.API}/componentes/promociones`, { params }).pipe(
+      map(res => (res.data ?? []).map((c: any) => this.mapearComponente(c))),
+    );
+  }
+
+  // ── Señales de relevancia ─────────────────────────────────────────────
+  //
+  // "Fire-and-forget": alimentan metricas_relevancia (se recalcula una
+  // vez al día en el backend), no algo que el usuario espere ni de lo que
+  // dependa la UI. Por eso se suscriben aquí mismo con un no-op y se
+  // ignora cualquier error (un fallo de red al registrar una interacción
+  // nunca debe interrumpir ni avisar al usuario de nada).
+
+  /** Marca que estos componentes han aparecido como resultado de una
+   *  búsqueda CON TEXTO. Llamar solo cuando el usuario ha escrito algo
+   *  (un listado sin texto de búsqueda no cuenta como "búsqueda" para la
+   *  relevancia), y como mucho una vez por resultado nuevo, no en cada
+   *  "cargar más". */
+  registrarBusqueda(uuids: string[]): void {
+    if (!uuids.length) return;
+    this.http.post(`${this.API}/interacciones/busqueda`, { componente_uuids: uuids })
+      .subscribe({ error: () => {} });
+  }
+
+  /** Marca que el usuario ha seleccionado/abierto este componente (desde
+   *  el buscador, el configurador o cualquier carrusel del home). */
+  registrarSeleccion(uuid: string): void {
+    this.http.post(`${this.API}/interacciones/seleccion`, { componente_uuid: uuid })
+      .subscribe({ error: () => {} });
   }
 }

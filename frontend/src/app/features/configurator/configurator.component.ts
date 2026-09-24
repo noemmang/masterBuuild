@@ -91,7 +91,7 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   esApilable(slot: Slot): boolean { return SLOTS_APILABLES.has(slot.id); }
 
   ordenes = [
-    { label: 'Relevancia',            value: '' },
+    { label: 'Relevancia',            value: 'relevancia' },
     { label: 'Precio: menor a mayor', value: 'precio_asc' },
     { label: 'Precio: mayor a menor', value: 'precio_desc' },
     { label: 'Nombre A-Z',            value: 'nombre_asc' },
@@ -109,7 +109,10 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
   hayMas         = signal(false);
   totalResultados = signal(0);
   busqueda       = '';
-  ordenActivo    = '';
+  // 'relevancia' (no '' vacío): ver el mismo comentario en
+  // search.component.ts — con '' el backend acababa ordenando por
+  // nombre sin que "Relevancia" hiciera nada de verdad.
+  ordenActivo    = 'relevancia';
   precioMin: number | null = null;
   precioMax: number | null = null;
   /** Filtro "ver agotados": por defecto se incluyen (con su último precio conocido) */
@@ -462,6 +465,9 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
           this.hayMas.set(resAire.current_page < resAire.last_page || resLiquida.current_page < resLiquida.last_page);
           this.cargando.set(false);
           this.cargandoMas.set(false);
+          if (!acumular && this.busqueda.trim()) {
+            this.componenteService.registrarBusqueda(merged.map(c => c.uuid));
+          }
           this.cdr.markForCheck();
         },
         error: () => { this.cargando.set(false); this.cargandoMas.set(false); this.cdr.markForCheck(); },
@@ -479,6 +485,9 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
         this.hayMas.set(res.current_page < res.last_page);
         this.cargando.set(false);
         this.cargandoMas.set(false);
+        if (!acumular && this.busqueda.trim()) {
+          this.componenteService.registrarBusqueda(res.data.map((c: Componente) => c.uuid));
+        }
         this.cdr.markForCheck();
       },
       error: () => { this.cargando.set(false); this.cargandoMas.set(false); this.cdr.markForCheck(); },
@@ -546,6 +555,7 @@ export class ConfiguratorComponent implements OnInit, OnDestroy {
 
   seleccionarComponente(comp: Componente) {
     const slot = this.slotActivo();
+    this.componenteService.registrarSeleccion(comp.uuid);
 
     if (this.esApilable(slot)) {
       const existente = slot.entradas.find(e => e.componente.uuid === comp.uuid);

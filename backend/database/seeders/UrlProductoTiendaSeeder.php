@@ -278,6 +278,14 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/asrock-phantom-gaming-b850i-lightning-wifi-socket-am5',
                 'Neobyte' => '',
             ],
+            'MSI MPG X870I EDGE TI EVO WIFI' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-mpg-x870i-edge-ti-evo-wifi-socket-am5',
+                'Neobyte' => 'https://www.neobyte.es/msi-mpg-x870i-edge-ti-evo-wifi-placa-base-am5-miniitx-32297.html',
+            ],
+            'MSI MEG X870E ACE MAX' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-meg-x870e-ace-max-socket-am5',
+                'Neobyte' => 'https://www.neobyte.es/msi-meg-x870e-ace-max-placa-base-am5-atx-35248.html',
+            ],
 
             // ---------- Placas base LGA1700 ----------
             'ASUS ROG Maximus Z690 Hero' => [
@@ -365,6 +373,22 @@ class UrlProductoTiendaSeeder extends Seeder
             'ASUS ROG Strix B860-I Gaming WiFi' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-rog-strix-b860-i-gaming-wifi-socket-1851',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-strix-b860-i-gaming-wifi-placa-base-1851-mini-itx-26397.html',
+            ],
+            'MSI PRO B860-P WIFI' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-pro-b860-p-wifi-socket-1851',
+                'Neobyte' => 'https://www.neobyte.es/msi-pro-b860p-wifi-placa-base-1851-atx-26634.html',
+            ],
+            'MSI B860 GAMING PLUS WIFI' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-b860-gaming-plus-wifi-socket-1851',
+                'Neobyte' => 'https://www.neobyte.es/msi-b860-gaming-plus-wifi-placa-base-1851-atx-26633.html',
+            ],
+            'MSI B860M GAMING PLUS WIFI' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-b860m-gaming-plus-wifi-socket-1851',
+                'Neobyte' => 'https://www.neobyte.es/msi-b860m-gaming-plus-wifi--placa-base-1851-microatx-26644.html',
+            ],
+            'MSI MPG Z890I EDGE TI WIFI' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-mpg-z890i-edge-ti-wifi-socket-1851',
+                'Neobyte' => 'https://www.neobyte.es/msi-mpg-z890i-edge-ti-wifi-placa-base-1851-mini-itx-25477.html',
             ],
 
             // ---------- RAM DDR4 ----------
@@ -482,7 +506,7 @@ class UrlProductoTiendaSeeder extends Seeder
             ],
             'ASUS Dual GeForce RTX 5060 Ti OC 16GB' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-dual-geforce-rtx-5060-ti-oc-16gb-gddr7-dlss4',
-                'Neobyte' => 'https://www.neobyte.es/asus-dual-rtx-5060-ti-oc-8gb-gddr7-dlss4-tarjeta-grafica-28548.html',
+                'Neobyte' => 'https://www.neobyte.es/asus-dual-rtx-5060-ti-oc-16gb-gddr7-dlss4-tarjeta-grafica-28549.html',
             ],
             'MSI GeForce RTX 5070 GAMING TRIO OC 12GB' => [
                 'Coolmod' => 'https://www.coolmod.com/msi-geforce-rtx-5070-gaming-trio-oc-12gb-gddr7-dlss4',
@@ -544,7 +568,6 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/gigabyte-aorus-geforce-rtx-5090-master-32gb-gddr7',
                 'Neobyte' => 'https://www.neobyte.es/gigabyte-aorus-rtx-5090-master-32gb-gddr7-dlss4-tarjeta-grafica-26501.html',
             ],
-
             'Sapphire Pulse Radeon RX 7600 8GB' => [
                 'Coolmod' => 'https://www.coolmod.com/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6',
                 'Neobyte' => 'https://www.neobyte.es/sapphire-pulse-amd-radeon-rx-7600-8gb-gddr6-tarjeta-grafica-18448.html',
@@ -592,6 +615,34 @@ class UrlProductoTiendaSeeder extends Seeder
             'ASRock Intel Arc B570 Challenger OC' => [
                 'Coolmod' => '',
                 'Neobyte' => 'https://www.neobyte.es/asrock-intel-arc-b570-challenger-oc-10gb-gddr6-tarjeta-grafica-40129.html',
+            ],
+            'PowerColor Reaper AMD Radeon RX 9070 XT 16GB' => [
+                'Coolmod' => 'https://www.coolmod.com/powercolor-reaper-amd-radeon-rx-9070-xt-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/powercolor-radeon-reaper-rx-9070-xt-16gb-gddr6-tarjeta-grafica-30866.html',
+            ],
+            'PowerColor Hellhound Spectral AMD Radeon RX 9070 XT' => [
+                'Coolmod' => 'https://www.coolmod.com/powercolor-hellhound-spectral-amd-radeon-rx-9070-xt-white-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/powercolor-radeon-hellhound-spectral-rx-9070-xt-16gb-gddr6-tarjeta-grafica-30869.html',
+            ],
+            'Powercolor REAPER AMD Radeon RX 9070 GRE 12GB' => [
+                'Coolmod' => 'https://www.coolmod.com/powercolor-reaper-amd-radeon-rx-9070-gre-12gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/powercolor-radeon-reaper-rx-9070-gre-12gb-gddr6-tarjeta-grafica-38119.html',
+            ],
+            'Powercolor RED DEVIL AMD Radeon RX 9070 GRE' => [
+                'Coolmod' => 'https://www.coolmod.com/powercolor-red-devil-amd-radeon-rx-9070-gre-12gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/powercolor-radeon-red-devil-rx-9070-gre-12gb-gddr6-tarjeta-grafica-38120.html',
+            ],
+            'Asus Prime Radeon RX 9070 EVO OC Edition 16GB' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-prime-radeon-rx-9070-evo-oc-edition-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/asus-prime-radeon-rx-9070-evo-oc-edition-16gb-gddr6-tarjeta-grafica-30062.html',
+            ],
+            'XFX Swift AMD Radeon RX 9070 OC 16GB' => [
+                'Coolmod' => 'https://www.coolmod.com/xfx-swift-amd-radeon-rx-9070-oc-gaming-edition-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/xfx-swift-amd-radeon-rx-9070-xt-16gb-gddr6-triple-fan-gaming-edition-tarjeta-grafica-45085.html',
+            ],
+            'Gigabyte Radeon RX 9070 XT Gaming OC' => [
+                'Coolmod' => 'https://www.coolmod.com/gigabyte-radeon-rx-9070-xt-gaming-oc-16gb-gddr6',
+                'Neobyte' => 'https://www.neobyte.es/gigabyte-radeon-rx-9070-xt-gaming-oc-16gb-tarjeta-grafica-26461.html',
             ],
 
             // ---------- Almacenamiento ----------
@@ -813,6 +864,14 @@ class UrlProductoTiendaSeeder extends Seeder
                 'Coolmod' => 'https://www.coolmod.com/asus-proart-pa602-wood-edition-negro',
                 'Neobyte' => 'https://www.neobyte.es/asus-proart-pa602-wood-edition-tg-caja-e-atx-24482.html',
             ],
+            'MSI MPG VELOX 300R AIRFLOW PZ' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-mpg-velox-300r-airflow-pz-negro',
+                'Neobyte' => 'https://www.neobyte.es/msi-mpg-velox-300r-airflow-pz-caja-eatx-30905.html',
+            ],
+            'Asus Prime AP202 TG ARGB' => [
+                'Coolmod' => 'https://www.coolmod.com/asus-prime-ap202-tg-argb-blanco',
+                'Neobyte' => 'https://www.neobyte.es/asus-prime-ap202-tg-argb-blanca-caja-micro-atx-29435.html',
+            ],
 
             // ---------- Fuentes de alimentación (PSU) ----------
             'DeepCool PQ650M' => [
@@ -898,6 +957,10 @@ class UrlProductoTiendaSeeder extends Seeder
             'ASUS TUF Gaming 750W Gold EVO' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-tuf-gaming-750w-gold-evo-cybenetics-platinum-gold-750w-atx-3-1-pcie-5-1-modular-negra',
                 'Neobyte' => 'https://www.neobyte.es/asus-tuf-gaming-750w-gold-evo-atx-31-pcie-51-fuente-de-alimentacion-750w-33708.html',
+            ],
+            'MSI MEG Ai1600T PCIE5 80 Plus Titanium 1600W' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-meg-ai1600t-pcie5-80-plus-titanium-1600w-atx-3-1-pcie-5-1-modular',
+                'Neobyte' => 'https://www.neobyte.es/msi-meg-ai1600t-atx-31-pcie-51-fuente-de-alimentacion-1600w-29105.html',
             ],
 
 
@@ -1023,6 +1086,10 @@ class UrlProductoTiendaSeeder extends Seeder
             'ROG Ryujin III 240' => [
                 'Coolmod' => 'https://www.coolmod.com/asus-ryujin-iii-240-argb-negro',
                 'Neobyte' => 'https://www.neobyte.es/asus-rog-ryujin-iii-argb-refrigeracion-liquida-240mm-17900.html',
+            ],
+            'MSI MPG CORELIQUID P13 360 ARGB LCD' => [
+                'Coolmod' => 'https://www.coolmod.com/msi-mpg-coreliquid-p13-360-argb-negro',
+                'Neobyte' => 'https://www.neobyte.es/msi-mpg-coreliquid-p13-360-refrigeracion-liquida-360mm-30900.html',
             ],
 
             // ---------- Ventiladores ----------

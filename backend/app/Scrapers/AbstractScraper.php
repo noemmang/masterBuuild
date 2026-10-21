@@ -4,7 +4,9 @@ namespace App\Scrapers;
 
 use App\Scrapers\Exceptions\ScrapingException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 
 abstract class AbstractScraper
@@ -42,6 +44,26 @@ abstract class AbstractScraper
     {
         try {
             $response = $this->http->get($url);
+        } catch (BadResponseException $e) {
+            $respuesta = $e->getResponse();
+            $codigo = $respuesta->getStatusCode();
+
+            // 403 / 429: la tienda nos rechaza a propósito (WAF, detección
+            // de bots, rate limit). Se distingue de un fallo normal para
+            // que ScrapePrecios no oculte el producto por algo que no es
+            // culpa del producto.
+            if (in_array($codigo, [403, 429], true)) {
+                throw ScrapingException::bloqueo(
+                    "Bloqueado por la tienda (HTTP {$codigo}) al descargar {$url}".$this->pistasDeBloqueo($respuesta),
+                    $codigo,
+                    $e
+                );
+            }
+
+            throw new ScrapingException(
+                "Error de red al descargar {$url}: {$e->getMessage()}",
+                previous: $e
+            );
         } catch (GuzzleException $e) {
             throw new ScrapingException(
                 "Error de red al descargar {$url}: {$e->getMessage()}",
@@ -55,6 +77,42 @@ abstract class AbstractScraper
         }
 
         return new Crawler((string) $response->getBody(), $url);
+    }
+
+    /**
+     * Pistas cortas para saber QUIÉN bloquea (cabecera Server, Cloudflare,
+     * Retry-After...) sin volcar el HTML de la página de bloqueo en el log
+     * del Job. El principio del cuerpo se guarda aparte en el log de
+     * Laravel por si hace falta identificar el WAF.
+     */
+    private function pistasDeBloqueo(\Psr\Http\Message\ResponseInterface $respuesta): string
+    {
+        $pistas = [];
+
+        $servidor = $respuesta->getHeaderLine('Server');
+        if ($servidor !== '') {
+            $pistas[] = "server: {$servidor}";
+        }
+        if ($respuesta->hasHeader('CF-Ray')) {
+            $pistas[] = 'cloudflare';
+        }
+        $reintento = $respuesta->getHeaderLine('Retry-After');
+        if ($reintento !== '') {
+            $pistas[] = "retry-after: {$reintento}";
+        }
+
+        try {
+            $cuerpo = $this->normalizarTexto(substr((string) $respuesta->getBody(), 0, 600));
+            Log::warning('Scraping bloqueado por la tienda', [
+                'http'  => $respuesta->getStatusCode(),
+                'pistas' => $pistas,
+                'cuerpo' => $cuerpo,
+            ]);
+        } catch (\Throwable) {
+            // el log de diagnóstico nunca debe romper el scraping
+        }
+
+        return $pistas === [] ? '' : ' ['.implode('; ', $pistas).']';
     }
 
     /**

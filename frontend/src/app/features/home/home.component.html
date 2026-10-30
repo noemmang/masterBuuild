@@ -287,27 +287,57 @@
        vigente que enseñar (ver HomeController::promociones). -->
   @if (cargandoPromos() || promos().length > 0) {
     <section class="ofertas promos">
-      <!-- Banner de una promoción activa elegida al azar en cada visita. Va
-           dentro de la sección, así que solo existe si hay promociones
-           activas, y solo se pinta si su imagen ha cargado (ver
-           HomeComponent.cargarBanner). Pulsarlo abre la página de la tienda
-           donde se explica la promoción o el regalo. -->
-      @if (bannerPromo(); as banner) {
-        <a class="promo-banner"
-           [href]="banner.url"
-           target="_blank"
-           rel="noopener noreferrer"
-           [attr.aria-label]="'Ver promoción: ' + banner.titulo + (banner.tienda ? ' en ' + banner.tienda : '')">
-          <img [src]="banner.imagen_url" alt="" referrerpolicy="no-referrer" decoding="async" />
-          <span class="promo-banner-cta">
-            @if (banner.tienda) { {{ banner.tienda }} · }
-            Ver promoción
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M7 17 17 7M8 7h9v9"/>
-            </svg>
-          </span>
-        </a>
+      <!-- Banners de promociones activas, rotando solos cada pocos segundos
+           con un desplazamiento lateral (sin puntos de navegación). Una
+           misma promoción puede estar en varias tiendas y no hay forma de
+           saberlo, así que simplemente rotan todos los activos sin control
+           exacto. Va dentro de la sección, así que solo existe si hay
+           promociones activas, y cada banner solo entra si su imagen ha
+           cargado (ver HomeComponent.cargarBanners). Pulsar uno abre la
+           página de la tienda donde se explica la promoción o el regalo. -->
+      @if (bannersPromo().length > 0) {
+        <div class="promo-slider">
+          <div class="promo-slider-track" #bannerTrack>
+            @for (banner of bannersPromo(); track banner.uuid) {
+              <a class="promo-banner"
+                 [href]="banner.url"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 [attr.aria-label]="'Ver promoción: ' + banner.titulo + (banner.tienda ? ' en ' + banner.tienda : '')">
+                <img [src]="banner.imagen_url" alt="" referrerpolicy="no-referrer" decoding="async" />
+                <span class="promo-banner-cta">
+                  @if (banner.tienda) { {{ banner.tienda }} · }
+                  Ver promoción
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9"/>
+                  </svg>
+                </span>
+              </a>
+            }
+            <!-- Clon del primero para cerrar el bucle sin salto. Solo cuando
+                 hay más de uno (con uno solo no hay nada que rotar). -->
+            @if (bannersPromo().length > 1) {
+              @let primero = bannersPromo()[0];
+              <a class="promo-banner"
+                 aria-hidden="true"
+                 tabindex="-1"
+                 [href]="primero.url"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                <img [src]="primero.imagen_url" alt="" referrerpolicy="no-referrer" decoding="async" />
+                <span class="promo-banner-cta">
+                  @if (primero.tienda) { {{ primero.tienda }} · }
+                  Ver promoción
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9"/>
+                  </svg>
+                </span>
+              </a>
+            }
+          </div>
+        </div>
       }
 
       <div class="section-header">

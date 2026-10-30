@@ -509,7 +509,7 @@ export class ComponenteService {
   }
 
   /** Banners (imagen + enlace) de las promociones activas. Lista vacía si no
-   *  hay ninguna. Quién se enseña (uno al azar) lo decide el home. */
+   *  hay ninguna. La rotación entre ellos la hace el home. */
   getPromoBanners(): Observable<PromoBanner[]> {
     return this.http.get<{ data: PromoBanner[] }>(`${this.API}/promociones/banners`).pipe(
       map(res => res.data ?? []),

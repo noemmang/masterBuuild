@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Cache;
 
 class PromocionController extends Controller
 {
-    // Tope de banners que se devuelven. El front elige UNO al azar entre
-    // ellos, así que no hace falta mandar más; con inRandomOrder() antes
-    // del límite, si hubiera más promociones activas que esto, cada
-    // refresco de la caché reparte la oportunidad entre todas.
+    // Tope de banners que se devuelven. El front los hace rotar uno tras
+    // otro; con inRandomOrder() antes del límite, si hubiera más
+    // promociones activas que esto, cada refresco de la caché reparte la
+    // oportunidad entre todas.
     private const LIMITE_BANNERS = 20;
 
     // Caché corta (y no de 24 h como destacados()/promociones()): esta
@@ -24,7 +24,7 @@ class PromocionController extends Controller
 
     /**
      * Banners (imagen + enlace) de las promociones de regalo ACTIVAS, para
-     * la cabecera de la sección "Promociones" del home. Lista vacía si no
+     * la cabecera (slider rotatorio) de la sección "Promociones" del home. Lista vacía si no
      * hay ninguna: el front oculta entonces el banner.
      *
      * "Activa" es exactamente lo mismo que en el resto de la web
@@ -38,9 +38,10 @@ class PromocionController extends Controller
      * se descarta cualquier otra cosa (p. ej. un "javascript:" o un
      * "data:") en vez de fiarse de ellos.
      *
-     * La elección aleatoria la hace el front, no este endpoint: así la
-     * respuesta es la misma para todos, se puede cachear, y cada visita
-     * al home ve un banner distinto.
+     * La rotación entre banners la hace el front, no este endpoint: así la
+     * respuesta es la misma para todos y se puede cachear. No se intenta
+     * deduplicar promociones iguales de distintas tiendas (no hay forma
+     * fiable de saberlo): simplemente rotan todas las activas.
      */
     public function banners()
     {

@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('carruselDestacados') carruselDestacadosRef!: ElementRef<HTMLElement>;
   @ViewChild('carruselOfertas')    carruselOfertasRef!: ElementRef<HTMLElement>;
   @ViewChild('carruselPromos')     carruselPromosRef!: ElementRef<HTMLElement>;
+  @ViewChild('bannerTrack')        bannerTrackRef?: ElementRef<HTMLElement>;
 
   constructor(
     private componenteService: ComponenteService,
@@ -141,11 +142,18 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   promos           = signal<Componente[]>([]);
   cargandoPromos   = signal(true);
 
-  /** Banner de promoción que se enseña encima de la sección Promociones.
-   *  Es uno de los banners de promociones activas elegido al azar en cada
-   *  visita (ver cargarBanner). null = no hay ninguno que enseñar: el
-   *  banner no se pinta, y la sección queda como estaba. */
-  bannerPromo = signal<PromoBanner | null>(null);
+  /** Banners de promociones activas que rotan encima de la sección
+   *  Promociones. Se van añadiendo a medida que su imagen carga (ver
+   *  cargarBanners): así el primero aparece en cuanto está listo, sin
+   *  esperar a los demás. Vacío = no hay ninguno que enseñar: el banner no
+   *  se pinta y la sección queda como estaba. */
+  bannersPromo = signal<PromoBanner[]>([]);
+
+  /** Posición actual del slider de banners (0..n). Cuando vale n se está
+   *  enseñando el clon del primero, que sirve para cerrar el bucle sin
+   *  salto (ver avanzarBanner). */
+  private idxBanner = 0;
+  private timerBanner?: ReturnType<typeof setInterval>;
 
   // ── Carrusel infinito ────────────────────────────────────
 
@@ -154,6 +162,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly CARD_GAP      = 16;
   readonly STEP_MS       = 6000;
   readonly TRANSITION_MS = 700;
+
+  /** Cada cuántos ms cambia el banner de promociones (como un scroll). */
+  readonly BANNER_STEP_MS       = 5000;
+  readonly BANNER_TRANSITION_MS = 600;
+  /** Si una imagen tarda más que esto en cargar se descarta. */
+  private readonly BANNER_IMG_TIMEOUT_MS = 8000;
 
   paginaDestacados = signal(0);
   paginaOfertas    = signal(0);
@@ -173,7 +187,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cargarDestacados();
     this.cargarOfertas();
     this.cargarPromos();
-    this.cargarBanner();
+    this.cargarBanners();
   }
 
   ngAfterViewInit(): void {}
@@ -182,6 +196,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     clearInterval(this.timerDestacados);
     clearInterval(this.timerOfertas);
     clearInterval(this.timerPromos);
+    clearInterval(this.timerBanner);
   }
 
   // ── Carga ────────────────────────────────────────────────
@@ -222,30 +237,109 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Banner de promociones ────────────────────────────────
 
   /**
-   * Pide los banners de las promociones activas y enseña UNO al azar. Si el
-   * elegido no carga (hotlinking bloqueado por la tienda, URL rota...) se
-   * prueba con el siguiente, y si no carga ninguno el banner no se pinta:
-   * mejor nada que una imagen rota.
+   * Pide los banners de las promociones activas y los enseña UNO TRAS OTRO,
+   * cambiando solo cada BANNER_STEP_MS con un desplazamiento lateral (sin
+   * puntos de navegación).
    *
-   * La imagen se precarga ANTES de ponerla en pantalla, así el banner
-   * aparece ya completo, sin hueco vacío ni salto de diseño mientras baja.
+   * No se intenta saber si dos banners son "la misma promoción" (una
+   * promoción puede estar en varias tiendas y no hay forma fiable de
+   * saberlo), así que simplemente rotan todos los activos sin control
+   * exacto. El backend ya solo devuelve los activos; aquí además se
+   * descartan los que hayan caducado mientras la página seguía abierta
+   * (ver bannerVigente).
+   *
+   * Cada imagen se precarga ANTES de entrar en el slider: si no carga
+   * (hotlinking bloqueado, URL rota...) se descarta, y si no carga ninguna
+   * el banner no se pinta — mejor nada que una imagen rota.
    */
-  private cargarBanner(): void {
+  private cargarBanners(): void {
     this.componenteService.getPromoBanners().subscribe({
-      next: (banners) => this.mostrarPrimeroQueCargue(this.barajar(banners)),
+      next: (banners) => {
+        const candidatos = this.barajar(banners.filter(b => this.bannerVigente(b)));
+        for (const banner of candidatos) this.precargarBanner(banner);
+      },
       error: () => { /* sin banner: la sección de promociones sigue igual */ },
     });
   }
 
-  private mostrarPrimeroQueCargue(candidatos: PromoBanner[]): void {
-    const [banner, ...resto] = candidatos;
-    if (!banner) return;
-
+  private precargarBanner(banner: PromoBanner): void {
     const img = new Image();
     img.referrerPolicy = 'no-referrer'; // mismo criterio que el panel de regalos
-    img.onload  = () => this.bannerPromo.set(banner);
-    img.onerror = () => this.mostrarPrimeroQueCargue(resto);
+
+    let resuelto = false;
+    const terminar = (ok: boolean) => {
+      if (resuelto) return;
+      resuelto = true;
+      clearTimeout(limite);
+      if (ok) this.anadirBanner(banner);
+    };
+    const limite = setTimeout(() => terminar(false), this.BANNER_IMG_TIMEOUT_MS);
+
+    img.onload  = () => terminar(true);
+    img.onerror = () => terminar(false);
     img.src = banner.imagen_url;
+  }
+
+  /** Mete un banner ya cargado en el slider y arranca la rotación. */
+  private anadirBanner(banner: PromoBanner): void {
+    this.bannersPromo.update(lista => [...lista, banner]);
+    this.iniciarRotacionBanner();
+  }
+
+  /** Un banner sigue siendo válido hasta el final de su fecha_fin (inclusive). */
+  private bannerVigente(banner: PromoBanner): boolean {
+    if (!banner.fecha_fin) return true;
+    const hoy = new Date();
+    const hoyISO = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    return banner.fecha_fin >= hoyISO;
+  }
+
+  /** Arranca (una sola vez) el temporizador que cambia de banner. */
+  private iniciarRotacionBanner(): void {
+    if (this.timerBanner) return;
+
+    this.ngZone.runOutsideAngular(() => {
+      this.timerBanner = setInterval(() => this.avanzarBanner(), this.BANNER_STEP_MS);
+    });
+  }
+
+  /**
+   * Pasa al siguiente banner con un desplazamiento lateral. Tras el último
+   * se enseña el clon del primero (que va al final del track) y, cuando
+   * termina la animación, se vuelve al primero de verdad SIN transición: el
+   * ojo no nota el salto y el bucle es continuo.
+   *
+   * Los banners caducados se retiran justo aquí, cuando el slider vuelve al
+   * principio (en reposo), para no desmontar un slide mientras se ve.
+   */
+  private avanzarBanner(): void {
+    const track = this.bannerTrackRef?.nativeElement;
+    const total = this.bannersPromo().length;
+    if (!track || total < 2) return;
+
+    const next = this.idxBanner + 1;
+    track.style.transition = `transform ${this.BANNER_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+    track.style.transform  = `translateX(-${next * 100}%)`;
+    this.idxBanner = next;
+
+    if (next >= total) {
+      setTimeout(() => {
+        const t = this.bannerTrackRef?.nativeElement;
+        if (!t) return;
+        t.style.transition = 'none';
+        t.style.transform  = 'translateX(0)';
+        this.idxBanner = 0;
+
+        const vigentes = this.bannersPromo().filter(b => this.bannerVigente(b));
+        if (vigentes.length !== this.bannersPromo().length) {
+          this.ngZone.run(() => this.bannersPromo.set(vigentes));
+          if (vigentes.length < 2) {
+            clearInterval(this.timerBanner);
+            this.timerBanner = undefined;
+          }
+        }
+      }, this.BANNER_TRANSITION_MS + 20);
+    }
   }
 
   /** Fisher-Yates sobre una copia: el orden aleatorio no es sesgado. */

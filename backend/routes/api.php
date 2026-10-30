@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Negocio\AuthController;
 use App\Http\Controllers\Api\Componentes\ComponenteController;
 use App\Http\Controllers\Api\Componentes\GabineteController;
 use App\Http\Controllers\Api\Negocio\PrecioController;
+use App\Http\Controllers\Api\Negocio\PromocionController;
 use App\Http\Controllers\Api\Negocio\GuardadoController;
 use App\Http\Controllers\Api\Negocio\AlertaController;
 use App\Http\Controllers\Api\Negocio\ConfiguracionController;
@@ -64,6 +65,13 @@ Route::prefix('v1')->group(function () {
         Route::get('{uuid}/precios/historial', [PrecioController::class, 'historial']);
         Route::get('{uuid}/gabinete/visor',    [GabineteController::class, 'visor']);
     });
+
+    // ── Promociones — lectura pública ─────────────────────────
+    //
+    // Banners (imagen + enlace a la tienda) de las promociones de regalo
+    // activas, para la cabecera de la sección "Promociones" del home. Ver
+    // PromocionController::banners.
+    Route::get('promociones/banners', [PromocionController::class, 'banners']);
 
     // ── Configurador — público ────────────────────────────────
     Route::prefix('configurador')->group(function () {

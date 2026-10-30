@@ -248,6 +248,21 @@ export interface EntradaPrecio {
 
 // ── Regalos ───────────────────────────────────────────────────────────────────
 
+/** Banner de una promoción activa para la cabecera de "Promociones" del home
+ *  (GET /promociones/banners, ver PromocionBannerResource). */
+export interface PromoBanner {
+  uuid: string;
+  titulo: string;
+  /** Nombre de la tienda que lanza la promoción. */
+  tienda: string | null;
+  /** Página de la tienda donde se explica la promoción o el regalo. */
+  url: string;
+  /** Imagen del banner. */
+  imagen_url: string;
+  /** "YYYY-MM-DD" o null si la tienda no indica fecha. */
+  fecha_fin: string | null;
+}
+
 /** Promoción de regalo de una tienda (ver PromocionRegaloResource en el
  *  backend). Antes esta interfaz tenía campos de un diseño antiguo
  *  (nombre, descripcion, valor_estimado) que el backend nunca envió. */
@@ -490,6 +505,14 @@ export class ComponenteService {
     const params = new HttpParams().set('limit', String(limit));
     return this.http.get<{ data: any[] }>(`${this.API}/componentes/promociones`, { params }).pipe(
       map(res => (res.data ?? []).map((c: any) => this.mapearComponente(c))),
+    );
+  }
+
+  /** Banners (imagen + enlace) de las promociones activas. Lista vacía si no
+   *  hay ninguna. Quién se enseña (uno al azar) lo decide el home. */
+  getPromoBanners(): Observable<PromoBanner[]> {
+    return this.http.get<{ data: PromoBanner[] }>(`${this.API}/promociones/banners`).pipe(
+      map(res => res.data ?? []),
     );
   }
 

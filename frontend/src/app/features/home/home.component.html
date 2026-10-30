@@ -287,6 +287,29 @@
        vigente que enseñar (ver HomeController::promociones). -->
   @if (cargandoPromos() || promos().length > 0) {
     <section class="ofertas promos">
+      <!-- Banner de una promoción activa elegida al azar en cada visita. Va
+           dentro de la sección, así que solo existe si hay promociones
+           activas, y solo se pinta si su imagen ha cargado (ver
+           HomeComponent.cargarBanner). Pulsarlo abre la página de la tienda
+           donde se explica la promoción o el regalo. -->
+      @if (bannerPromo(); as banner) {
+        <a class="promo-banner"
+           [href]="banner.url"
+           target="_blank"
+           rel="noopener noreferrer"
+           [attr.aria-label]="'Ver promoción: ' + banner.titulo + (banner.tienda ? ' en ' + banner.tienda : '')">
+          <img [src]="banner.imagen_url" alt="" referrerpolicy="no-referrer" decoding="async" />
+          <span class="promo-banner-cta">
+            @if (banner.tienda) { {{ banner.tienda }} · }
+            Ver promoción
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9"/>
+            </svg>
+          </span>
+        </a>
+      }
+
       <div class="section-header">
         <div>
           <h2 class="section-title">

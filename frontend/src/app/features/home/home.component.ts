@@ -5,7 +5,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';                          // ← AÑADIDO
-import { ComponenteService, Componente } from '../../core/services/componente.service';
+import { ComponenteService, Componente, PromoBanner } from '../../core/services/componente.service';
 import { ComponenteCardComponent } from '../../shared/components/componente-card/componente-card.component';
 import { Model3dViewerComponent } from '../../shared/components/model-3d-viewer/model-3d-viewer.component'; // ← AÑADIDO
 
@@ -141,6 +141,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   promos           = signal<Componente[]>([]);
   cargandoPromos   = signal(true);
 
+  /** Banner de promoción que se enseña encima de la sección Promociones.
+   *  Es uno de los banners de promociones activas elegido al azar en cada
+   *  visita (ver cargarBanner). null = no hay ninguno que enseñar: el
+   *  banner no se pinta, y la sección queda como estaba. */
+  bannerPromo = signal<PromoBanner | null>(null);
+
   // ── Carrusel infinito ────────────────────────────────────
 
   readonly CARD_W        = 220;
@@ -167,6 +173,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cargarDestacados();
     this.cargarOfertas();
     this.cargarPromos();
+    this.cargarBanner();
   }
 
   ngAfterViewInit(): void {}
@@ -210,6 +217,45 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: () => this.cargandoPromos.set(false),
     });
+  }
+
+  // ── Banner de promociones ────────────────────────────────
+
+  /**
+   * Pide los banners de las promociones activas y enseña UNO al azar. Si el
+   * elegido no carga (hotlinking bloqueado por la tienda, URL rota...) se
+   * prueba con el siguiente, y si no carga ninguno el banner no se pinta:
+   * mejor nada que una imagen rota.
+   *
+   * La imagen se precarga ANTES de ponerla en pantalla, así el banner
+   * aparece ya completo, sin hueco vacío ni salto de diseño mientras baja.
+   */
+  private cargarBanner(): void {
+    this.componenteService.getPromoBanners().subscribe({
+      next: (banners) => this.mostrarPrimeroQueCargue(this.barajar(banners)),
+      error: () => { /* sin banner: la sección de promociones sigue igual */ },
+    });
+  }
+
+  private mostrarPrimeroQueCargue(candidatos: PromoBanner[]): void {
+    const [banner, ...resto] = candidatos;
+    if (!banner) return;
+
+    const img = new Image();
+    img.referrerPolicy = 'no-referrer'; // mismo criterio que el panel de regalos
+    img.onload  = () => this.bannerPromo.set(banner);
+    img.onerror = () => this.mostrarPrimeroQueCargue(resto);
+    img.src = banner.imagen_url;
+  }
+
+  /** Fisher-Yates sobre una copia: el orden aleatorio no es sesgado. */
+  private barajar<T>(items: T[]): T[] {
+    const copia = [...items];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
   }
 
   // ── Autoplay infinito ─────────────────────────────────────

@@ -3,9 +3,12 @@
 namespace App\Scrapers;
 
 use App\Scrapers\Exceptions\ScrapingException;
+use App\Scrapers\Support\Transporte;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -15,68 +18,127 @@ abstract class AbstractScraper
 
     public function __construct()
     {
-        $this->http = new Client([
-            'timeout' => 15,
-            // Algunas tiendas (p. ej. Coolmod) exigen una cookie de
-            // "verificación" antes de servir la página real. Sin cookies
-            // persistentes, cada redirect vuelve a pedir la verificación
-            // y se entra en bucle infinito -> "Will not follow more than
-            // 5 redirects". Con esto, Guzzle guarda y reenvía las cookies
-            // que el servidor va fijando entre redirects.
-            'cookies' => true,
-            'headers' => [
-                // Cabeceras de un navegador real. Muchas tiendas devuelven
-                // una versión distinta (o bloquean) si detectan un
-                // User-Agent de bot/librería.
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                    .'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'Accept-Language' => 'es-ES,es;q=0.9',
-            ],
-        ]);
+        // El cliente se construye en Transporte según SCRAPER_MODO
+        // (direct / proxy / api). Aquí solo desactivamos http_errors para
+        // decidir nosotros qué hacer con cada código de estado.
+        $this->http = Transporte::cliente(
+            (array) config('scraper'),
+            null,
+            [RequestOptions::HTTP_ERRORS => false]
+        );
     }
 
     /**
      * Descarga una URL y devuelve un Crawler (Symfony DomCrawler) listo
      * para aplicar selectores CSS o buscar JSON-LD.
+     *
+     * Clasificación de errores (de ella depende ScrapePrecios):
+     *  - BLOQUEO (ScrapingException::bloqueo): 401/402/403/406/429/451, 5xx,
+     *    timeouts/errores de conexión, bucles de redirección y páginas anti-bot
+     *    servidas con 200. NO es culpa del producto: no suma fallos, no lo
+     *    oculta y conserva su último precio.
+     *  - FALLO normal (ScrapingException): 404/410 y cualquier otra cosa. Sí
+     *    cuenta contra el producto.
      */
     protected function descargar(string $url): Crawler
     {
-        try {
-            $response = $this->http->get($url);
-        } catch (BadResponseException $e) {
-            $respuesta = $e->getResponse();
-            $codigo = $respuesta->getStatusCode();
+        $cfg = (array) config('scraper');
 
-            // 403 / 429: la tienda nos rechaza a propósito (WAF, detección
-            // de bots, rate limit). Se distingue de un fallo normal para
-            // que ScrapePrecios no oculte el producto por algo que no es
-            // culpa del producto.
-            if (in_array($codigo, [403, 429], true)) {
+        try {
+            $urlReal = Transporte::urlEfectiva($cfg, $url);
+        } catch (\InvalidArgumentException $e) {
+            // Error de configuración (no del producto): que no lo castigue.
+            throw ScrapingException::bloqueo($e->getMessage(), 0, $e);
+        }
+
+        $intentos = 1 + max(0, (int) ($cfg['reintentos'] ?? 1));
+        $respuesta = null;
+
+        for ($intento = 1; $intento <= $intentos; $intento++) {
+            try {
+                $respuesta = $this->http->get($urlReal);
+            } catch (TooManyRedirectsException $e) {
+                // Coolmod y otras redirigen en bucle hasta que se resuelve
+                // un desafío de cookie/JS que no podemos resolver.
                 throw ScrapingException::bloqueo(
-                    "Bloqueado por la tienda (HTTP {$codigo}) al descargar {$url}".$this->pistasDeBloqueo($respuesta),
-                    $codigo,
+                    "Bucle de redirecciones al descargar {$url} (probable desafío anti-bot)",
+                    0,
                     $e
+                );
+            } catch (ConnectException $e) {
+                if ($intento < $intentos) {
+                    usleep(2_000_000 * $intento);
+                    continue;
+                }
+
+                throw ScrapingException::bloqueo(
+                    "Sin conexión / timeout al descargar {$url}: ".$this->limpiar($e->getMessage(), $urlReal, $url),
+                    0,
+                    $e
+                );
+            } catch (GuzzleException $e) {
+                throw new ScrapingException(
+                    "Error de red al descargar {$url}: ".$this->limpiar($e->getMessage(), $urlReal, $url),
+                    previous: $e
                 );
             }
 
-            throw new ScrapingException(
-                "Error de red al descargar {$url}: {$e->getMessage()}",
-                previous: $e
-            );
-        } catch (GuzzleException $e) {
-            throw new ScrapingException(
-                "Error de red al descargar {$url}: {$e->getMessage()}",
-                previous: $e
+            // 5xx: error del servidor (o de la API de scraping). Se reintenta.
+            if ($respuesta->getStatusCode() >= 500 && $intento < $intentos) {
+                usleep(2_000_000 * $intento);
+                continue;
+            }
+
+            break;
+        }
+
+        $codigo = $respuesta->getStatusCode();
+        $cuerpo = (string) $respuesta->getBody();
+
+        if (in_array($codigo, [401, 402, 403, 406, 429, 451], true) || $codigo >= 500) {
+            throw ScrapingException::bloqueo(
+                "Bloqueado/rechazado por la tienda (HTTP {$codigo}) al descargar {$url}".$this->pistasDeBloqueo($respuesta),
+                $codigo
             );
         }
 
-        $codigo = $response->getStatusCode();
         if ($codigo !== 200) {
             throw new ScrapingException("Respuesta HTTP {$codigo} al descargar {$url}");
         }
 
-        return new Crawler((string) $response->getBody(), $url);
+        // 200 OK pero con una página anti-bot en lugar de la ficha.
+        $cabeceras = array_change_key_case(
+            array_map(static fn (array $v) => implode(', ', $v), $respuesta->getHeaders()),
+            CASE_LOWER
+        );
+        $desafio = Transporte::detectarDesafio($cuerpo, $cabeceras);
+
+        if ($desafio !== null) {
+            Log::warning('Scraping: desafío anti-bot servido con HTTP 200', [
+                'url'     => $url,
+                'sistema' => $desafio,
+                'cuerpo'  => $this->normalizarTexto(substr($cuerpo, 0, 600)),
+            ]);
+
+            throw ScrapingException::bloqueo(
+                "Página anti-bot ({$desafio}) en lugar de la ficha de {$url}",
+                200
+            );
+        }
+
+        return new Crawler($cuerpo, $url);
+    }
+
+    /**
+     * Los mensajes de Guzzle incluyen la URL pedida; en modo "api" esa URL
+     * lleva la API key. Se sustituye por la del producto y se tapan
+     * parámetros típicos de credenciales antes de guardar/loguear nada.
+     */
+    protected function limpiar(string $mensaje, string $urlReal, string $url): string
+    {
+        $mensaje = str_replace($urlReal, $url, $mensaje);
+
+        return (string) preg_replace('/((?:api[_-]?key|token|key)=)[^&\s"\']+/i', '$1***', $mensaje);
     }
 
     /**

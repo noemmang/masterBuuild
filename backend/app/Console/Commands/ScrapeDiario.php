@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Scraping\AlertaScraping;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -30,23 +31,51 @@ class ScrapeDiario extends Command
         {tienda? : Nombre exacto de la tienda a scrapear (por defecto, todas las activas)}
         {--pausa-min=2 : Segundos mínimos de espera entre peticiones}
         {--pausa-max=5 : Segundos máximos de espera entre peticiones}
-        {--umbral-fallos=5 : Fallos consecutivos a partir de los cuales se marca la URL como no_disponible}';
+        {--umbral-fallos=5 : Fallos consecutivos a partir de los cuales se marca la URL como no_disponible}
+        {--max-minutos=0 : Tope de duración del scraping en minutos (0 = sin tope). Debe ser menor que el replica-timeout del Job}';
 
-    protected $description = 'Ejecuta scrape:precios, notificaciones:verificar y relevancia:recalcular en cadena. Es el único comando que debe configurarse en el Job programado.';
+    protected $description = 'Ejecuta scrape:precios, notificaciones:verificar, relevancia:recalcular y scrape:vigilar en cadena. Es el único comando que debe configurarse en el Job programado.';
 
     public function handle(): int
     {
-        $this->info('== 1/3 · scrape:precios ==');
+        $alertas = app(AlertaScraping::class);
+
+        // Latido: healthchecks.io (u otro) recibe "start" ahora y "ok"/"fail"
+        // al terminar. Si NO llega ninguno de los dos —Job que no arranca,
+        // contenedor que muere, timeout de Azure— el propio servicio avisa.
+        $alertas->latido('start');
+
+        try {
+            $codigos = $this->ejecutarPasos();
+        } catch (\Throwable $e) {
+            $this->error('Excepción no controlada en scrape:diario: '.$e->getMessage());
+            $alertas->alertar('scrape:diario ha terminado con una excepción', [get_class($e).': '.$e->getMessage()]);
+            $alertas->latido('fail');
+
+            return self::FAILURE;
+        }
+
+        $fallo = in_array(self::FAILURE, $codigos, true);
+        $alertas->latido($fallo ? 'fail' : 'ok');
+
+        return $fallo ? self::FAILURE : self::SUCCESS;
+    }
+
+    /** @return int[] códigos de salida de cada paso */
+    private function ejecutarPasos(): array
+    {
+        $this->info('== 1/4 · scrape:precios ==');
 
         $codigoScrape = Artisan::call('scrape:precios', [
             'tienda'           => $this->argument('tienda'),
             '--pausa-min'      => $this->option('pausa-min'),
             '--pausa-max'      => $this->option('pausa-max'),
             '--umbral-fallos'  => $this->option('umbral-fallos'),
+            '--max-minutos'    => $this->option('max-minutos'),
         ], $this->output);
 
         $this->newLine();
-        $this->info('== 2/3 · notificaciones:verificar ==');
+        $this->info('== 2/4 · notificaciones:verificar ==');
 
         // Se ejecuta siempre, incluso si scrape:precios ha tenido fallos:
         // los precios que SÍ se guardaron esta noche merecen comprobarse
@@ -55,15 +84,22 @@ class ScrapeDiario extends Command
         $codigoNotificaciones = Artisan::call('notificaciones:verificar', [], $this->output);
 
         $this->newLine();
-        $this->info('== 3/3 · relevancia:recalcular ==');
+        $this->info('== 3/4 · relevancia:recalcular ==');
 
         // Mismo motivo: se ejecuta pase lo que pase con los dos pasos
         // anteriores, para que el home refleje los datos que sí se
         // guardaron esta noche en vez de quedarse con la caché de ayer.
         $codigoRelevancia = Artisan::call('relevancia:recalcular', [], $this->output);
 
-        $codigos = [$codigoScrape, $codigoNotificaciones, $codigoRelevancia];
+        $this->newLine();
+        $this->info('== 4/4 · scrape:vigilar ==');
 
-        return in_array(self::FAILURE, $codigos, true) ? self::FAILURE : self::SUCCESS;
+        // Comprueba cuánto llevan sin actualizarse los precios de cada tienda
+        // y avisa si es demasiado, independientemente de lo que haya dicho
+        // scrape:precios (que con una tienda bloqueada no ve datos "malos",
+        // solo datos que dejan de renovarse).
+        $codigoVigilar = Artisan::call('scrape:vigilar', [], $this->output);
+
+        return [$codigoScrape, $codigoNotificaciones, $codigoRelevancia, $codigoVigilar];
     }
 }

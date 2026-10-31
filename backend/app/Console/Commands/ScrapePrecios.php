@@ -9,6 +9,7 @@ use App\Scrapers\Contracts\ScraperTienda;
 use App\Scrapers\DTO\DatoScrapeado;
 use App\Scrapers\Exceptions\ScrapingException;
 use App\Services\Promociones\PromocionRegaloService;
+use App\Services\Scraping\AlertaScraping;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -20,7 +21,8 @@ class ScrapePrecios extends Command
         {--pausa-min=2 : Segundos mínimos de espera entre peticiones}
         {--pausa-max=5 : Segundos máximos de espera entre peticiones}
         {--umbral-fallos=5 : Fallos consecutivos a partir de los cuales se marca la URL como no_disponible}
-        {--bloqueos-max=5 : Bloqueos (403/429) seguidos de una tienda tras los cuales se abandona esa tienda en esta ejecución}';
+        {--bloqueos-max=5 : Bloqueos (403/429, timeouts, páginas anti-bot...) seguidos de una tienda tras los cuales se abandona esa tienda en esta ejecución}
+        {--max-minutos=0 : Tope de duración en minutos (0 = sin tope). Al alcanzarlo se corta limpiamente y se avisa. Ponlo por debajo del replica-timeout del Job de Azure (1800 s por defecto) para que Azure no lo mate sin dejar rastro}';
 
     protected $description = 'Descarga precios reales desde las tiendas configuradas y actualiza precios_actuales / historial_precios (y los regalos activos de cada ficha)';
 
@@ -45,7 +47,15 @@ class ScrapePrecios extends Command
             $query->whereHas('tienda', fn ($q) => $q->where('nombre', $tiendaFiltro));
         }
 
-        $urls = $query->get();
+        // Las URLs con el scrape más antiguo (o nunca scrapeadas) van primero.
+        // Si una ejecución se corta (tope de tiempo, timeout de Azure...), la
+        // siguiente continúa por donde se quedó en vez de repetir siempre las
+        // mismas URLs del principio y dejar las del final sin actualizar jamás.
+        $urls = $query
+            ->orderByRaw('ultimo_scrape_at IS NOT NULL')
+            ->orderBy('ultimo_scrape_at')
+            ->orderBy('id')
+            ->get();
 
         if ($urls->isEmpty()) {
             $this->warn('No hay URLs de producto configuradas en urls_producto_tienda.');
@@ -74,8 +84,22 @@ class ScrapePrecios extends Command
         $bloqueosSeguidos = [];
         /** @var array<int, string> $tiendasAbandonadas tiendas cortadas en esta ejecución, por id */
         $tiendasAbandonadas = [];
+        /** @var array<string, string> $ejemplos primer error visto por tienda (para la alerta) */
+        $ejemplos = [];
 
-        foreach ($urls as $registro) {
+        $inicio = microtime(true);
+        $maxSegundos = max(0, (int) $this->option('max-minutos')) * 60;
+        $cortadoPorTiempo = false;
+        $pendientes = 0;
+
+        foreach ($urls as $indice => $registro) {
+            if ($maxSegundos > 0 && (microtime(true) - $inicio) >= $maxSegundos) {
+                $cortadoPorTiempo = true;
+                $pendientes = $urls->count() - $indice;
+                $this->error("  ‼ Tope de {$this->option('max-minutos')} min alcanzado: quedan {$pendientes} productos sin procesar (se retomarán primero en la próxima ejecución).");
+                break;
+            }
+
             $tienda = $registro->tienda;
             $nombre = $registro->componente->nombre ?? $registro->componente_id;
 
@@ -152,6 +176,7 @@ class ScrapePrecios extends Command
             } catch (ScrapingException|Throwable $e) {
                 $stats[$tienda->nombre]['fallos']++;
                 $fallos++;
+                $ejemplos[$tienda->nombre] ??= mb_substr($e->getMessage(), 0, 300);
 
                 if ($e instanceof ScrapingException && $e->esBloqueo()) {
                     // BLOQUEO (403/429): la tienda nos rechaza, no es culpa del
@@ -222,6 +247,8 @@ class ScrapePrecios extends Command
         $this->info('Resumen por tienda:');
 
         $problemas = [];
+        $avisos = [];
+        $detalles = [];
 
         foreach ($stats as $nombreTienda => $s) {
             $this->line(sprintf(
@@ -230,14 +257,27 @@ class ScrapePrecios extends Command
             ));
 
             if ($s['bloqueos'] > 0 && ($s['omitidos'] > 0 || $s['ok'] === 0)) {
-                $problemas[] = "{$nombreTienda}: bloqueada ({$s['bloqueos']} bloqueos, {$s['ok']} OK, {$s['omitidos']} omitidos)";
+                $problemas[] = "{$nombreTienda}: BLOQUEADA ({$s['bloqueos']} bloqueos, {$s['ok']} OK, {$s['omitidos']} omitidos). Sus productos conservan el último precio, que ya no está al día.";
             } elseif (
                 $s['intentos'] >= self::MIN_INTENTOS_RATIO
                 && ($s['fallos'] / $s['intentos']) > self::RATIO_FALLOS_CRITICO
             ) {
                 $problemas[] = sprintf('%s: %d de %d productos fallaron', $nombreTienda, $s['fallos'], $s['intentos']);
+            } elseif ($s['bloqueos'] > 0) {
+                $avisos[] = "{$nombreTienda}: {$s['bloqueos']} bloqueo(s) puntuales, {$s['ok']} productos OK.";
+            }
+
+            if ($s['fallos'] > 0 && isset($ejemplos[$nombreTienda])) {
+                $detalles[] = "Ejemplo de error en {$nombreTienda}: {$ejemplos[$nombreTienda]}";
             }
         }
+
+        if ($cortadoPorTiempo) {
+            $problemas[] = "Tope de tiempo alcanzado: {$pendientes} de {$urls->count()} productos sin procesar. "
+                .'Sube el replica-timeout del Job o reduce --pausa-min/--pausa-max.';
+        }
+
+        $alertas = app(AlertaScraping::class);
 
         if ($problemas !== []) {
             $this->newLine();
@@ -245,7 +285,13 @@ class ScrapePrecios extends Command
                 $this->error("‼ PROBLEMA SISTÉMICO → {$problema}");
             }
 
+            $alertas->alertar('Scraping con problemas', array_merge($problemas, $avisos, $detalles));
+
             return self::FAILURE;
+        }
+
+        if ($avisos !== []) {
+            $alertas->alertar('Scraping con avisos', array_merge($avisos, $detalles));
         }
 
         return self::SUCCESS;

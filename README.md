@@ -256,8 +256,7 @@ La aplicación está desplegada y funcional. Hay partes que siguen evolucionando
 ### 🔮 Posibles mejoras
 
 * 🏬 Scrapers para el resto de tiendas registradas.
-* 🧪 Más pruebas automáticas del backend y del configurador de compatibilidad.
-* 📄 Documentación de la API con OpenAPI.
+* 🧪 Configurador de compatibilidad.
 
 ---
 

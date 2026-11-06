@@ -10,17 +10,17 @@ La aplicación **no vende productos**: actúa como intermediaria mostrando la me
 
 ---
 
-## 🎯 Finalidad del proyecto
+## 🎯 Objetivo del proyecto
 
-Este proyecto se desarrolló como **Trabajo de Fin de Grado (TFG)** del ciclo **Desarrollo de Aplicaciones Web (DAW)**.
+Este proyecto se desarrolló como **Trabajo de Fin de Grado (TFG)** del ciclo **Desarrollo de Aplicaciones Web (DAW)**. Es uno de mis primeros proyectos completos y el primero que despliego en la nube.
 
-Su objetivo es ayudar a montar un PC de forma informada y, al mismo tiempo, servir como ejemplo práctico de una aplicación completa:
+Lo que buscaba aprender:
 
-* 🏗️ Aplicación full stack con frontend y backend desacoplados
-* 🕷️ Obtención de datos reales mediante scraping
-* 🗄️ Modelado de una base de datos relacional amplia
-* ☁️ Despliegue en la nube con contenedores
-* 🚀 Automatización con CI/CD
+* 🕷️ **Scraping** — obtener precios reales de las tiendas en lugar de usar datos de ejemplo.
+* 🔀 **Dos lenguajes en un mismo proyecto** — PHP en el backend y TypeScript en el frontend, comunicados por una API REST.
+* 🏗️ **MVC** — llevar la arquitectura de Laravel (modelos, controladores y servicios) a una aplicación completa.
+* ☁️ **Azure** — publicar el frontend, el backend y las tareas programadas en la nube.
+* 🚀 **Workflows con GitHub Actions** — automatizar la construcción y el despliegue en cada cambio.
 
 El repositorio se comparte con fines **didácticos y educativos**. 🎓
 
@@ -256,7 +256,8 @@ La aplicación está desplegada y funcional. Hay partes que siguen evolucionando
 ### 🔮 Posibles mejoras
 
 * 🏬 Scrapers para el resto de tiendas registradas.
-* 🧪 Configurador de compatibilidad.
+* 🧪 Más pruebas automáticas del backend y del configurador de compatibilidad.
+* 📄 Documentación de la API con OpenAPI.
 
 ---
 

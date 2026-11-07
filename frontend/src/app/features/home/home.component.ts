@@ -7,12 +7,13 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';                          // ← AÑADIDO
 import { ComponenteService, Componente, PromoBanner } from '../../core/services/componente.service';
 import { ComponenteCardComponent } from '../../shared/components/componente-card/componente-card.component';
+import { PriceHistoryCategoriasComponent } from '../../shared/components/price-history-categorias/price-history-categorias.component';
 import { Model3dViewerComponent } from '../../shared/components/model-3d-viewer/model-3d-viewer.component'; // ← AÑADIDO
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, FormsModule, Model3dViewerComponent, ComponenteCardComponent],
+  imports: [RouterLink, FormsModule, Model3dViewerComponent, ComponenteCardComponent, PriceHistoryCategoriasComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

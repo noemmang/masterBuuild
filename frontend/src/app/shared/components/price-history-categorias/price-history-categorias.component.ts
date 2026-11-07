@@ -75,14 +75,18 @@ export class PriceHistoryCategoriasComponent implements OnInit, OnDestroy {
     const d = this.datos();
     if (!d) return [];
     const sel = this.seleccion();
-    return d.series.filter(s => s.puntos.length > 0 && (sel.length === 0 || sel.includes(s.categoria)));
+    // "Todos" = una única línea con la media global, no una por categoría.
+    return d.series.filter(s =>
+      s.puntos.length > 0 &&
+      (sel.length === 0 ? s.categoria === 'todos' : sel.includes(s.categoria)),
+    );
   });
 
   hayDatos = computed(() => this.seriesVisibles().length > 0);
 
   /** Categorías que tienen datos en el período (para desactivar chips vacíos). */
   categoriasConDatos = computed(() =>
-    new Set((this.datos()?.series ?? []).filter(s => s.puntos.length > 0).map(s => s.categoria)),
+    new Set((this.datos()?.series ?? []).filter(s => s.puntos.length > 0 && s.categoria !== 'todos').map(s => s.categoria)),
   );
 
   resumen = computed<FilaResumen[]>(() =>
@@ -315,6 +319,7 @@ export class PriceHistoryCategoriasComponent implements OnInit, OnDestroy {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   info(slug: string): CategoriaInfo {
+    if (slug === 'todos') return { slug, label: 'Todos', color: '#38bdf8' };
     return CATEGORIAS.find(c => c.slug === slug)
       ?? { slug, label: slug, color: '#64748b' };
   }

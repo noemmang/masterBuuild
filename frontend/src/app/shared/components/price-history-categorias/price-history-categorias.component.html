@@ -1,0 +1,84 @@
+<div class="phc">
+
+  <!-- ── Controles ── -->
+  <div class="phc-controles">
+    <div class="phc-grupo">
+      @for (p of PERIODOS; track p.value) {
+        <button
+          type="button"
+          class="phc-btn"
+          [class.activo]="periodoActivo() === p.value"
+          (click)="setPeriodo(p.value)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+
+    <div class="phc-grupo phc-modo" role="group" aria-label="Unidad del gráfico">
+      <button type="button" class="phc-btn" [class.activo]="modo() === 'precio'" (click)="setModo('precio')">€ medio</button>
+      <button type="button" class="phc-btn" [class.activo]="modo() === 'variacion'" (click)="setModo('variacion')">% variación</button>
+    </div>
+  </div>
+
+  <!-- ── Selector de categorías ── -->
+  <div class="phc-chips">
+    <button
+      type="button"
+      class="phc-chip"
+      [class.activo]="seleccion().length === 0"
+      (click)="seleccionarTodos()">
+      Todos
+    </button>
+    @for (c of CATEGORIAS; track c.slug) {
+      <button
+        type="button"
+        class="phc-chip"
+        [class.activo]="chipActivo(c.slug)"
+        [class.sin-datos]="!cargando() && !error() && !categoriasConDatos().has(c.slug)"
+        [style.--chip-color]="c.color"
+        (click)="toggleCategoria(c.slug)">
+        <span class="phc-chip-dot"></span>
+        {{ c.label }}
+      </button>
+    }
+  </div>
+
+  <!-- ── Gráfico ── -->
+  <div class="phc-body">
+    <!-- El contenedor existe siempre para que ApexCharts tenga dónde montarse;
+         los estados van encima. -->
+    <div #chartEl class="phc-chart" [class.oculto]="cargando() || error() || !hayDatos()"></div>
+
+    @if (cargando()) {
+      <div class="phc-estado"><div class="phc-spinner"></div></div>
+    } @else if (error()) {
+      <div class="phc-estado"><p>No se pudieron cargar los datos</p></div>
+    } @else if (!hayDatos()) {
+      <div class="phc-estado"><p>Sin datos para el período o las categorías seleccionadas</p></div>
+    }
+  </div>
+
+  <!-- ── Resumen por categoría (también hace de leyenda) ── -->
+  @if (!cargando() && !error() && resumen().length > 0) {
+    <div class="phc-resumen">
+      @for (r of resumen(); track r.slug) {
+        <div class="phc-fila">
+          <span class="phc-fila-dot" [style.background]="r.color"></span>
+          <span class="phc-fila-nombre">{{ r.label }}</span>
+          <span class="phc-fila-precio">{{ formatPrecio(r.actual) }}</span>
+          <span
+            class="phc-fila-var"
+            [class.baja]="r.variacion !== null && r.variacion < -0.05"
+            [class.sube]="r.variacion !== null && r.variacion > 0.05">
+            {{ formatPct(r.variacion) }}
+          </span>
+          <span class="phc-fila-n">{{ r.componentes }} comp.</span>
+        </div>
+      }
+    </div>
+    <p class="phc-nota">
+      Precio medio de los componentes de cada tipo (media mensual ponderada por días entre todas las tiendas).
+      La variación compara el primer y el último mes del período.
+    </p>
+  }
+</div>

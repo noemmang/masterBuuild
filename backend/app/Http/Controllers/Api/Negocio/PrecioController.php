@@ -223,4 +223,109 @@ class PrecioController extends Controller
             'tiendas' => $tiendas,
         ]);
     }
+
+    // ── GET /api/v1/componentes/historial-categorias ───────────────────────
+    //
+    // Evolución de la MEDIA de precio por tipo de componente (para el home).
+    //
+    // Query params:
+    //   periodo    = 6m|1y|2y|3y (default 1y), igual que historial()
+    //   categorias = lista separada por comas (cpu,gpu,ram...). Vacío = todas.
+    //
+    // Cómo se calcula cada punto (categoría, mes):
+    //   1. Para cada componente se hace la media del mes ponderada por días
+    //      (mismo criterio que historial(): un precio que duró 28 días pesa
+    //      más que uno que duró 2). Todas las tiendas del componente entran
+    //      en esa media.
+    //   2. La media de la categoría es la media simple de esas medias entre
+    //      los componentes que tienen precio ese mes, así un componente con
+    //      muchas tiendas no pesa más que uno con una sola.
+    //
+    // Ojo: si entran o salen componentes del catálogo la media se mueve
+    // aunque ningún precio cambie; por eso cada punto devuelve cuántos
+    // componentes lo forman.
+
+    public function historialCategorias(Request $request): JsonResponse
+    {
+        $periodo = $request->query('periodo', '1y');
+        $desde   = match ($periodo) {
+            '6m'    => now()->subMonths(6)->startOfMonth(),
+            '2y'    => now()->subYears(2)->startOfMonth(),
+            '3y'    => now()->subYears(3)->startOfMonth(),
+            default => now()->subYear()->startOfMonth(),
+        };
+
+        $pedidas = collect(explode(',', (string) $request->query('categorias', '')))
+            ->map(fn ($c) => trim($c))
+            ->filter(fn ($c) => in_array($c, Componente::CATEGORIAS, true))
+            ->unique()
+            ->values();
+
+        $categorias = $pedidas->isEmpty() ? collect(Componente::CATEGORIAS) : $pedidas;
+        $in         = implode(',', array_fill(0, $categorias->count(), '?'));
+
+        $rows = DB::select("
+            WITH meses AS (
+                SELECT generate_series(
+                    date_trunc('month', ?::date),
+                    date_trunc('month', now()),
+                    interval '1 month'
+                )::date AS mes
+            ),
+            tramos AS (
+                SELECT h.componente_id, h.precio, h.valid_from, h.valid_to
+                FROM historial_precios h
+                JOIN componentes c ON c.id = h.componente_id
+                WHERE h.valid_to >= ? AND c.activo = true AND c.categoria IN ($in)
+                UNION ALL
+                SELECT p.componente_id, p.precio, p.vigente_desde::date AS valid_from, CURRENT_DATE AS valid_to
+                FROM precios_actuales p
+                JOIN componentes c ON c.id = p.componente_id
+                WHERE c.activo = true AND c.categoria IN ($in)
+            ),
+            por_componente AS (
+                SELECT
+                    c.categoria,
+                    m.mes,
+                    t.componente_id,
+                    SUM(t.precio * (LEAST(t.valid_to, (m.mes + INTERVAL '1 month' - INTERVAL '1 day')::date)
+                                   - GREATEST(t.valid_from, m.mes) + 1))
+                    / NULLIF(SUM(LEAST(t.valid_to, (m.mes + INTERVAL '1 month' - INTERVAL '1 day')::date)
+                               - GREATEST(t.valid_from, m.mes) + 1), 0) AS media
+                FROM meses m
+                JOIN tramos t
+                    ON t.valid_from <= (m.mes + INTERVAL '1 month' - INTERVAL '1 day')::date
+                   AND t.valid_to   >= m.mes
+                JOIN componentes c ON c.id = t.componente_id
+                GROUP BY c.categoria, m.mes, t.componente_id
+            )
+            SELECT
+                categoria,
+                to_char(mes, 'YYYY-MM') AS periodo,
+                ROUND(AVG(media)::numeric, 2) AS media,
+                COUNT(*) AS componentes
+            FROM por_componente
+            WHERE media IS NOT NULL
+            GROUP BY categoria, mes
+            ORDER BY categoria, mes
+        ", [
+            $desde,
+            $desde, ...$categorias->all(),
+            ...$categorias->all(),
+        ]);
+
+        $series = collect($rows)
+            ->groupBy('categoria')
+            ->map(fn ($puntos, $categoria) => [
+                'categoria' => $categoria,
+                'puntos'    => $puntos->map(fn ($r) => [
+                    'periodo'     => $r->periodo,
+                    'media'       => (float) $r->media,
+                    'componentes' => (int) $r->componentes,
+                ])->values(),
+            ])
+            ->values();
+
+        return response()->json(['series' => $series]);
+    }
 }

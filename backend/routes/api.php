@@ -58,6 +58,9 @@ Route::prefix('v1')->group(function () {
         Route::get('destacados',               [ComponenteController::class, 'destacados']);
         Route::get('bajadas-precio',           [ComponenteController::class, 'bajadasPrecio']);
         Route::get('promociones',              [ComponenteController::class, 'promociones']);
+        // Media de precio por tipo de componente (gráfico del home). Antes de
+        // '{uuid}' por la misma razón que las tres de arriba.
+        Route::get('historial-categorias',     [PrecioController::class, 'historialCategorias']);
 
         Route::get('{uuid}',                   [ComponenteController::class, 'show']);
         Route::get('categoria/{categoria}',    [ComponenteController::class, 'porCategoria']);

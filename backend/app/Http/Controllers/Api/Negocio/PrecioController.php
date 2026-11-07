@@ -241,6 +241,9 @@ class PrecioController extends Controller
     //      los componentes que tienen precio ese mes, así un componente con
     //      muchas tiendas no pesa más que uno con una sola.
     //
+    // Además de una serie por categoría, devuelve la serie 'todos': la media
+    // de todos los componentes juntos (una sola línea para la vista general).
+    //
     // Ojo: si entran o salen componentes del catálogo la media se mueve
     // aunque ningún precio cambie; por eso cada punto devuelve cuántos
     // componentes lo forman.
@@ -299,14 +302,31 @@ class PrecioController extends Controller
                 JOIN componentes c ON c.id = t.componente_id
                 GROUP BY c.categoria, m.mes, t.componente_id
             )
-            SELECT
-                categoria,
-                to_char(mes, 'YYYY-MM') AS periodo,
-                ROUND(AVG(media)::numeric, 2) AS media,
-                COUNT(*) AS componentes
-            FROM por_componente
-            WHERE media IS NOT NULL
-            GROUP BY categoria, mes
+            SELECT categoria, periodo, media, componentes
+            FROM (
+                SELECT
+                    categoria::text AS categoria,
+                    mes,
+                    to_char(mes, 'YYYY-MM') AS periodo,
+                    ROUND(AVG(media)::numeric, 2) AS media,
+                    COUNT(*) AS componentes
+                FROM por_componente
+                WHERE media IS NOT NULL
+                GROUP BY categoria, mes
+
+                UNION ALL
+
+                -- Serie 'todos': media de todos los componentes juntos
+                SELECT
+                    'todos'::text AS categoria,
+                    mes,
+                    to_char(mes, 'YYYY-MM') AS periodo,
+                    ROUND(AVG(media)::numeric, 2) AS media,
+                    COUNT(*) AS componentes
+                FROM por_componente
+                WHERE media IS NOT NULL
+                GROUP BY mes
+            ) x
             ORDER BY categoria, mes
         ", [
             $desde,

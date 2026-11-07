@@ -303,6 +303,23 @@ export interface HistorialPrecios {
   tiendas: { uuid: string; nombre: string }[];
 }
 
+// ── Historial de precios por categoría (gráfico del home) ─────────────────────
+
+export interface PuntoHistorialCategoria {
+  periodo: string;      // 'YYYY-MM'
+  media: number;        // media de las medias mensuales de cada componente
+  componentes: number;  // cuántos componentes forman ese punto
+}
+
+export interface SerieHistorialCategoria {
+  categoria: string;
+  puntos: PuntoHistorialCategoria[];
+}
+
+export interface HistorialCategorias {
+  series: SerieHistorialCategoria[];
+}
+
 // ── Visor de gabinete (endpoint ligero para el comparador 3D) ─────────────────
 
 export interface GabineteVisor {
@@ -428,6 +445,19 @@ export class ComponenteService {
     if (tiendaUuid) p = p.set('tienda', tiendaUuid);
     return this.http.get<HistorialPrecios>(
       `${this.API}/componentes/${uuid}/precios/historial`,
+      { params: p },
+    );
+  }
+
+  /** Media de precio mensual por tipo de componente. Sin `categorias`, todas. */
+  getHistorialCategorias(
+    periodo: PeriodoHistorial = '1y',
+    categorias: string[] = [],
+  ): Observable<HistorialCategorias> {
+    let p = new HttpParams().set('periodo', periodo);
+    if (categorias.length) p = p.set('categorias', categorias.join(','));
+    return this.http.get<HistorialCategorias>(
+      `${this.API}/componentes/historial-categorias`,
       { params: p },
     );
   }

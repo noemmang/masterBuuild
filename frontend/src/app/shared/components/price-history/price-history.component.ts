@@ -22,7 +22,7 @@ interface PuntoGrafico {
   punto: PuntoHistorial;
 }
 
-const PERIODOS: { label: string; value: PeriodoHistorial }[] = [
+export const PERIODOS: { label: string; value: PeriodoHistorial }[] = [
   { label: '6M', value: '6m' },
   { label: '1A', value: '1y' },
   { label: '2A', value: '2y' },
